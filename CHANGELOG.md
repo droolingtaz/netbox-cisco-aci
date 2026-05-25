@@ -11,6 +11,16 @@ and this project adheres to [Semantic Versioning 2.0.0](https://semver.org/).
 
 > **Compatibility:** NetBox v4.5, NetBox v4.6
 
+### Added
+
+- **Cloud / Kubernetes compatibility contract.** Documented in
+  `docs/cloud-compatibility.md` and `AGENTS.md`; enforced by a new
+  `cloud-compat` CI job (`scripts/check_cloud_compat.py`) that fails
+  the build on local-filesystem writes, in-process threading or
+  schedulers, subprocess use, Django management commands, file-based
+  caches, hard-coded host paths, and other patterns that would break
+  on NetBox Enterprise / NetBox Cloud.
+
 ### Changed
 
 - **BREAKING (pre-release): renamed plugin to `netbox-cisco-aci`.**

@@ -27,10 +27,22 @@ Claude-specific guidance for this repository. The general rules live in
 
 - **`rsplit('/', 1)` on ACI DNs.** Use bracket-aware helpers.
 - **`management/commands/` directories.** Use NetBox's `JobRunner`.
-- **Direct file I/O.** Go through `django-storages`.
+- **Direct file I/O.** Go through `django-storages` — see the
+  *Cloud / Kubernetes compatibility* section in [AGENTS.md](AGENTS.md)
+  for the full forbidden-pattern list (no `open()`, no `tempfile`, no
+  `threading`, no `subprocess`, no in-process schedulers, etc.). The
+  `cloud-compat` CI job will fail the build on any hit.
 - **`features.updateFields = true`** in any docx generation (carried
   over from the aci-analyzer report — same Word popup applies if we
   ever ship a docx exporter).
+
+## Hosting environment
+
+This plugin must run unmodified on **NetBox Enterprise** and **NetBox
+Cloud** — both Kubernetes-based, multi-pod, immutable filesystems.
+When in doubt about a design choice, ask: *“would this still work if
+my pod was killed and rescheduled to a different node mid-request?”*
+If the answer is no, redesign.
 
 ## Useful context
 

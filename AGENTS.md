@@ -95,20 +95,68 @@ brackets and produce silent data loss. Helpers belong in
   `clean`), a form test (valid + invalid cases), a filterset test, and
   an API test (list/detail/create/update/delete).
 
-### Storage
+### Cloud / Kubernetes compatibility (HARD CONTRACT)
 
-- Any disk I/O — uploads, generated artefacts, exports — goes through
-  `django-storages`. This keeps the plugin compatible with S3-backed
-  NetBox deployments (Kubernetes, SaaS, etc.).
-- **Do not** write directly to `MEDIA_ROOT` with `open()`.
+This plugin **must** run unmodified on NetBox Enterprise and NetBox
+Cloud. Both run as immutable, horizontally-scalable Kubernetes pods.
+That rules out a whole class of patterns that would work fine on a
+classic VM install but silently break in a multi-pod environment.
 
-### Background work
+A dedicated CI job (`cloud-compat` in `.github/workflows/ci.yml`)
+scans the source tree for the forbidden patterns below and fails the
+build on a hit. Treat any new finding as a release blocker — do not
+`# noqa` it; fix the design.
 
-- No Django management commands. NetBox Cloud and most K8s deployments
-  cannot easily run them, and the NetBox plugin catalogue penalises
-  plugins that rely on them.
-- Use NetBox's `JobRunner` framework for any long-running work (APIC
-  sync, bulk imports, audits, exports).
+**Forbidden — local filesystem and per-pod state**
+
+- No `open(...)`, `pathlib.Path(...).write_*`, `os.makedirs`,
+  `os.mkdir`, `os.remove`, `shutil.copy*` against arbitrary paths.
+- No `tempfile.NamedTemporaryFile` / `mkdtemp` for anything that needs
+  to survive the request that created it. Use the active
+  `DEFAULT_FILE_STORAGE` backend instead (which is
+  `django-storages` on Enterprise/Cloud).
+- No hard-coded paths: `/tmp/...`, `/var/...`, `/opt/netbox/...`,
+  `/home/...`. These don't exist (or aren't writeable) in the
+  container image.
+- No `FileField` / `ImageField` / `FilePathField` without explicit
+  `storage=` kwarg routed through `default_storage`.
+- No local SQLite, no `shelve`, no on-disk pickle caches.
+- No `MEDIA_ROOT` / `STATIC_ROOT` direct access.
+
+**Forbidden — process- and host-level assumptions**
+
+- No Django management commands. Enterprise/Cloud cannot run them on
+  demand. Use NetBox's `JobRunner` framework for long-running work
+  (APIC sync, bulk import, audits, exports).
+- No `threading.Thread`, `multiprocessing.*`, `asyncio.create_task`
+  spawned from request paths. The pod can be killed mid-flight.
+- No `subprocess.*`. The container has no shell-level tools we can
+  depend on.
+- No `APScheduler`, `schedule`, `crontab`, or other in-process
+  schedulers. Recurring work goes through NetBox jobs + the
+  Enterprise scheduler.
+- No `socket.bind` / `listen`. Ingress is the platform's job.
+- No `logging.FileHandler` / `RotatingFileHandler`. Logs go to stdout
+  (Django default) so the platform can collect them.
+
+**Forbidden — per-pod caching**
+
+- No `django.core.cache.backends.locmem` or `filebased` assumptions.
+  Anything cached must be safe to evict per-pod (Enterprise/Cloud run
+  Redis behind the cache framework).
+- No module-level mutable state that holds user/tenant data across
+  requests.
+
+**Required**
+
+- Disk I/O goes through `django-storages` via `default_storage`. This
+  routes to S3 (or equivalent) on Enterprise/Cloud and the local
+  filesystem on a dev VM.
+- Background work uses NetBox's `JobRunner` framework. The job
+  payload is the state contract — assume the job may run on a
+  different pod from the one that enqueued it.
+- If you need a one-shot bootstrap (e.g. seed reference data), do it
+  through a data migration, not a management command.
 
 ### Templates
 
@@ -136,7 +184,9 @@ If you (the AI) are editing this repo:
    be a planned entry that constrains the design.
 3. **Run `make lint test`** before declaring work done. Both must pass.
 4. **Don't add management commands.**
-5. **Don't write to disk outside `django-storages`.**
+5. **Don't write to disk outside `django-storages`** — see the
+   *Cloud / Kubernetes compatibility* section above for the full list
+   of forbidden patterns. The `cloud-compat` CI job enforces this.
 6. **Don't introduce new third-party deps** without first checking that
    they ship wheels for Python 3.11 and 3.12.
 7. **Don't bump `min_version` or `max_version`** in a feature PR — that
