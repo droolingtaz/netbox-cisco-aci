@@ -78,9 +78,7 @@ class ACIVLANPoolAPITests(
         # test_delete_object case (it deletes ._get_queryset().first()).
         fab = ACIFabric.objects.create(name="API-PoolFab")
         for i in range(4):
-            ACIVLANPool.objects.create(
-                aci_fabric=fab, name=f"pool-{i}", allocation_mode="static"
-            )
+            ACIVLANPool.objects.create(aci_fabric=fab, name=f"pool-{i}", allocation_mode="static")
         cls.create_data = [
             {"aci_fabric": fab.pk, "name": "pool-a", "allocation_mode": "static"},
             {
