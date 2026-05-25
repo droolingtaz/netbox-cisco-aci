@@ -22,6 +22,19 @@ jobs:
       # yamllint only — COMPATIBILITY.md is markdown, not YAML.
       - run: yamllint -s .github
 
+  cloud-compat:
+    # Gates the plugin against patterns that would break on NetBox
+    # Enterprise / NetBox Cloud (Kubernetes, multi-pod, immutable FS).
+    # The full contract is documented in AGENTS.md under
+    # "Cloud / Kubernetes compatibility (HARD CONTRACT)".
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python scripts/check_cloud_compat.py
+
   test:
     runs-on: ubuntu-latest
     strategy:

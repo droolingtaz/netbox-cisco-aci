@@ -19,6 +19,12 @@ ACI policy applied to any device or port at a glance.
 
 See the [compatibility matrix](COMPATIBILITY.md) for supported NetBox versions.
 
+The plugin is designed to run unmodified on **NetBox Enterprise** and
+**NetBox Cloud** (both Kubernetes-based, multi-pod, immutable
+filesystems) as well as classic single-VM installs. The contract is
+documented in [`docs/cloud-compatibility.md`](docs/cloud-compatibility.md)
+and enforced by the `cloud-compat` CI job.
+
 ## Features
 
 - **Fabric topology** — Fabric → Pod → Node, with each Node optionally
