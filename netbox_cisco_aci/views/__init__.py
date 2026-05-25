@@ -1,3 +1,3 @@
 """UI views for the plugin."""
 
-from . import fabric, tenant  # noqa: F401
+from . import access, fabric, tenant  # noqa: F401

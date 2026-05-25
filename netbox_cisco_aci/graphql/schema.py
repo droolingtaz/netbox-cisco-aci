@@ -7,6 +7,13 @@ resolver. NetBox merges this schema into its own at startup.
 import strawberry
 import strawberry_django
 
+from ..models.access import (
+    ACIAAEP,
+    ACIAAEPEPGMapping,
+    ACIDomain,
+    ACIVLANPool,
+    ACIVLANPoolBlock,
+)
 from ..models.fabric import ACIFabric, ACINode, ACIPod
 from ..models.tenant import (
     ACIVRF,
@@ -79,6 +86,31 @@ class ACIEndpointSecurityGroupType:
     pass
 
 
+@strawberry_django.type(ACIVLANPool, fields="__all__")
+class ACIVLANPoolType:
+    pass
+
+
+@strawberry_django.type(ACIVLANPoolBlock, fields="__all__")
+class ACIVLANPoolBlockType:
+    pass
+
+
+@strawberry_django.type(ACIDomain, fields="__all__")
+class ACIDomainType:
+    pass
+
+
+@strawberry_django.type(ACIAAEP, fields="__all__")
+class ACIAAEPType:
+    pass
+
+
+@strawberry_django.type(ACIAAEPEPGMapping, fields="__all__")
+class ACIAAEPEPGMappingType:
+    pass
+
+
 # ---------------------------------------------------------------------------
 # Query root
 # ---------------------------------------------------------------------------
@@ -118,6 +150,21 @@ class Query:
 
     aci_endpoint_security_group: ACIEndpointSecurityGroupType | None = strawberry_django.field()
     aci_endpoint_security_group_list: list[ACIEndpointSecurityGroupType] = strawberry_django.field()
+
+    aci_vlan_pool: ACIVLANPoolType | None = strawberry_django.field()
+    aci_vlan_pool_list: list[ACIVLANPoolType] = strawberry_django.field()
+
+    aci_vlan_pool_block: ACIVLANPoolBlockType | None = strawberry_django.field()
+    aci_vlan_pool_block_list: list[ACIVLANPoolBlockType] = strawberry_django.field()
+
+    aci_domain: ACIDomainType | None = strawberry_django.field()
+    aci_domain_list: list[ACIDomainType] = strawberry_django.field()
+
+    aci_aaep: ACIAAEPType | None = strawberry_django.field()
+    aci_aaep_list: list[ACIAAEPType] = strawberry_django.field()
+
+    aci_aaep_epg_mapping: ACIAAEPEPGMappingType | None = strawberry_django.field()
+    aci_aaep_epg_mapping_list: list[ACIAAEPEPGMappingType] = strawberry_django.field()
 
 
 schema = [Query]

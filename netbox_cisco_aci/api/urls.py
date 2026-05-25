@@ -8,6 +8,13 @@ fallback when reverse() lookups don't specify an instance.
 
 from netbox.api.routers import NetBoxRouter
 
+from .views.access import (
+    ACIAAEPEPGMappingViewSet,
+    ACIAAEPViewSet,
+    ACIDomainViewSet,
+    ACIVLANPoolBlockViewSet,
+    ACIVLANPoolViewSet,
+)
 from .views.fabric import ACIFabricViewSet, ACINodeViewSet, ACIPodViewSet
 from .views.tenant import (
     ACIAppProfileViewSet,
@@ -38,5 +45,12 @@ router.register("app-profiles", ACIAppProfileViewSet)
 router.register("endpoint-groups", ACIEndpointGroupViewSet)
 router.register("useg-attributes", ACIUSegAttributeViewSet)
 router.register("endpoint-security-groups", ACIEndpointSecurityGroupViewSet)
+
+# Phase 3 — Access policies
+router.register("vlan-pools", ACIVLANPoolViewSet)
+router.register("vlan-pool-blocks", ACIVLANPoolBlockViewSet)
+router.register("domains", ACIDomainViewSet)
+router.register("aaeps", ACIAAEPViewSet)
+router.register("aaep-epg-mappings", ACIAAEPEPGMappingViewSet)
 
 urlpatterns = router.urls

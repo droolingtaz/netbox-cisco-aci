@@ -12,6 +12,7 @@ namespace; reverse() lookups against ``plugins:netbox_cisco_aci:...`` use it.
 
 from django.urls import path
 
+from .views import access as acc
 from .views import fabric as fab
 from .views import tenant as tn
 
@@ -93,4 +94,17 @@ urlpatterns += _crud(
     tn,
     "ACIEndpointSecurityGroup",
     "aciendpointsecuritygroup",
+)
+
+# Phase 3 — Access policies
+urlpatterns += _crud("vlan-pools", "pool", acc, "ACIVLANPool", "acivlanpool")
+urlpatterns += _crud("vlan-pool-blocks", "block", acc, "ACIVLANPoolBlock", "acivlanpoolblock")
+urlpatterns += _crud("domains", "domain", acc, "ACIDomain", "acidomain")
+urlpatterns += _crud("aaeps", "aaep", acc, "ACIAAEP", "aciaaep")
+urlpatterns += _crud(
+    "aaep-epg-mappings",
+    "aaep-map",
+    acc,
+    "ACIAAEPEPGMapping",
+    "aciaaepepgmapping",
 )
