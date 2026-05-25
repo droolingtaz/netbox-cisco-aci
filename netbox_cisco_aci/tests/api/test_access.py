@@ -73,15 +73,18 @@ class ACIVLANPoolAPITests(
 
     @classmethod
     def setUpTestData(cls):
-        d = _seed_access()
-        for i in range(3):
+        # NOTE: do not call _seed_access() here -- it creates an ACIDomain
+        # protecting the first VLAN pool, which would block the inherited
+        # test_delete_object case (it deletes ._get_queryset().first()).
+        fab = ACIFabric.objects.create(name="API-PoolFab")
+        for i in range(4):
             ACIVLANPool.objects.create(
-                aci_fabric=d["fab"], name=f"pool-extra-{i}", allocation_mode="static"
+                aci_fabric=fab, name=f"pool-{i}", allocation_mode="static"
             )
         cls.create_data = [
-            {"aci_fabric": d["fab"].pk, "name": "pool-a", "allocation_mode": "static"},
+            {"aci_fabric": fab.pk, "name": "pool-a", "allocation_mode": "static"},
             {
-                "aci_fabric": d["fab"].pk,
+                "aci_fabric": fab.pk,
                 "name": "pool-b",
                 "allocation_mode": "dynamic",
             },

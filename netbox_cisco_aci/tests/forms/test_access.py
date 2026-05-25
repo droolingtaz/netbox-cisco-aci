@@ -59,6 +59,7 @@ class AccessFormTests(TestCase):
         form = ACIVLANPoolBlockForm(
             data={
                 "aci_vlan_pool": self.pool.pk,
+                "name": "blk-1",
                 "from_vlan": 100,
                 "to_vlan": 200,
             }
