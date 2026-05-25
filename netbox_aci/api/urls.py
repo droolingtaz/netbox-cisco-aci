@@ -1,4 +1,10 @@
-"""API URL routes."""
+"""API URL routes.
+
+NetBox includes this module at ``api/plugins/aci/`` with the instance
+namespace ``netbox_aci-api`` — see netbox/plugins/urls.py in the NetBox
+source. Setting an ``app_name`` here would clash with that namespace,
+so we deliberately don't.
+"""
 
 from netbox.api.routers import NetBoxRouter
 
@@ -13,8 +19,6 @@ from .views.tenant import (
     ACIUSegAttributeViewSet,
     ACIVRFViewSet,
 )
-
-app_name = "netbox_aci"
 
 router = NetBoxRouter()
 
