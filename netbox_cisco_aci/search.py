@@ -2,6 +2,13 @@
 
 from netbox.search import SearchIndex, register_search
 
+from .models.access import (
+    ACIAAEP,
+    ACIAAEPEPGMapping,
+    ACIDomain,
+    ACIVLANPool,
+    ACIVLANPoolBlock,
+)
 from .models.fabric import ACIFabric, ACINode, ACIPod
 from .models.tenant import (
     ACIVRF,
@@ -84,3 +91,33 @@ class ACIUSegAttributeIndex(SearchIndex):
 class ACIEndpointSecurityGroupIndex(SearchIndex):
     model = ACIEndpointSecurityGroup
     fields = (("name", 100), ("name_alias", 200), ("description", 500))
+
+
+@register_search
+class ACIVLANPoolIndex(SearchIndex):
+    model = ACIVLANPool
+    fields = (("name", 100), ("name_alias", 200), ("description", 500))
+
+
+@register_search
+class ACIVLANPoolBlockIndex(SearchIndex):
+    model = ACIVLANPoolBlock
+    fields = (("name", 100), ("description", 500))
+
+
+@register_search
+class ACIDomainIndex(SearchIndex):
+    model = ACIDomain
+    fields = (("name", 100), ("name_alias", 200), ("description", 500))
+
+
+@register_search
+class ACIAAEPIndex(SearchIndex):
+    model = ACIAAEP
+    fields = (("name", 100), ("name_alias", 200), ("description", 500))
+
+
+@register_search
+class ACIAAEPEPGMappingIndex(SearchIndex):
+    model = ACIAAEPEPGMapping
+    fields = (("name", 100), ("description", 500))

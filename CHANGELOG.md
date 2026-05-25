@@ -55,9 +55,29 @@ and this project adheres to [Semantic Versioning 2.0.0](https://semver.org/).
   - Migration `0002_tenancy`.
   - Tests: model validation/uniqueness/clean, REST API CRUD,
     filterset behaviour, form valid/invalid — for every Phase 2 model.
-- Phase 3 (planned) — Access policies: `ACIVLANPool` + encap blocks,
-  `ACIDomain` (physical / L3 / VMM), `ACIAAEP` with domain and EPG
-  mappings.
+- **Phase 3 — Access policies** (this PR):
+  - `ACIVLANPool` (`fvnsVlanInstP`) with `allocation_mode` static or
+    dynamic. Unique per Fabric+name.
+  - `ACIVLANPoolBlock` (`fvnsEncapBlk`) — `from_vlan`/`to_vlan` range
+    inside a pool. Validates `to >= from`, refuses overlap with sibling
+    blocks in the same pool, allows overlap across pools.
+  - `ACIDomain` — single model for all five APIC domain types
+    (Physical, L3, VMM, L2-Ext, FC) keyed by `domain_type`. Each Domain
+    has an optional FK to one `ACIVLANPool`.
+  - `ACIAAEP` (`infraAttEntityP`) with `enable_infra_vlan` flag and a
+    M2M to Domains via the explicit `ACIAAEPDomainAssociation` through
+    model (cross-fabric pairings are refused).
+  - `ACIAAEPEPGMapping` (`infraRsFuncToEpg`) — binds an EPG onto an
+    AAEP with encap VLAN and switching mode. Cross-fabric pairings
+    are refused.
+  - Full surface per model: form (edit + bulk-edit + filter + import),
+    table, filterset, UI viewset, REST API serializer + viewset,
+    GraphQL type, search index, navigation entry, detail template.
+  - New "Access Policies" submenu groups all five UI entries.
+  - Migration `0003_access_policies`.
+  - Tests: model validation (overlap, cross-fabric, uniqueness),
+    REST API CRUD, filterset (including `contains_vlan` numeric
+    filter), form smoke tests — for every Phase 3 model.
 - Phase 4 — Switch / Interface Profiles, Interface Policy Groups,
   per-policy refs (CDP, LLDP, LACP, MCP, STP, Link Level).
 - Phase 5 — `ACIContract`, `ACIContractSubject`, `ACIContractFilter`

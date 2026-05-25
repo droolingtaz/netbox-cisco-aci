@@ -5,6 +5,14 @@ Each subpackage re-exports its concrete models so callers can do
 internal layout.
 """
 
+from .access import (  # noqa: F401
+    ACIAAEP,
+    ACIAAEPDomainAssociation,
+    ACIAAEPEPGMapping,
+    ACIDomain,
+    ACIVLANPool,
+    ACIVLANPoolBlock,
+)
 from .base import ACIBaseModel, ACIFabricBaseModel, ACITenantBaseModel  # noqa: F401
 from .fabric import ACIFabric, ACINode, ACIPod  # noqa: F401
 from .tenant import (  # noqa: F401

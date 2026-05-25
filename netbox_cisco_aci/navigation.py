@@ -23,6 +23,14 @@ fabric_items = (
     _item("acinode", "Nodes"),
 )
 
+access_items = (
+    _item("acivlanpool", "VLAN Pools"),
+    _item("acivlanpoolblock", "VLAN Pool Blocks"),
+    _item("acidomain", "Domains"),
+    _item("aciaaep", "AAEPs"),
+    _item("aciaaepepgmapping", "AAEP → EPG Mappings"),
+)
+
 tenancy_items = (
     _item("acitenant", "Tenants"),
     _item("acivrf", "VRFs"),
@@ -39,8 +47,9 @@ menu = PluginMenu(
     groups=(
         ("Fabric", fabric_items),
         ("Tenancy", tenancy_items),
-        # Subsequent phases extend this tuple — Access policies,
-        # Contracts, L3Outs, Static Port Bindings.
+        ("Access Policies", access_items),
+        # Subsequent phases extend this tuple — Contracts, L3Outs,
+        # Static Port Bindings.
     ),
     icon_class="mdi mdi-server-network",
 )
