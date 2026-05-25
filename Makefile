@@ -11,7 +11,7 @@ help:
 	@echo "  make test            Run the test suite"
 	@echo "  make test-cov        Run tests and emit an HTML coverage report"
 	@echo "  make migrate         Apply migrations against the dev NetBox"
-	@echo "  make makemigrations  Generate new migrations for netbox_aci"
+	@echo "  make makemigrations  Generate new migrations for netbox_cisco_aci"
 	@echo "  make shell           Open the NetBox shell with the plugin loaded"
 	@echo "  make docs-serve      Live-preview the mkdocs site"
 	@echo "  make clean           Remove build artefacts"
@@ -20,8 +20,8 @@ install:
 	pip install -e ".[test,docs]"
 
 lint:
-	ruff check netbox_aci
-	ruff format --check netbox_aci
+	ruff check netbox_cisco_aci
+	ruff format --check netbox_cisco_aci
 	yamllint -s .github
 
 test:
@@ -31,10 +31,10 @@ test-cov:
 	pytest --cov-report=html
 
 migrate:
-	$(PY) $(NETBOX_MANAGE) migrate netbox_aci
+	$(PY) $(NETBOX_MANAGE) migrate netbox_cisco_aci
 
 makemigrations:
-	$(PY) $(NETBOX_MANAGE) makemigrations netbox_aci
+	$(PY) $(NETBOX_MANAGE) makemigrations netbox_cisco_aci
 
 shell:
 	$(PY) $(NETBOX_MANAGE) shell_plus || $(PY) $(NETBOX_MANAGE) shell

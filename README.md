@@ -1,4 +1,4 @@
-# netbox-aci
+# netbox-cisco-aci
 
 A [NetBox](https://netboxlabs.com/oss/netbox/) plugin for **operational
 visibility and documentation of Cisco ACI** fabrics.
@@ -11,8 +11,8 @@ Interface profiles, L3Outs (with BGP / OSPF / EIGRP peers and External
 EPGs), and **per-interface EPG/BD/Subnet bindings** so you can see the
 ACI policy applied to any device or port at a glance.
 
-[![PyPI](https://img.shields.io/pypi/v/netbox-aci.svg)](https://pypi.org/project/netbox-aci/)
-[![Python versions](https://img.shields.io/pypi/pyversions/netbox-aci.svg)](https://pypi.org/project/netbox-aci/)
+[![PyPI](https://img.shields.io/pypi/v/netbox-cisco-aci.svg)](https://pypi.org/project/netbox-cisco-aci/)
+[![Python versions](https://img.shields.io/pypi/pyversions/netbox-cisco-aci.svg)](https://pypi.org/project/netbox-cisco-aci/)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
 ## Compatibility
@@ -47,13 +47,13 @@ See the [compatibility matrix](COMPATIBILITY.md) for supported NetBox versions.
 
 ```bash
 source /opt/netbox/venv/bin/activate
-pip install netbox-aci
+pip install netbox-cisco-aci
 ```
 
 Enable the plugin in `/opt/netbox/netbox/netbox/configuration.py`:
 
 ```python
-PLUGINS = ['netbox_aci']
+PLUGINS = ['netbox_cisco_aci']
 ```
 
 Run migrations and restart NetBox:
@@ -63,12 +63,12 @@ python /opt/netbox/netbox/manage.py migrate
 sudo systemctl restart netbox netbox-rq
 ```
 
-Add `netbox-aci` to `local_requirements.txt`.
+Add `netbox-cisco-aci` to `local_requirements.txt`.
 
 ## Configuration
 
 The plugin works with sensible defaults. Optional settings live under
-`PLUGINS_CONFIG['netbox_aci']` — see the [configuration docs](docs/configuration.md).
+`PLUGINS_CONFIG['netbox_cisco_aci']` — see the [configuration docs](docs/configuration.md).
 
 ## Development
 

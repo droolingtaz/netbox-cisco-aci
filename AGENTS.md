@@ -7,8 +7,8 @@ with the NetBox plugin catalogue standards.
 
 ## Project at a glance
 
-- **Plugin name (Python package):** `netbox_aci`
-- **PyPI name:** `netbox-aci`
+- **Plugin name (Python package):** `netbox_cisco_aci`
+- **PyPI name:** `netbox-cisco-aci`
 - **License:** Apache-2.0
 - **Supported NetBox:** 4.5.x and 4.6.x (single release supports both)
 - **Supported Python:** 3.12 (NetBox 4.5+ requires Python 3.12)
@@ -17,7 +17,7 @@ with the NetBox plugin catalogue standards.
 ## Repository layout
 
 ```
-netbox_aci/
+netbox_cisco_aci/
 ├── __init__.py            # PluginConfig (min_version, max_version, etc.)
 ├── version.py             # __version__ — single source of truth
 ├── choices.py             # Django/NetBox ChoiceSet definitions
@@ -41,7 +41,7 @@ netbox_aci/
 │   ├── l3out/             # L3Out, LNP, LIP, peers, ExtEPG
 │   └── bindings/          # Static port bindings (EPG ↔ dcim.Interface)
 ├── tables/                # django-tables2 tables
-├── templates/netbox_aci/  # Object detail + list templates
+├── templates/netbox_cisco_aci/  # Object detail + list templates
 ├── template_content/      # PluginTemplateExtensions for core NetBox objects
 └── tests/                 # Mirrors the package layout
 ```
@@ -51,8 +51,8 @@ netbox_aci/
 ### Naming
 
 - **Model class:** `ACI<Object>` — `ACIFabric`, `ACITenant`, `ACIEndpointGroup`, etc.
-- **DB table:** `netbox_aci_<snake>` (default Django naming is fine).
-- **URL namespace:** `plugins:netbox_aci:<model>_list` / `_detail` / etc.
+- **DB table:** `netbox_cisco_aci_<snake>` (default Django naming is fine).
+- **URL namespace:** `plugins:netbox_cisco_aci:<model>_list` / `_detail` / etc.
 - **GraphQL type:** `ACI<Object>Type`.
 - **Choice classes:** `<Domain>Choices` (e.g. `NodeRoleChoices`).
 
@@ -77,7 +77,7 @@ If you ever parse APIC DNs (for example during a sync job), **always**
 use bracket-aware helpers — never a naked `rsplit('/', 1)`. ACI embeds
 full DNs in the last RN inside `[...]`, and naïve splits cut inside the
 brackets and produce silent data loss. Helpers belong in
-`netbox_aci/utils/dn.py` when sync code lands.
+`netbox_cisco_aci/utils/dn.py` when sync code lands.
 
 ### Migrations
 
@@ -114,14 +114,14 @@ brackets and produce silent data loss. Helpers belong in
 
 - Detail templates extend `generic/object.html`.
 - List templates extend `generic/object_list.html`.
-- Re-usable partials live in `templates/netbox_aci/inc/`.
+- Re-usable partials live in `templates/netbox_cisco_aci/inc/`.
 - Use NetBox's `htmx_partial` helpers for in-page updates.
 
 ### Template extensions
 
 - Lives in `template_content/`. Each extension class targets exactly one
   core NetBox model (`dcim.Device`, `dcim.Interface`, ...).
-- Register through `template_extensions` in `netbox_aci/__init__.py`.
+- Register through `template_extensions` in `netbox_cisco_aci/__init__.py`.
 - Keep queries small: prefetch related EPGs/BDs/Subnets in a single
   `select_related` chain and cap the queryset with `[:N]` before
   rendering.

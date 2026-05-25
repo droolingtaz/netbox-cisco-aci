@@ -39,10 +39,10 @@ API_TOKEN_PEPPERS = {
     1: "ci-only-pepper-do-not-use-in-production-0000000000000000000000000000000000",
 }
 
-PLUGINS = ["netbox_aci"]
+PLUGINS = ["netbox_cisco_aci"]
 
 PLUGINS_CONFIG = {
-    "netbox_aci": {},
+    "netbox_cisco_aci": {},
 }
 
 # django-storages compatibility — kept local for the dev/CI loop.

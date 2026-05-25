@@ -3,8 +3,8 @@
 ## Quickstart
 
 ```bash
-git clone https://github.com/bparker-e280/netbox-aci
-cd netbox-aci
+git clone https://github.com/bparker-e280/netbox-cisco-aci
+cd netbox-cisco-aci
 python -m venv .venv && source .venv/bin/activate
 pip install -e ".[test,docs]"
 ```
@@ -23,12 +23,12 @@ make shell       # NetBox shell with plugin pre-loaded
 
 ## Adding a model
 
-1. Add the model class under `netbox_aci/models/<domain>/`.
+1. Add the model class under `netbox_cisco_aci/models/<domain>/`.
 2. Register it in the domain's `__init__.py`.
 3. Generate the migration: `make makemigrations`.
 4. Add serializer, view, filterset, form, table, GraphQL type, search
    index, and navigation entry.
-5. Add tests under `netbox_aci/tests/` mirroring the package layout.
+5. Add tests under `netbox_cisco_aci/tests/` mirroring the package layout.
 6. Update `CHANGELOG.md`.
 
 See [AGENTS.md](../AGENTS.md) for the full conventions list.

@@ -8,7 +8,7 @@ Claude-specific guidance for this repository. The general rules live in
 1. [AGENTS.md](AGENTS.md) — full repo conventions.
 2. [COMPATIBILITY.md](COMPATIBILITY.md) — supported NetBox versions.
 3. [CHANGELOG.md](CHANGELOG.md) — what is planned vs. shipped.
-4. The relevant model file under `netbox_aci/models/<domain>/` before
+4. The relevant model file under `netbox_cisco_aci/models/<domain>/` before
    touching anything in `forms/`, `filtersets/`, `api/`, or `tables/`.
 
 ## Workflow
@@ -20,7 +20,7 @@ Claude-specific guidance for this repository. The general rules live in
   search index, navigation entry, and tests. Missing one of these is the
   #1 source of regressions in NetBox plugins.
 - Generate migrations with `make migrate` (which calls
-  `manage.py makemigrations netbox_aci`); never hand-edit migration
+  `manage.py makemigrations netbox_cisco_aci`); never hand-edit migration
   files after they have been committed.
 
 ## Things to avoid
