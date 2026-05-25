@@ -34,7 +34,7 @@ class ACITenantAPITests(
 ):
     model = ACITenant
     view_namespace = PLUGIN_API_NAMESPACE
-    brief_fields = ["display", "id", "name", "url"]
+    brief_fields = ["aci_fabric", "description", "display", "id", "name", "url"]
     bulk_update_data = {"description": "Bulk-updated"}
 
     @classmethod
@@ -58,7 +58,7 @@ class ACIVRFAPITests(
 ):
     model = ACIVRF
     view_namespace = PLUGIN_API_NAMESPACE
-    brief_fields = ["display", "id", "name", "url"]
+    brief_fields = ["aci_tenant", "description", "display", "id", "name", "url"]
     bulk_update_data = {"description": "Bulk-updated"}
 
     @classmethod
@@ -83,7 +83,7 @@ class ACIBridgeDomainAPITests(
 ):
     model = ACIBridgeDomain
     view_namespace = PLUGIN_API_NAMESPACE
-    brief_fields = ["display", "id", "name", "url"]
+    brief_fields = ["aci_tenant", "aci_vrf", "description", "display", "id", "name", "url"]
     bulk_update_data = {"description": "Bulk-updated"}
 
     @classmethod
@@ -115,7 +115,7 @@ class ACIEndpointGroupAPITests(
 ):
     model = ACIEndpointGroup
     view_namespace = PLUGIN_API_NAMESPACE
-    brief_fields = ["display", "id", "name", "url"]
+    brief_fields = ["aci_app_profile", "aci_tenant", "description", "display", "id", "name", "url"]
     bulk_update_data = {"description": "Bulk-updated"}
 
     @classmethod
@@ -154,7 +154,7 @@ class ACIEndpointSecurityGroupAPITests(
 ):
     model = ACIEndpointSecurityGroup
     view_namespace = PLUGIN_API_NAMESPACE
-    brief_fields = ["display", "id", "name", "url"]
+    brief_fields = ["aci_tenant", "aci_vrf", "description", "display", "id", "name", "url"]
     bulk_update_data = {"description": "Bulk-updated"}
 
     @classmethod

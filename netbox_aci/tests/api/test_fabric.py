@@ -22,7 +22,7 @@ class ACIFabricAPITests(
 ):
     model = ACIFabric
     view_namespace = PLUGIN_API_NAMESPACE
-    brief_fields = ["display", "id", "name", "url"]
+    brief_fields = ["description", "display", "fabric_id", "id", "name", "url"]
     create_data = [
         {"name": "ACI-API-DC1", "fabric_id": 1},
         {"name": "ACI-API-DC2", "fabric_id": 2},
@@ -46,7 +46,7 @@ class ACIPodAPITests(
 ):
     model = ACIPod
     view_namespace = PLUGIN_API_NAMESPACE
-    brief_fields = ["display", "id", "name", "url"]
+    brief_fields = ["aci_fabric", "description", "display", "id", "name", "pod_id", "url"]
     bulk_update_data = {"description": "Bulk-updated"}
 
     @classmethod
@@ -70,7 +70,7 @@ class ACINodeAPITests(
 ):
     model = ACINode
     view_namespace = PLUGIN_API_NAMESPACE
-    brief_fields = ["display", "id", "name", "url"]
+    brief_fields = ["aci_pod", "description", "display", "id", "name", "node_id", "role", "url"]
     bulk_update_data = {"description": "Bulk-updated"}
 
     @classmethod
