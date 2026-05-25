@@ -1,0 +1,12 @@
+include README.md
+include LICENSE
+include CHANGELOG.md
+include COMPATIBILITY.md
+include AGENTS.md
+include CLAUDE.md
+recursive-include netbox_aci/templates *.html
+recursive-include netbox_aci/static *
+recursive-include netbox_aci/locale *.mo
+recursive-exclude netbox_aci/tests *
+global-exclude __pycache__
+global-exclude *.py[co]

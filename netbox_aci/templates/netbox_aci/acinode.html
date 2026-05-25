@@ -1,0 +1,74 @@
+{% extends 'generic/object.html' %}
+{% load helpers %}
+{% load i18n %}
+
+{% block content %}
+<div class="row">
+  <div class="col col-md-6">
+    <div class="card">
+      <h2 class="card-header">{% trans "Node" %}</h2>
+      <table class="table table-hover attr-table">
+        <tr>
+          <th scope="row">{% trans "Name" %}</th>
+          <td>{{ object.name }}</td>
+        </tr>
+        <tr>
+          <th scope="row">{% trans "Alias" %}</th>
+          <td>{{ object.name_alias|placeholder }}</td>
+        </tr>
+        <tr>
+          <th scope="row">{% trans "Pod" %}</th>
+          <td><a href="{{ object.aci_pod.get_absolute_url }}">{{ object.aci_pod }}</a></td>
+        </tr>
+        <tr>
+          <th scope="row">{% trans "Fabric" %}</th>
+          <td><a href="{{ object.aci_fabric.get_absolute_url }}">{{ object.aci_fabric }}</a></td>
+        </tr>
+        <tr>
+          <th scope="row">{% trans "Node ID" %}</th>
+          <td>{{ object.node_id }}</td>
+        </tr>
+        <tr>
+          <th scope="row">{% trans "Role" %}</th>
+          <td>{% badge object.get_role_display bg_color=object.get_role_color %}</td>
+        </tr>
+        <tr>
+          <th scope="row">{% trans "Type" %}</th>
+          <td>{% badge object.get_node_type_display bg_color=object.get_node_type_color %}</td>
+        </tr>
+        <tr>
+          <th scope="row">{% trans "Serial" %}</th>
+          <td>{{ object.serial_number|placeholder }}</td>
+        </tr>
+        <tr>
+          <th scope="row">{% trans "Pod TEP pool" %}</th>
+          <td>{{ object.pod_tep_pool|placeholder }}</td>
+        </tr>
+        <tr>
+          <th scope="row">{% trans "Firmware" %}</th>
+          <td>{{ object.firmware_version|placeholder }}</td>
+        </tr>
+        <tr>
+          <th scope="row">{% trans "Linked object" %}</th>
+          <td>
+            {% if object.node_object %}
+              <a href="{{ object.node_object.get_absolute_url }}">{{ object.node_object }}</a>
+            {% else %}
+              {{ ''|placeholder }}
+            {% endif %}
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">{% trans "Description" %}</th>
+          <td>{{ object.description|placeholder }}</td>
+        </tr>
+      </table>
+    </div>
+    {% include 'inc/panels/tags.html' %}
+    {% include 'inc/panels/custom_fields.html' %}
+  </div>
+  <div class="col col-md-6">
+    {% include 'inc/panels/comments.html' %}
+  </div>
+</div>
+{% endblock %}
