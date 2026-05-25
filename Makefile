@@ -22,7 +22,7 @@ install:
 lint:
 	ruff check netbox_aci
 	ruff format --check netbox_aci
-	yamllint -s .github COMPATIBILITY.md || true
+	yamllint -s .github
 
 test:
 	pytest

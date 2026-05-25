@@ -19,7 +19,8 @@ jobs:
       - run: pip install ruff==0.15.14 yamllint==1.38.0
       - run: ruff check netbox_aci
       - run: ruff format --check netbox_aci
-      - run: yamllint -s .github COMPATIBILITY.md
+      # yamllint only — COMPATIBILITY.md is markdown, not YAML.
+      - run: yamllint -s .github
 
   test:
     runs-on: ubuntu-latest
