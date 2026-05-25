@@ -1,0 +1,29 @@
+{% extends 'generic/object.html' %}
+{% load helpers %}
+{% load i18n %}
+
+{% block content %}
+<div class="row">
+  <div class="col col-md-6">
+    <div class="card">
+      <h2 class="card-header">{% trans "VRF" %}</h2>
+      <table class="table table-hover attr-table">
+        <tr><th scope="row">{% trans "Name" %}</th><td>{{ object.name }}</td></tr>
+        <tr><th scope="row">{% trans "Alias" %}</th><td>{{ object.name_alias|placeholder }}</td></tr>
+        <tr><th scope="row">{% trans "Tenant" %}</th>
+          <td><a href="{{ object.aci_tenant.get_absolute_url }}">{{ object.aci_tenant }}</a></td></tr>
+        <tr><th scope="row">{% trans "NetBox VRF" %}</th>
+          <td>{% if object.nb_vrf %}<a href="{{ object.nb_vrf.get_absolute_url }}">{{ object.nb_vrf }}</a>{% else %}{{ ''|placeholder }}{% endif %}</td></tr>
+        <tr><th scope="row">{% trans "Pol enforcement" %}</th><td>{{ object.get_policy_enforcement_preference_display }}</td></tr>
+        <tr><th scope="row">{% trans "Direction" %}</th><td>{{ object.get_policy_enforcement_direction_display }}</td></tr>
+        <tr><th scope="row">{% trans "BD enforcement" %}</th><td>{{ object.bd_enforcement_enabled|yesno }}</td></tr>
+        <tr><th scope="row">{% trans "Preferred group" %}</th><td>{{ object.preferred_group_enabled|yesno }}</td></tr>
+        <tr><th scope="row">{% trans "Description" %}</th><td>{{ object.description|placeholder }}</td></tr>
+      </table>
+    </div>
+    {% include 'inc/panels/tags.html' %}
+    {% include 'inc/panels/custom_fields.html' %}
+  </div>
+  <div class="col col-md-6">{% include 'inc/panels/comments.html' %}</div>
+</div>
+{% endblock %}

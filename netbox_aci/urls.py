@@ -1,84 +1,93 @@
 """Top-level URL routes for the plugin's UI views.
 
-Each model gets a five-route block (list, add, view, edit, delete)
-following standard NetBox plugin conventions. As models land in later
-phases they slot in here.
+Each model gets a standard seven-route block (list, add, view, edit,
+delete, bulk-import, bulk-edit, bulk-delete) following NetBox plugin
+conventions.
 """
 
-from django.urls import include, path
+from django.urls import path
 
-from .views import fabric as fabric_views
+from .views import fabric as fab
+from .views import tenant as tn
 
 app_name = "netbox_aci"
 
-urlpatterns = [
-    # ----- Fabric topology -----
-    path(
-        "fabrics/",
-        include(
-            [
-                path("", fabric_views.ACIFabricListView.as_view(), name="acifabric_list"),
-                path(
-                    "add/",
-                    fabric_views.ACIFabricEditView.as_view(),
-                    name="acifabric_add",
-                ),
-                path(
-                    "<int:pk>/",
-                    fabric_views.ACIFabricView.as_view(),
-                    name="acifabric",
-                ),
-                path(
-                    "<int:pk>/edit/",
-                    fabric_views.ACIFabricEditView.as_view(),
-                    name="acifabric_edit",
-                ),
-                path(
-                    "<int:pk>/delete/",
-                    fabric_views.ACIFabricDeleteView.as_view(),
-                    name="acifabric_delete",
-                ),
-            ]
+
+def _crud(prefix, slug, mod, view_cls_name, label):
+    """Build the standard 8-URL CRUD block for a model.
+
+    ``view_cls_name`` is the class-name *prefix* — e.g. for ``ACIFabric``
+    we expect ``ACIFabricView``, ``ACIFabricListView``, etc., to exist
+    on ``mod``.
+    """
+
+    return [
+        path(
+            f"{prefix}/",
+            getattr(mod, f"{view_cls_name}ListView").as_view(),
+            name=f"{label}_list",
         ),
-    ),
-    path(
-        "pods/",
-        include(
-            [
-                path("", fabric_views.ACIPodListView.as_view(), name="acipod_list"),
-                path("add/", fabric_views.ACIPodEditView.as_view(), name="acipod_add"),
-                path("<int:pk>/", fabric_views.ACIPodView.as_view(), name="acipod"),
-                path(
-                    "<int:pk>/edit/",
-                    fabric_views.ACIPodEditView.as_view(),
-                    name="acipod_edit",
-                ),
-                path(
-                    "<int:pk>/delete/",
-                    fabric_views.ACIPodDeleteView.as_view(),
-                    name="acipod_delete",
-                ),
-            ]
+        path(
+            f"{prefix}/add/",
+            getattr(mod, f"{view_cls_name}EditView").as_view(),
+            name=f"{label}_add",
         ),
-    ),
-    path(
-        "nodes/",
-        include(
-            [
-                path("", fabric_views.ACINodeListView.as_view(), name="acinode_list"),
-                path("add/", fabric_views.ACINodeEditView.as_view(), name="acinode_add"),
-                path("<int:pk>/", fabric_views.ACINodeView.as_view(), name="acinode"),
-                path(
-                    "<int:pk>/edit/",
-                    fabric_views.ACINodeEditView.as_view(),
-                    name="acinode_edit",
-                ),
-                path(
-                    "<int:pk>/delete/",
-                    fabric_views.ACINodeDeleteView.as_view(),
-                    name="acinode_delete",
-                ),
-            ]
+        path(
+            f"{prefix}/import/",
+            getattr(mod, f"{view_cls_name}BulkImportView").as_view(),
+            name=f"{label}_import",
         ),
-    ),
-]
+        path(
+            f"{prefix}/edit/",
+            getattr(mod, f"{view_cls_name}BulkEditView").as_view(),
+            name=f"{label}_bulk_edit",
+        ),
+        path(
+            f"{prefix}/delete/",
+            getattr(mod, f"{view_cls_name}BulkDeleteView").as_view(),
+            name=f"{label}_bulk_delete",
+        ),
+        path(
+            f"{prefix}/<int:pk>/",
+            getattr(mod, f"{view_cls_name}View").as_view(),
+            name=label,
+        ),
+        path(
+            f"{prefix}/<int:pk>/edit/",
+            getattr(mod, f"{view_cls_name}EditView").as_view(),
+            name=f"{label}_edit",
+        ),
+        path(
+            f"{prefix}/<int:pk>/delete/",
+            getattr(mod, f"{view_cls_name}DeleteView").as_view(),
+            name=f"{label}_delete",
+        ),
+    ]
+
+
+urlpatterns = []
+
+# Phase 1 — Fabric topology
+urlpatterns += _crud("fabrics", "fabric", fab, "ACIFabric", "acifabric")
+urlpatterns += _crud("pods", "pod", fab, "ACIPod", "acipod")
+urlpatterns += _crud("nodes", "node", fab, "ACINode", "acinode")
+
+# Phase 2 — Tenancy
+urlpatterns += _crud("tenants", "tenant", tn, "ACITenant", "acitenant")
+urlpatterns += _crud("vrfs", "vrf", tn, "ACIVRF", "acivrf")
+urlpatterns += _crud("bridge-domains", "bd", tn, "ACIBridgeDomain", "acibridgedomain")
+urlpatterns += _crud(
+    "bridge-domain-subnets", "bd-subnet", tn, "ACIBridgeDomainSubnet", "acibridgedomainsubnet"
+)
+urlpatterns += _crud("app-profiles", "ap", tn, "ACIAppProfile", "aciappprofile")
+urlpatterns += _crud("endpoint-groups", "epg", tn, "ACIEndpointGroup", "aciendpointgroup")
+urlpatterns += _crud(
+    "useg-attributes", "useg-attr", tn, "ACIUSegAttribute", "aciusegattribute"
+)
+urlpatterns += _crud(
+    "endpoint-security-groups",
+    "esg",
+    tn,
+    "ACIEndpointSecurityGroup",
+    "aciendpointsecuritygroup",
+)

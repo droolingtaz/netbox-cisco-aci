@@ -1,0 +1,47 @@
+{% extends 'generic/object.html' %}
+{% load helpers %}
+{% load i18n %}
+
+{% block content %}
+<div class="row">
+  <div class="col col-md-6">
+    <div class="card">
+      <h2 class="card-header">{% trans "Bridge Domain" %}</h2>
+      <table class="table table-hover attr-table">
+        <tr><th scope="row">{% trans "Name" %}</th><td>{{ object.name }}</td></tr>
+        <tr><th scope="row">{% trans "Alias" %}</th><td>{{ object.name_alias|placeholder }}</td></tr>
+        <tr><th scope="row">{% trans "Tenant" %}</th>
+          <td><a href="{{ object.aci_tenant.get_absolute_url }}">{{ object.aci_tenant }}</a></td></tr>
+        <tr><th scope="row">{% trans "VRF" %}</th>
+          <td><a href="{{ object.aci_vrf.get_absolute_url }}">{{ object.aci_vrf }}</a></td></tr>
+        <tr><th scope="row">{% trans "Unicast routing" %}</th><td>{{ object.unicast_routing_enabled|yesno }}</td></tr>
+        <tr><th scope="row">{% trans "Limit IP learn" %}</th><td>{{ object.limit_ip_learn_to_subnets|yesno }}</td></tr>
+        <tr><th scope="row">{% trans "ARP flooding" %}</th><td>{{ object.arp_flooding_enabled|yesno }}</td></tr>
+        <tr><th scope="row">{% trans "L2 unknown unicast" %}</th><td>{{ object.get_l2_unknown_unicast_display }}</td></tr>
+        <tr><th scope="row">{% trans "L3 unknown multicast" %}</th><td>{{ object.get_l3_unknown_multicast_display }}</td></tr>
+        <tr><th scope="row">{% trans "Multi-dest flooding" %}</th><td>{{ object.get_multi_destination_flooding_display }}</td></tr>
+        <tr><th scope="row">{% trans "Custom MAC" %}</th><td>{{ object.mac_address|placeholder }}</td></tr>
+        <tr><th scope="row">{% trans "Description" %}</th><td>{{ object.description|placeholder }}</td></tr>
+      </table>
+    </div>
+    {% include 'inc/panels/tags.html' %}
+    {% include 'inc/panels/custom_fields.html' %}
+  </div>
+  <div class="col col-md-6">
+    <div class="card">
+      <h2 class="card-header">{% trans "Subnets" %}</h2>
+      <table class="table table-hover attr-table">
+        {% for s in object.subnets.all %}
+          <tr>
+            <td><a href="{{ s.get_absolute_url }}">{{ s.gateway_ip }}</a></td>
+            <td>{% if s.is_primary %}<span class="badge text-bg-primary">primary</span>{% endif %}</td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="2" class="text-muted">{% trans "No subnets defined." %}</td></tr>
+        {% endfor %}
+      </table>
+    </div>
+    {% include 'inc/panels/comments.html' %}
+  </div>
+</div>
+{% endblock %}
