@@ -49,8 +49,10 @@ test = [
     "pytest>=8.0",
     "pytest-django>=4.8",
     "pytest-cov>=4.1",
-    "ruff>=0.5",
-    "yamllint>=1.35",
+    # ruff is pinned to keep local and CI in lockstep on formatter
+    # output. Bump together with `.github/workflows/ci.yml`.
+    "ruff==0.15.14",
+    "yamllint==1.38.0",
 ]
 docs = [
     "mkdocs>=1.6",

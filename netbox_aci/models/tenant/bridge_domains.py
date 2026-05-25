@@ -34,9 +34,7 @@ class ACIBridgeDomain(ACITenantBaseModel):
         on_delete=models.PROTECT,
         related_name="bridge_domains",
         verbose_name=_("ACI VRF"),
-        help_text=_(
-            "VRF backing this BD. May belong to the same tenant or to the " "common tenant."
-        ),
+        help_text=_("VRF backing this BD. May belong to the same tenant or to the common tenant."),
     )
 
     # L2/L3 forwarding policy

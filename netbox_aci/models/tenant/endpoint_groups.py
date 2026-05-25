@@ -51,8 +51,7 @@ class ACIEndpointGroup(ACITenantBaseModel):
         verbose_name=_("uSeg EPG"),
         default=False,
         help_text=_(
-            "When true, membership is governed by uSeg attributes rather than "
-            "static port bindings."
+            "When true, membership is governed by uSeg attributes rather than static port bindings."
         ),
     )
     intra_epg_isolation = models.BooleanField(
@@ -176,7 +175,7 @@ class ACIUSegAttribute(ACITenantBaseModel):
             raise ValidationError(
                 {
                     "aci_endpoint_group": _(
-                        "uSeg attributes can only be attached to EPGs with " "`is_useg=True`."
+                        "uSeg attributes can only be attached to EPGs with `is_useg=True`."
                     )
                 }
             )

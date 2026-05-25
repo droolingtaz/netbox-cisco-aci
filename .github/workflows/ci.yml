@@ -15,7 +15,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install ruff yamllint
+      # Pin ruff so local + CI agree on formatter output. Bump together.
+      - run: pip install ruff==0.15.14 yamllint==1.38.0
       - run: ruff check netbox_aci
       - run: ruff format --check netbox_aci
       - run: yamllint -s .github COMPATIBILITY.md
