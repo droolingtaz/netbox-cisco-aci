@@ -4,6 +4,7 @@ from netbox.search import SearchIndex, register_search
 
 from .models.fabric import ACIFabric, ACINode, ACIPod
 from .models.tenant import (
+    ACIVRF,
     ACIAppProfile,
     ACIBridgeDomain,
     ACIBridgeDomainSubnet,
@@ -11,7 +12,6 @@ from .models.tenant import (
     ACIEndpointSecurityGroup,
     ACITenant,
     ACIUSegAttribute,
-    ACIVRF,
 )
 
 

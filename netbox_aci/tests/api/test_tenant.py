@@ -4,12 +4,12 @@ from utilities.testing import APITestCase, APIViewTestCases
 
 from netbox_aci.models.fabric import ACIFabric
 from netbox_aci.models.tenant import (
+    ACIVRF,
     ACIAppProfile,
     ACIBridgeDomain,
     ACIEndpointGroup,
     ACIEndpointSecurityGroup,
     ACITenant,
-    ACIVRF,
 )
 
 
@@ -85,9 +85,7 @@ class ACIBridgeDomainAPITests(
     def setUpTestData(cls):
         d = _seed()
         for i in range(3):
-            ACIBridgeDomain.objects.create(
-                aci_tenant=d["tenant"], aci_vrf=d["vrf"], name=f"bd-{i}"
-            )
+            ACIBridgeDomain.objects.create(aci_tenant=d["tenant"], aci_vrf=d["vrf"], name=f"bd-{i}")
         cls.create_data = [
             {
                 "aci_tenant_id": d["tenant"].pk,

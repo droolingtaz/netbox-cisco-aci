@@ -94,13 +94,7 @@ class ACIEndpointSecurityGroup(ACITenantBaseModel):
         # VRF must belong to the ESG's tenant.
         if self.aci_vrf_id and self.aci_tenant_id:
             if self.aci_vrf.aci_tenant_id != self.aci_tenant_id:
-                raise ValidationError(
-                    {
-                        "aci_vrf": _(
-                            "The VRF must belong to the ESG's tenant."
-                        )
-                    }
-                )
+                raise ValidationError({"aci_vrf": _("The VRF must belong to the ESG's tenant.")})
         if self.aci_app_profile_id and self.aci_tenant_id:
             if self.aci_app_profile.aci_tenant_id != self.aci_tenant_id:
                 raise ValidationError(

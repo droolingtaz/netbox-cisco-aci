@@ -9,7 +9,7 @@ from netbox_aci.forms.tenant import (
     ACIVRFForm,
 )
 from netbox_aci.models.fabric import ACIFabric
-from netbox_aci.models.tenant import ACIAppProfile, ACIBridgeDomain, ACITenant, ACIVRF
+from netbox_aci.models.tenant import ACIVRF, ACIAppProfile, ACIBridgeDomain, ACITenant
 
 
 class TenancyFormTests(TestCase):
@@ -19,9 +19,7 @@ class TenancyFormTests(TestCase):
         cls.t = ACITenant.objects.create(aci_fabric=cls.fab, name="acme")
         cls.vrf = ACIVRF.objects.create(aci_tenant=cls.t, name="vrf-prod")
         cls.ap = ACIAppProfile.objects.create(aci_tenant=cls.t, name="ap")
-        cls.bd = ACIBridgeDomain.objects.create(
-            aci_tenant=cls.t, aci_vrf=cls.vrf, name="bd"
-        )
+        cls.bd = ACIBridgeDomain.objects.create(aci_tenant=cls.t, aci_vrf=cls.vrf, name="bd")
 
     def test_tenant_form_valid(self):
         form = ACITenantForm(data={"aci_fabric": self.fab.pk, "name": "shiny"})

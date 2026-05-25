@@ -35,8 +35,7 @@ class ACIBridgeDomain(ACITenantBaseModel):
         related_name="bridge_domains",
         verbose_name=_("ACI VRF"),
         help_text=_(
-            "VRF backing this BD. May belong to the same tenant or to the "
-            "common tenant."
+            "VRF backing this BD. May belong to the same tenant or to the " "common tenant."
         ),
     )
 

@@ -6,6 +6,7 @@ from rest_framework import serializers
 
 from ...models.fabric import ACIFabric
 from ...models.tenant import (
+    ACIVRF,
     ACIAppProfile,
     ACIBridgeDomain,
     ACIBridgeDomainSubnet,
@@ -13,7 +14,6 @@ from ...models.tenant import (
     ACIEndpointSecurityGroup,
     ACITenant,
     ACIUSegAttribute,
-    ACIVRF,
 )
 from .fabric import ACIFabricSerializer
 
@@ -27,6 +27,7 @@ def _url(view: str):
 # ---------------------------------------------------------------------------
 # Tenant
 # ---------------------------------------------------------------------------
+
 
 class ACITenantSerializer(NetBoxModelSerializer):
     url = _url("acitenant")
@@ -65,6 +66,7 @@ class ACITenantSerializer(NetBoxModelSerializer):
 # VRF
 # ---------------------------------------------------------------------------
 
+
 class ACIVRFSerializer(NetBoxModelSerializer):
     url = _url("acivrf")
     aci_tenant = ACITenantSerializer(read_only=True)
@@ -99,6 +101,7 @@ class ACIVRFSerializer(NetBoxModelSerializer):
 # ---------------------------------------------------------------------------
 # Bridge Domain + Subnet
 # ---------------------------------------------------------------------------
+
 
 class ACIBridgeDomainSerializer(NetBoxModelSerializer):
     url = _url("acibridgedomain")
@@ -175,6 +178,7 @@ class ACIBridgeDomainSubnetSerializer(NetBoxModelSerializer):
 # ---------------------------------------------------------------------------
 # App Profile + EPG + uSeg
 # ---------------------------------------------------------------------------
+
 
 class ACIAppProfileSerializer(NetBoxModelSerializer):
     url = _url("aciappprofile")
@@ -278,6 +282,7 @@ class ACIUSegAttributeSerializer(NetBoxModelSerializer):
 # ---------------------------------------------------------------------------
 # ESG
 # ---------------------------------------------------------------------------
+
 
 class ACIEndpointSecurityGroupSerializer(NetBoxModelSerializer):
     url = _url("aciendpointsecuritygroup")

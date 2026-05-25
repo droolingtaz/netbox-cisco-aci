@@ -8,10 +8,10 @@ the literal strings.
 from django.utils.translation import gettext_lazy as _
 from utilities.choices import ChoiceSet
 
-
 # ---------------------------------------------------------------------------
 # Fabric / Node
 # ---------------------------------------------------------------------------
+
 
 class NodeRoleChoices(ChoiceSet):
     """Functional role of an ACI Node."""
@@ -56,6 +56,7 @@ class NodeTypeChoices(ChoiceSet):
 # ---------------------------------------------------------------------------
 # Tenancy / EPG
 # ---------------------------------------------------------------------------
+
 
 class QualityOfServiceClassChoices(ChoiceSet):
     """ACI QoS classes."""
@@ -113,6 +114,7 @@ class VRFPolicyEnforcementPreferenceChoices(ChoiceSet):
 # Bridge Domain
 # ---------------------------------------------------------------------------
 
+
 class BDL2UnknownUnicastChoices(ChoiceSet):
     """BD L2 unknown unicast forwarding mode."""
 
@@ -160,6 +162,7 @@ class BDMultiDestinationChoices(ChoiceSet):
 # ---------------------------------------------------------------------------
 # Contracts
 # ---------------------------------------------------------------------------
+
 
 class ContractScopeChoices(ChoiceSet):
     """Contract enforcement scope."""
@@ -255,6 +258,7 @@ class ContractFilterEntryIPProtocolChoices(ChoiceSet):
 # Domains / VLAN Pools / AAEP
 # ---------------------------------------------------------------------------
 
+
 class DomainTypeChoices(ChoiceSet):
     """ACI Domain type."""
 
@@ -292,6 +296,7 @@ class VLANPoolAllocationChoices(ChoiceSet):
 # ---------------------------------------------------------------------------
 # Static Port Bindings
 # ---------------------------------------------------------------------------
+
 
 class StaticPortModeChoices(ChoiceSet):
     """Static port binding switching mode."""
@@ -343,6 +348,7 @@ class ResolutionImmediacyChoices(ChoiceSet):
 # L3Out
 # ---------------------------------------------------------------------------
 
+
 class L3OutInterfaceTypeChoices(ChoiceSet):
     """Logical Interface Profile sub-type."""
 
@@ -382,6 +388,7 @@ class RoutingProtocolChoices(ChoiceSet):
 # ---------------------------------------------------------------------------
 # uSeg EPG attributes
 # ---------------------------------------------------------------------------
+
 
 class USegAttributeTypeChoices(ChoiceSet):
     """uSeg EPG attribute type."""

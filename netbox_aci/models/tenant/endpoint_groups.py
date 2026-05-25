@@ -176,8 +176,7 @@ class ACIUSegAttribute(ACITenantBaseModel):
             raise ValidationError(
                 {
                     "aci_endpoint_group": _(
-                        "uSeg attributes can only be attached to EPGs with "
-                        "`is_useg=True`."
+                        "uSeg attributes can only be attached to EPGs with " "`is_useg=True`."
                     )
                 }
             )

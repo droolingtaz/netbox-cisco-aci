@@ -11,7 +11,7 @@ with the NetBox plugin catalogue standards.
 - **PyPI name:** `netbox-aci`
 - **License:** Apache-2.0
 - **Supported NetBox:** 4.5.x and 4.6.x (single release supports both)
-- **Supported Python:** 3.11, 3.12
+- **Supported Python:** 3.12 (NetBox 4.5+ requires Python 3.12)
 - **Status:** Alpha — model and API may change between 0.x releases.
 
 ## Repository layout

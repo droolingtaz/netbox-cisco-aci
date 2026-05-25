@@ -4,6 +4,7 @@ import django_tables2 as tables
 from netbox.tables import ChoiceFieldColumn, NetBoxTable, columns
 
 from ..models.tenant import (
+    ACIVRF,
     ACIAppProfile,
     ACIBridgeDomain,
     ACIBridgeDomainSubnet,
@@ -11,7 +12,6 @@ from ..models.tenant import (
     ACIEndpointSecurityGroup,
     ACITenant,
     ACIUSegAttribute,
-    ACIVRF,
 )
 
 

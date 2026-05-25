@@ -13,6 +13,7 @@ from ..choices import (
 )
 from ..models.fabric import ACIFabric
 from ..models.tenant import (
+    ACIVRF,
     ACIAppProfile,
     ACIBridgeDomain,
     ACIBridgeDomainSubnet,
@@ -20,15 +21,12 @@ from ..models.tenant import (
     ACIEndpointSecurityGroup,
     ACITenant,
     ACIUSegAttribute,
-    ACIVRF,
 )
 
 
 def _name_search(queryset, value):
     return queryset.filter(
-        Q(name__icontains=value)
-        | Q(name_alias__icontains=value)
-        | Q(description__icontains=value)
+        Q(name__icontains=value) | Q(name_alias__icontains=value) | Q(description__icontains=value)
     )
 
 

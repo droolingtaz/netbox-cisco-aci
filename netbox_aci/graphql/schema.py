@@ -4,13 +4,12 @@ Each model gets a type plus a `list_*` resolver and a `*` (single-object)
 resolver. NetBox merges this schema into its own at startup.
 """
 
-from typing import Optional
-
 import strawberry
 import strawberry_django
 
 from ..models.fabric import ACIFabric, ACINode, ACIPod
 from ..models.tenant import (
+    ACIVRF,
     ACIAppProfile,
     ACIBridgeDomain,
     ACIBridgeDomainSubnet,
@@ -18,13 +17,12 @@ from ..models.tenant import (
     ACIEndpointSecurityGroup,
     ACITenant,
     ACIUSegAttribute,
-    ACIVRF,
 )
-
 
 # ---------------------------------------------------------------------------
 # Types
 # ---------------------------------------------------------------------------
+
 
 @strawberry_django.type(ACIFabric, fields="__all__")
 class ACIFabricType:
@@ -85,39 +83,40 @@ class ACIEndpointSecurityGroupType:
 # Query root
 # ---------------------------------------------------------------------------
 
+
 @strawberry.type
 class Query:
-    aci_fabric: Optional[ACIFabricType] = strawberry_django.field()
+    aci_fabric: ACIFabricType | None = strawberry_django.field()
     aci_fabric_list: list[ACIFabricType] = strawberry_django.field()
 
-    aci_pod: Optional[ACIPodType] = strawberry_django.field()
+    aci_pod: ACIPodType | None = strawberry_django.field()
     aci_pod_list: list[ACIPodType] = strawberry_django.field()
 
-    aci_node: Optional[ACINodeType] = strawberry_django.field()
+    aci_node: ACINodeType | None = strawberry_django.field()
     aci_node_list: list[ACINodeType] = strawberry_django.field()
 
-    aci_tenant: Optional[ACITenantType] = strawberry_django.field()
+    aci_tenant: ACITenantType | None = strawberry_django.field()
     aci_tenant_list: list[ACITenantType] = strawberry_django.field()
 
-    aci_vrf: Optional[ACIVRFType] = strawberry_django.field()
+    aci_vrf: ACIVRFType | None = strawberry_django.field()
     aci_vrf_list: list[ACIVRFType] = strawberry_django.field()
 
-    aci_bridge_domain: Optional[ACIBridgeDomainType] = strawberry_django.field()
+    aci_bridge_domain: ACIBridgeDomainType | None = strawberry_django.field()
     aci_bridge_domain_list: list[ACIBridgeDomainType] = strawberry_django.field()
 
-    aci_bridge_domain_subnet: Optional[ACIBridgeDomainSubnetType] = strawberry_django.field()
+    aci_bridge_domain_subnet: ACIBridgeDomainSubnetType | None = strawberry_django.field()
     aci_bridge_domain_subnet_list: list[ACIBridgeDomainSubnetType] = strawberry_django.field()
 
-    aci_app_profile: Optional[ACIAppProfileType] = strawberry_django.field()
+    aci_app_profile: ACIAppProfileType | None = strawberry_django.field()
     aci_app_profile_list: list[ACIAppProfileType] = strawberry_django.field()
 
-    aci_endpoint_group: Optional[ACIEndpointGroupType] = strawberry_django.field()
+    aci_endpoint_group: ACIEndpointGroupType | None = strawberry_django.field()
     aci_endpoint_group_list: list[ACIEndpointGroupType] = strawberry_django.field()
 
-    aci_useg_attribute: Optional[ACIUSegAttributeType] = strawberry_django.field()
+    aci_useg_attribute: ACIUSegAttributeType | None = strawberry_django.field()
     aci_useg_attribute_list: list[ACIUSegAttributeType] = strawberry_django.field()
 
-    aci_endpoint_security_group: Optional[ACIEndpointSecurityGroupType] = strawberry_django.field()
+    aci_endpoint_security_group: ACIEndpointSecurityGroupType | None = strawberry_django.field()
     aci_endpoint_security_group_list: list[ACIEndpointSecurityGroupType] = strawberry_django.field()
 
 

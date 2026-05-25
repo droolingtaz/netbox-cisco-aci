@@ -81,9 +81,7 @@ urlpatterns += _crud(
 )
 urlpatterns += _crud("app-profiles", "ap", tn, "ACIAppProfile", "aciappprofile")
 urlpatterns += _crud("endpoint-groups", "epg", tn, "ACIEndpointGroup", "aciendpointgroup")
-urlpatterns += _crud(
-    "useg-attributes", "useg-attr", tn, "ACIUSegAttribute", "aciusegattribute"
-)
+urlpatterns += _crud("useg-attributes", "useg-attr", tn, "ACIUSegAttribute", "aciusegattribute")
 urlpatterns += _crud(
     "endpoint-security-groups",
     "esg",

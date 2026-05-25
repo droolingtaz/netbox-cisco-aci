@@ -47,6 +47,7 @@ from ..forms.tenant import (
     ACIVRFImportForm,
 )
 from ..models.tenant import (
+    ACIVRF,
     ACIAppProfile,
     ACIBridgeDomain,
     ACIBridgeDomainSubnet,
@@ -54,7 +55,6 @@ from ..models.tenant import (
     ACIEndpointSecurityGroup,
     ACITenant,
     ACIUSegAttribute,
-    ACIVRF,
 )
 from ..tables.tenant import (
     ACIAppProfileTable,

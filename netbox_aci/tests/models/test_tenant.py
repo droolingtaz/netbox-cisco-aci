@@ -6,6 +6,7 @@ from django.test import TestCase
 
 from netbox_aci.models.fabric import ACIFabric
 from netbox_aci.models.tenant import (
+    ACIVRF,
     ACIAppProfile,
     ACIBridgeDomain,
     ACIBridgeDomainSubnet,
@@ -13,7 +14,6 @@ from netbox_aci.models.tenant import (
     ACIEndpointSecurityGroup,
     ACITenant,
     ACIUSegAttribute,
-    ACIVRF,
 )
 
 
@@ -54,14 +54,10 @@ class ACIVRFTests(_TenancyFixture):
 
 class ACIBridgeDomainTests(_TenancyFixture):
     def test_bd_in_same_tenant_passes_clean(self):
-        ACIBridgeDomain(
-            aci_tenant=self.tenant, aci_vrf=self.vrf, name="bd-clean"
-        ).full_clean()
+        ACIBridgeDomain(aci_tenant=self.tenant, aci_vrf=self.vrf, name="bd-clean").full_clean()
 
     def test_bd_with_common_tenant_vrf_passes_clean(self):
-        bd = ACIBridgeDomain(
-            aci_tenant=self.tenant, aci_vrf=self.common_vrf, name="bd-via-common"
-        )
+        bd = ACIBridgeDomain(aci_tenant=self.tenant, aci_vrf=self.common_vrf, name="bd-via-common")
         bd.full_clean()
 
     def test_bd_with_foreign_vrf_fails_clean(self):
@@ -161,9 +157,7 @@ class ACIEndpointSecurityGroupTests(_TenancyFixture):
     def test_vrf_must_match_tenant(self):
         other_tenant = ACITenant.objects.create(aci_fabric=self.fabric, name="t2")
         other_vrf = ACIVRF.objects.create(aci_tenant=other_tenant, name="vrf-x")
-        esg = ACIEndpointSecurityGroup(
-            aci_tenant=self.tenant, aci_vrf=other_vrf, name="esg-bad"
-        )
+        esg = ACIEndpointSecurityGroup(aci_tenant=self.tenant, aci_vrf=other_vrf, name="esg-bad")
         with self.assertRaises(ValidationError):
             esg.full_clean()
 

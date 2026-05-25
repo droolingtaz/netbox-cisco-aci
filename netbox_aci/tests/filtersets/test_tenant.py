@@ -10,11 +10,11 @@ from netbox_aci.filtersets.tenant import (
 )
 from netbox_aci.models.fabric import ACIFabric
 from netbox_aci.models.tenant import (
+    ACIVRF,
     ACIAppProfile,
     ACIBridgeDomain,
     ACIEndpointGroup,
     ACITenant,
-    ACIVRF,
 )
 
 
@@ -32,9 +32,7 @@ class TenancyFilterSetTests(TestCase):
         ACIVRF.objects.create(aci_tenant=cls.t2, name="vrf-x")
 
         cls.ap1 = ACIAppProfile.objects.create(aci_tenant=cls.t1, name="ap")
-        cls.bd1 = ACIBridgeDomain.objects.create(
-            aci_tenant=cls.t1, aci_vrf=cls.vrf1, name="bd"
-        )
+        cls.bd1 = ACIBridgeDomain.objects.create(aci_tenant=cls.t1, aci_vrf=cls.vrf1, name="bd")
         for i in range(3):
             ACIEndpointGroup.objects.create(
                 aci_tenant=cls.t1,
@@ -45,15 +43,11 @@ class TenancyFilterSetTests(TestCase):
             )
 
     def test_tenant_filter_by_fabric(self):
-        qs = ACITenantFilterSet(
-            {"aci_fabric_id": [self.fab1.pk]}, ACITenant.objects.all()
-        ).qs
+        qs = ACITenantFilterSet({"aci_fabric_id": [self.fab1.pk]}, ACITenant.objects.all()).qs
         self.assertEqual(qs.count(), 2)
 
     def test_vrf_filter_by_tenant(self):
-        qs = ACIVRFFilterSet(
-            {"aci_tenant_id": [self.t1.pk]}, ACIVRF.objects.all()
-        ).qs
+        qs = ACIVRFFilterSet({"aci_tenant_id": [self.t1.pk]}, ACIVRF.objects.all()).qs
         self.assertEqual(qs.count(), 2)
 
     def test_bd_filter_by_tenant(self):
@@ -63,7 +57,5 @@ class TenancyFilterSetTests(TestCase):
         self.assertEqual(qs.count(), 1)
 
     def test_epg_filter_by_useg(self):
-        qs = ACIEndpointGroupFilterSet(
-            {"is_useg": True}, ACIEndpointGroup.objects.all()
-        ).qs
+        qs = ACIEndpointGroupFilterSet({"is_useg": True}, ACIEndpointGroup.objects.all()).qs
         self.assertEqual(qs.count(), 1)

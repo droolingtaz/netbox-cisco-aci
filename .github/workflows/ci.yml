@@ -25,7 +25,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.11", "3.12"]
+        # NetBox 4.5+ requires Python 3.12 — earlier Python versions
+        # cannot even import the NetBox app, so they are excluded.
+        python-version: ["3.12"]
         netbox-version: ["v4.5.0", "v4.6.0"]
     services:
       postgres:
@@ -82,12 +84,19 @@ jobs:
           python netbox/manage.py migrate
 
       - name: Run tests
+        env:
+          # pytest-django needs to be able to import the `netbox` Django
+          # project. The checkout lives under netbox/netbox/ relative to
+          # the workspace.
+          PYTHONPATH: ${{ github.workspace }}/netbox/netbox
+          DJANGO_SETTINGS_MODULE: netbox.settings
+          NETBOX_CONFIGURATION: netbox.configuration
         run: |
           cd netbox-aci
           pytest -v
 
       - name: Upload coverage
-        if: matrix.python-version == '3.12' && matrix.netbox-version == 'v4.6.0'
+        if: matrix.netbox-version == 'v4.6.0'
         uses: codecov/codecov-action@v4
         with:
           files: ./netbox-aci/.coverage

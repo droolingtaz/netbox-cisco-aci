@@ -23,6 +23,7 @@ from ..choices import (
 )
 from ..models.fabric import ACIFabric
 from ..models.tenant import (
+    ACIVRF,
     ACIAppProfile,
     ACIBridgeDomain,
     ACIBridgeDomainSubnet,
@@ -30,19 +31,16 @@ from ..models.tenant import (
     ACIEndpointSecurityGroup,
     ACITenant,
     ACIUSegAttribute,
-    ACIVRF,
 )
-
 
 # ---------------------------------------------------------------------------
 # ACITenant
 # ---------------------------------------------------------------------------
 
+
 class ACITenantForm(NetBoxModelForm):
     aci_fabric = DynamicModelChoiceField(queryset=ACIFabric.objects.all(), label=_("Fabric"))
-    fieldsets = (
-        FieldSet("aci_fabric", "name", "name_alias", "description", name=_("Tenant")),
-    )
+    fieldsets = (FieldSet("aci_fabric", "name", "name_alias", "description", name=_("Tenant")),)
 
     class Meta:
         model = ACITenant
@@ -73,6 +71,7 @@ class ACITenantImportForm(NetBoxModelImportForm):
 # ---------------------------------------------------------------------------
 # ACIVRF
 # ---------------------------------------------------------------------------
+
 
 class ACIVRFForm(NetBoxModelForm):
     aci_tenant = DynamicModelChoiceField(queryset=ACITenant.objects.all(), label=_("Tenant"))
@@ -148,6 +147,7 @@ class ACIVRFImportForm(NetBoxModelImportForm):
 # ---------------------------------------------------------------------------
 # ACIBridgeDomain
 # ---------------------------------------------------------------------------
+
 
 class ACIBridgeDomainForm(NetBoxModelForm):
     aci_tenant = DynamicModelChoiceField(queryset=ACITenant.objects.all(), label=_("Tenant"))
@@ -248,6 +248,7 @@ class ACIBridgeDomainImportForm(NetBoxModelImportForm):
 # ACIBridgeDomainSubnet
 # ---------------------------------------------------------------------------
 
+
 class ACIBridgeDomainSubnetForm(NetBoxModelForm):
     aci_bridge_domain = DynamicModelChoiceField(
         queryset=ACIBridgeDomain.objects.all(), label=_("Bridge Domain")
@@ -329,6 +330,7 @@ class ACIBridgeDomainSubnetImportForm(NetBoxModelImportForm):
 # ACIAppProfile
 # ---------------------------------------------------------------------------
 
+
 class ACIAppProfileForm(NetBoxModelForm):
     aci_tenant = DynamicModelChoiceField(queryset=ACITenant.objects.all(), label=_("Tenant"))
     fieldsets = (
@@ -371,6 +373,7 @@ class ACIAppProfileImportForm(NetBoxModelImportForm):
 # ---------------------------------------------------------------------------
 # ACIEndpointGroup
 # ---------------------------------------------------------------------------
+
 
 class ACIEndpointGroupForm(NetBoxModelForm):
     aci_tenant = DynamicModelChoiceField(queryset=ACITenant.objects.all(), label=_("Tenant"))
@@ -479,6 +482,7 @@ class ACIEndpointGroupImportForm(NetBoxModelImportForm):
 # ACIUSegAttribute
 # ---------------------------------------------------------------------------
 
+
 class ACIUSegAttributeForm(NetBoxModelForm):
     aci_endpoint_group = DynamicModelChoiceField(
         queryset=ACIEndpointGroup.objects.filter(is_useg=True), label=_("Endpoint Group")
@@ -541,6 +545,7 @@ class ACIUSegAttributeImportForm(NetBoxModelImportForm):
 # ---------------------------------------------------------------------------
 # ACIEndpointSecurityGroup
 # ---------------------------------------------------------------------------
+
 
 class ACIEndpointSecurityGroupForm(NetBoxModelForm):
     aci_tenant = DynamicModelChoiceField(queryset=ACITenant.objects.all(), label=_("Tenant"))

@@ -14,6 +14,7 @@ from ...filtersets.tenant import (
     ACIVRFFilterSet,
 )
 from ...models.tenant import (
+    ACIVRF,
     ACIAppProfile,
     ACIBridgeDomain,
     ACIBridgeDomainSubnet,
@@ -21,7 +22,6 @@ from ...models.tenant import (
     ACIEndpointSecurityGroup,
     ACITenant,
     ACIUSegAttribute,
-    ACIVRF,
 )
 from ..serializers.tenant import (
     ACIAppProfileSerializer,

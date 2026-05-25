@@ -31,9 +31,7 @@ class ACIFabricSerializer(NetBoxModelSerializer):
 
 
 class ACIPodSerializer(NetBoxModelSerializer):
-    url = serializers.HyperlinkedIdentityField(
-        view_name="plugins-api:netbox_aci-api:acipod-detail"
-    )
+    url = serializers.HyperlinkedIdentityField(view_name="plugins-api:netbox_aci-api:acipod-detail")
     aci_fabric = ACIFabricSerializer(read_only=True)
     aci_fabric_id = serializers.PrimaryKeyRelatedField(
         queryset=ACIFabric.objects.all(),

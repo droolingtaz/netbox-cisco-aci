@@ -12,6 +12,4 @@ def make_dcim_device(name: str = "leaf-101") -> Device:
         manufacturer=manufacturer, model="N9K-C9336C-FX2", slug="n9k-c9336c-fx2"
     )
     device_role, _ = DeviceRole.objects.get_or_create(name="ACI Leaf", slug="aci-leaf")
-    return Device.objects.create(
-        name=name, site=site, device_type=device_type, role=device_role
-    )
+    return Device.objects.create(name=name, site=site, device_type=device_type, role=device_role)
