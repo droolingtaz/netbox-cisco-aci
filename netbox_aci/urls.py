@@ -6,14 +6,16 @@ conventions.
 
 NetBox includes this module at ``plugins/aci/`` with the instance
 namespace ``netbox_aci`` (derived from ``app.label``) — see
-netbox/plugins/urls.py. Setting an explicit ``app_name`` here would
-clash with that namespace, so we deliberately don't.
+netbox/plugins/urls.py. The ``app_name`` below is the *application*
+namespace; reverse() lookups against ``plugins:netbox_aci:...`` use it.
 """
 
 from django.urls import path
 
 from .views import fabric as fab
 from .views import tenant as tn
+
+app_name = "netbox_aci"
 
 
 def _crud(prefix, slug, mod, view_cls_name, label):

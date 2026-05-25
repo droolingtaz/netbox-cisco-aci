@@ -5,6 +5,12 @@ from utilities.testing import APITestCase, APIViewTestCases
 
 from netbox_aci.models.fabric import ACIFabric, ACINode, ACIPod
 
+# Plugin API namespaces live under ``plugins-api:``. NetBox's default
+# ``_get_view_namespace`` returns ``{model._meta.app_label}-api``, which
+# is correct for core apps but not plugins. Override it for every API
+# test class.
+PLUGIN_API_NAMESPACE = "plugins-api:netbox_aci"
+
 
 class ACIFabricAPITests(
     APIViewTestCases.GetObjectViewTestCase,
@@ -15,6 +21,7 @@ class ACIFabricAPITests(
     APITestCase,
 ):
     model = ACIFabric
+    view_namespace = PLUGIN_API_NAMESPACE
     brief_fields = ["display", "id", "name", "url"]
     create_data = [
         {"name": "ACI-API-DC1", "fabric_id": 1},
@@ -38,6 +45,7 @@ class ACIPodAPITests(
     APITestCase,
 ):
     model = ACIPod
+    view_namespace = PLUGIN_API_NAMESPACE
     brief_fields = ["display", "id", "name", "url"]
     bulk_update_data = {"description": "Bulk-updated"}
 
@@ -61,6 +69,7 @@ class ACINodeAPITests(
     APITestCase,
 ):
     model = ACINode
+    view_namespace = PLUGIN_API_NAMESPACE
     brief_fields = ["display", "id", "name", "url"]
     bulk_update_data = {"description": "Bulk-updated"}
 

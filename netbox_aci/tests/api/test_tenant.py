@@ -12,6 +12,8 @@ from netbox_aci.models.tenant import (
     ACITenant,
 )
 
+PLUGIN_API_NAMESPACE = "plugins-api:netbox_aci"
+
 
 def _seed():
     fab = ACIFabric.objects.create(name="API-Fab")
@@ -31,6 +33,7 @@ class ACITenantAPITests(
     APITestCase,
 ):
     model = ACITenant
+    view_namespace = PLUGIN_API_NAMESPACE
     brief_fields = ["display", "id", "name", "url"]
     bulk_update_data = {"description": "Bulk-updated"}
 
@@ -54,6 +57,7 @@ class ACIVRFAPITests(
     APITestCase,
 ):
     model = ACIVRF
+    view_namespace = PLUGIN_API_NAMESPACE
     brief_fields = ["display", "id", "name", "url"]
     bulk_update_data = {"description": "Bulk-updated"}
 
@@ -78,6 +82,7 @@ class ACIBridgeDomainAPITests(
     APITestCase,
 ):
     model = ACIBridgeDomain
+    view_namespace = PLUGIN_API_NAMESPACE
     brief_fields = ["display", "id", "name", "url"]
     bulk_update_data = {"description": "Bulk-updated"}
 
@@ -109,6 +114,7 @@ class ACIEndpointGroupAPITests(
     APITestCase,
 ):
     model = ACIEndpointGroup
+    view_namespace = PLUGIN_API_NAMESPACE
     brief_fields = ["display", "id", "name", "url"]
     bulk_update_data = {"description": "Bulk-updated"}
 
@@ -147,6 +153,7 @@ class ACIEndpointSecurityGroupAPITests(
     APITestCase,
 ):
     model = ACIEndpointSecurityGroup
+    view_namespace = PLUGIN_API_NAMESPACE
     brief_fields = ["display", "id", "name", "url"]
     bulk_update_data = {"description": "Bulk-updated"}
 
