@@ -3,12 +3,12 @@ requires = ["setuptools>=77.0.3", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "netbox-aci"
+name = "netbox-cisco-aci"
 dynamic = ["version"]
 description = "NetBox plugin for daily-operations visibility of Cisco ACI fabrics."
 readme = { file = "README.md", content-type = "text/markdown" }
 # NetBox 4.5+ requires Python 3.12. We mirror that requirement here so
-# `pip install netbox-aci` against an older Python fails fast with a
+# `pip install netbox-cisco-aci` against an older Python fails fast with a
 # clear message rather than blowing up later at import-time.
 requires-python = ">=3.12"
 license = "Apache-2.0"
@@ -61,23 +61,23 @@ docs = [
 ]
 
 [project.urls]
-Homepage      = "https://github.com/bparker-e280/netbox-aci"
-Documentation = "https://github.com/bparker-e280/netbox-aci#readme"
-Source        = "https://github.com/bparker-e280/netbox-aci"
-Issues        = "https://github.com/bparker-e280/netbox-aci/issues"
-Changelog     = "https://github.com/bparker-e280/netbox-aci/blob/main/CHANGELOG.md"
+Homepage      = "https://github.com/droolingtaz/netbox-cisco-aci"
+Documentation = "https://github.com/droolingtaz/netbox-cisco-aci#readme"
+Source        = "https://github.com/droolingtaz/netbox-cisco-aci"
+Issues        = "https://github.com/droolingtaz/netbox-cisco-aci/issues"
+Changelog     = "https://github.com/droolingtaz/netbox-cisco-aci/blob/main/CHANGELOG.md"
 
 [tool.setuptools]
 include-package-data = true
 
 [tool.setuptools.dynamic]
-version = { attr = "netbox_aci.version.__version__" }
+version = { attr = "netbox_cisco_aci.version.__version__" }
 
 [tool.setuptools.packages.find]
-include = ["netbox_aci*"]
+include = ["netbox_cisco_aci*"]
 
 [tool.setuptools.package-data]
-netbox_aci = [
+netbox_cisco_aci = [
     "templates/**/*.html",
     "static/**/*",
     "locale/**/*.mo",
@@ -105,14 +105,14 @@ python_files = ["test_*.py"]
 # while the plugin surface is still growing rapidly. Once the data
 # model stabilises (~v0.5) the gate will be reintroduced at 65 and
 # the target lifted to 70 per the NBL plugin-catalogue guidance.
-addopts = "--strict-markers --cov=netbox_aci --cov-report=term-missing"
+addopts = "--strict-markers --cov=netbox_cisco_aci --cov-report=term-missing"
 
 [tool.coverage.run]
-source = ["netbox_aci"]
+source = ["netbox_cisco_aci"]
 omit = [
-    "netbox_aci/migrations/*",
-    "netbox_aci/tests/*",
-    "netbox_aci/version.py",
+    "netbox_cisco_aci/migrations/*",
+    "netbox_cisco_aci/tests/*",
+    "netbox_cisco_aci/version.py",
 ]
 
 [tool.coverage.report]

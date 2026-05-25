@@ -1,7 +1,7 @@
 # Configuration
 
 The plugin works with sensible defaults. The following settings live
-under `PLUGINS_CONFIG['netbox_aci']` in `configuration.py`:
+under `PLUGINS_CONFIG['netbox_cisco_aci']` in `configuration.py`:
 
 | Setting                          | Default | Purpose |
 |----------------------------------|---------|---------|

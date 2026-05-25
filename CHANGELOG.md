@@ -11,6 +11,20 @@ and this project adheres to [Semantic Versioning 2.0.0](https://semver.org/).
 
 > **Compatibility:** NetBox v4.5, NetBox v4.6
 
+### Changed
+
+- **BREAKING (pre-release): renamed plugin to `netbox-cisco-aci`.**
+  The PyPI name `netbox-aci` was already taken by an unrelated
+  project (Marc-Aurel Mohr-Lenné, v0.0.7). New names:
+  - PyPI distribution: `netbox-cisco-aci`
+  - Python package: `netbox_cisco_aci`
+  - Django app label: `netbox_cisco_aci`
+  - URL base: `/plugins/cisco-aci/` and `/api/plugins/cisco-aci/`
+  - URL namespaces: `plugins:netbox_cisco_aci:*`, `plugins-api:netbox_cisco_aci-api:*`
+  - Constraint names: `netbox_cisco_aci_*`
+  No releases have shipped under the old name, so no migration path
+  is required; the old name is simply unused.
+
 ### Added
 
 - Initial plugin scaffold targeting NetBox 4.5.x and 4.6.x in a single

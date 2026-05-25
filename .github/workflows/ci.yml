@@ -17,8 +17,8 @@ jobs:
           python-version: "3.12"
       # Pin ruff so local + CI agree on formatter output. Bump together.
       - run: pip install ruff==0.15.14 yamllint==1.38.0
-      - run: ruff check netbox_aci
-      - run: ruff format --check netbox_aci
+      - run: ruff check netbox_cisco_aci
+      - run: ruff format --check netbox_cisco_aci
       # yamllint only — COMPATIBILITY.md is markdown, not YAML.
       - run: yamllint -s .github
 
@@ -55,7 +55,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          path: netbox-aci
+          path: netbox-cisco-aci
 
       - name: Check out NetBox ${{ matrix.netbox-version }}
         uses: actions/checkout@v4
@@ -73,12 +73,12 @@ jobs:
         run: |
           cd netbox
           pip install -r requirements.txt
-          cd ../netbox-aci
+          cd ../netbox-cisco-aci
           pip install -e ".[test]"
 
       - name: Configure NetBox
         run: |
-          cp netbox-aci/develop/configuration.py netbox/netbox/netbox/configuration.py
+          cp netbox-cisco-aci/develop/configuration.py netbox/netbox/netbox/configuration.py
 
       - name: Run migrations
         run: |
@@ -94,12 +94,12 @@ jobs:
           DJANGO_SETTINGS_MODULE: netbox.settings
           NETBOX_CONFIGURATION: netbox.configuration
         run: |
-          cd netbox-aci
+          cd netbox-cisco-aci
           pytest -v
 
       - name: Upload coverage
         if: matrix.netbox-version == 'v4.6.0'
         uses: codecov/codecov-action@v4
         with:
-          files: ./netbox-aci/.coverage
+          files: ./netbox-cisco-aci/.coverage
           fail_ci_if_error: false
