@@ -55,8 +55,8 @@ class ACIPodAPITests(
         for i in range(3):
             ACIPod.objects.create(aci_fabric=fab, name=f"Pod-{i + 1}", pod_id=i + 1)
         cls.create_data = [
-            {"aci_fabric_id": fab.pk, "name": "Pod-10", "pod_id": 10},
-            {"aci_fabric_id": fab.pk, "name": "Pod-11", "pod_id": 11},
+            {"aci_fabric": fab.pk, "name": "Pod-10", "pod_id": 10},
+            {"aci_fabric": fab.pk, "name": "Pod-11", "pod_id": 11},
         ]
 
 
@@ -82,8 +82,8 @@ class ACINodeAPITests(
                 aci_pod=pod, name=f"leaf-{200 + i}", node_id=200 + i, role="leaf"
             )
         cls.create_data = [
-            {"aci_pod_id": pod.pk, "name": "leaf-300", "node_id": 300, "role": "leaf"},
-            {"aci_pod_id": pod.pk, "name": "spine-101", "node_id": 101, "role": "spine"},
+            {"aci_pod": pod.pk, "name": "leaf-300", "node_id": 300, "role": "leaf"},
+            {"aci_pod": pod.pk, "name": "spine-101", "node_id": 101, "role": "spine"},
         ]
 
 

@@ -1,10 +1,14 @@
-"""DRF serializers for tenancy models."""
+"""DRF serializers for tenancy models.
+
+Uses the NetBox idiom of ``Serializer(nested=True)`` for FK fields (PK
+on write, nested representation on read) and declares
+``Meta.brief_fields`` so ``?brief=True`` works.
+"""
 
 from ipam.api.serializers import PrefixSerializer, VRFSerializer
 from netbox.api.serializers import NetBoxModelSerializer
 from rest_framework import serializers
 
-from ...models.fabric import ACIFabric
 from ...models.tenant import (
     ACIVRF,
     ACIAppProfile,
@@ -31,12 +35,7 @@ def _url(view: str):
 
 class ACITenantSerializer(NetBoxModelSerializer):
     url = _url("acitenant")
-    aci_fabric = ACIFabricSerializer(read_only=True)
-    aci_fabric_id = serializers.PrimaryKeyRelatedField(
-        queryset=ACIFabric.objects.all(),
-        source="aci_fabric",
-        write_only=True,
-    )
+    aci_fabric = ACIFabricSerializer(nested=True)
     vrf_count = serializers.IntegerField(read_only=True)
     bd_count = serializers.IntegerField(read_only=True)
     app_profile_count = serializers.IntegerField(read_only=True)
@@ -50,7 +49,6 @@ class ACITenantSerializer(NetBoxModelSerializer):
             "name",
             "name_alias",
             "aci_fabric",
-            "aci_fabric_id",
             "description",
             "vrf_count",
             "bd_count",
@@ -59,6 +57,14 @@ class ACITenantSerializer(NetBoxModelSerializer):
             "custom_fields",
             "created",
             "last_updated",
+        )
+        brief_fields = (
+            "id",
+            "url",
+            "display",
+            "name",
+            "aci_fabric",
+            "description",
         )
 
 
@@ -69,11 +75,8 @@ class ACITenantSerializer(NetBoxModelSerializer):
 
 class ACIVRFSerializer(NetBoxModelSerializer):
     url = _url("acivrf")
-    aci_tenant = ACITenantSerializer(read_only=True)
-    aci_tenant_id = serializers.PrimaryKeyRelatedField(
-        queryset=ACITenant.objects.all(), source="aci_tenant", write_only=True
-    )
-    nb_vrf = VRFSerializer(read_only=True, nested=True)
+    aci_tenant = ACITenantSerializer(nested=True)
+    nb_vrf = VRFSerializer(nested=True, required=False, allow_null=True)
 
     class Meta:
         model = ACIVRF
@@ -84,7 +87,6 @@ class ACIVRFSerializer(NetBoxModelSerializer):
             "name",
             "name_alias",
             "aci_tenant",
-            "aci_tenant_id",
             "nb_vrf",
             "policy_enforcement_preference",
             "policy_enforcement_direction",
@@ -96,6 +98,14 @@ class ACIVRFSerializer(NetBoxModelSerializer):
             "created",
             "last_updated",
         )
+        brief_fields = (
+            "id",
+            "url",
+            "display",
+            "name",
+            "aci_tenant",
+            "description",
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -105,14 +115,8 @@ class ACIVRFSerializer(NetBoxModelSerializer):
 
 class ACIBridgeDomainSerializer(NetBoxModelSerializer):
     url = _url("acibridgedomain")
-    aci_tenant = ACITenantSerializer(read_only=True)
-    aci_tenant_id = serializers.PrimaryKeyRelatedField(
-        queryset=ACITenant.objects.all(), source="aci_tenant", write_only=True
-    )
-    aci_vrf = ACIVRFSerializer(read_only=True)
-    aci_vrf_id = serializers.PrimaryKeyRelatedField(
-        queryset=ACIVRF.objects.all(), source="aci_vrf", write_only=True
-    )
+    aci_tenant = ACITenantSerializer(nested=True)
+    aci_vrf = ACIVRFSerializer(nested=True)
     subnet_count = serializers.IntegerField(read_only=True)
 
     class Meta:
@@ -124,9 +128,7 @@ class ACIBridgeDomainSerializer(NetBoxModelSerializer):
             "name",
             "name_alias",
             "aci_tenant",
-            "aci_tenant_id",
             "aci_vrf",
-            "aci_vrf_id",
             "unicast_routing_enabled",
             "arp_flooding_enabled",
             "limit_ip_learn_to_subnets",
@@ -141,15 +143,21 @@ class ACIBridgeDomainSerializer(NetBoxModelSerializer):
             "created",
             "last_updated",
         )
+        brief_fields = (
+            "id",
+            "url",
+            "display",
+            "name",
+            "aci_tenant",
+            "aci_vrf",
+            "description",
+        )
 
 
 class ACIBridgeDomainSubnetSerializer(NetBoxModelSerializer):
     url = _url("acibridgedomainsubnet")
-    aci_bridge_domain = ACIBridgeDomainSerializer(read_only=True)
-    aci_bridge_domain_id = serializers.PrimaryKeyRelatedField(
-        queryset=ACIBridgeDomain.objects.all(), source="aci_bridge_domain", write_only=True
-    )
-    nb_prefix = PrefixSerializer(read_only=True, nested=True)
+    aci_bridge_domain = ACIBridgeDomainSerializer(nested=True)
+    nb_prefix = PrefixSerializer(nested=True, required=False, allow_null=True)
 
     class Meta:
         model = ACIBridgeDomainSubnet
@@ -160,7 +168,6 @@ class ACIBridgeDomainSubnetSerializer(NetBoxModelSerializer):
             "name",
             "name_alias",
             "aci_bridge_domain",
-            "aci_bridge_domain_id",
             "gateway_ip",
             "nb_prefix",
             "scope_public",
@@ -173,6 +180,14 @@ class ACIBridgeDomainSubnetSerializer(NetBoxModelSerializer):
             "created",
             "last_updated",
         )
+        brief_fields = (
+            "id",
+            "url",
+            "display",
+            "gateway_ip",
+            "aci_bridge_domain",
+            "description",
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -182,10 +197,7 @@ class ACIBridgeDomainSubnetSerializer(NetBoxModelSerializer):
 
 class ACIAppProfileSerializer(NetBoxModelSerializer):
     url = _url("aciappprofile")
-    aci_tenant = ACITenantSerializer(read_only=True)
-    aci_tenant_id = serializers.PrimaryKeyRelatedField(
-        queryset=ACITenant.objects.all(), source="aci_tenant", write_only=True
-    )
+    aci_tenant = ACITenantSerializer(nested=True)
     epg_count = serializers.IntegerField(read_only=True)
 
     class Meta:
@@ -197,7 +209,6 @@ class ACIAppProfileSerializer(NetBoxModelSerializer):
             "name",
             "name_alias",
             "aci_tenant",
-            "aci_tenant_id",
             "epg_count",
             "description",
             "tags",
@@ -205,22 +216,21 @@ class ACIAppProfileSerializer(NetBoxModelSerializer):
             "created",
             "last_updated",
         )
+        brief_fields = (
+            "id",
+            "url",
+            "display",
+            "name",
+            "aci_tenant",
+            "description",
+        )
 
 
 class ACIEndpointGroupSerializer(NetBoxModelSerializer):
     url = _url("aciendpointgroup")
-    aci_tenant = ACITenantSerializer(read_only=True)
-    aci_tenant_id = serializers.PrimaryKeyRelatedField(
-        queryset=ACITenant.objects.all(), source="aci_tenant", write_only=True
-    )
-    aci_app_profile = ACIAppProfileSerializer(read_only=True)
-    aci_app_profile_id = serializers.PrimaryKeyRelatedField(
-        queryset=ACIAppProfile.objects.all(), source="aci_app_profile", write_only=True
-    )
-    aci_bridge_domain = ACIBridgeDomainSerializer(read_only=True)
-    aci_bridge_domain_id = serializers.PrimaryKeyRelatedField(
-        queryset=ACIBridgeDomain.objects.all(), source="aci_bridge_domain", write_only=True
-    )
+    aci_tenant = ACITenantSerializer(nested=True)
+    aci_app_profile = ACIAppProfileSerializer(nested=True)
+    aci_bridge_domain = ACIBridgeDomainSerializer(nested=True)
 
     class Meta:
         model = ACIEndpointGroup
@@ -231,11 +241,8 @@ class ACIEndpointGroupSerializer(NetBoxModelSerializer):
             "name",
             "name_alias",
             "aci_tenant",
-            "aci_tenant_id",
             "aci_app_profile",
-            "aci_app_profile_id",
             "aci_bridge_domain",
-            "aci_bridge_domain_id",
             "admin_shutdown",
             "is_useg",
             "intra_epg_isolation",
@@ -247,16 +254,20 @@ class ACIEndpointGroupSerializer(NetBoxModelSerializer):
             "created",
             "last_updated",
         )
+        brief_fields = (
+            "id",
+            "url",
+            "display",
+            "name",
+            "aci_tenant",
+            "aci_app_profile",
+            "description",
+        )
 
 
 class ACIUSegAttributeSerializer(NetBoxModelSerializer):
     url = _url("aciusegattribute")
-    aci_endpoint_group = ACIEndpointGroupSerializer(read_only=True)
-    aci_endpoint_group_id = serializers.PrimaryKeyRelatedField(
-        queryset=ACIEndpointGroup.objects.filter(is_useg=True),
-        source="aci_endpoint_group",
-        write_only=True,
-    )
+    aci_endpoint_group = ACIEndpointGroupSerializer(nested=True)
 
     class Meta:
         model = ACIUSegAttribute
@@ -267,7 +278,6 @@ class ACIUSegAttributeSerializer(NetBoxModelSerializer):
             "name",
             "name_alias",
             "aci_endpoint_group",
-            "aci_endpoint_group_id",
             "attribute_type",
             "match_operator",
             "match_value",
@@ -276,6 +286,14 @@ class ACIUSegAttributeSerializer(NetBoxModelSerializer):
             "custom_fields",
             "created",
             "last_updated",
+        )
+        brief_fields = (
+            "id",
+            "url",
+            "display",
+            "name",
+            "aci_endpoint_group",
+            "attribute_type",
         )
 
 
@@ -286,22 +304,9 @@ class ACIUSegAttributeSerializer(NetBoxModelSerializer):
 
 class ACIEndpointSecurityGroupSerializer(NetBoxModelSerializer):
     url = _url("aciendpointsecuritygroup")
-    aci_tenant = ACITenantSerializer(read_only=True)
-    aci_tenant_id = serializers.PrimaryKeyRelatedField(
-        queryset=ACITenant.objects.all(), source="aci_tenant", write_only=True
-    )
-    aci_vrf = ACIVRFSerializer(read_only=True)
-    aci_vrf_id = serializers.PrimaryKeyRelatedField(
-        queryset=ACIVRF.objects.all(), source="aci_vrf", write_only=True
-    )
-    aci_app_profile = ACIAppProfileSerializer(read_only=True)
-    aci_app_profile_id = serializers.PrimaryKeyRelatedField(
-        queryset=ACIAppProfile.objects.all(),
-        source="aci_app_profile",
-        write_only=True,
-        required=False,
-        allow_null=True,
-    )
+    aci_tenant = ACITenantSerializer(nested=True)
+    aci_vrf = ACIVRFSerializer(nested=True)
+    aci_app_profile = ACIAppProfileSerializer(nested=True, required=False, allow_null=True)
 
     class Meta:
         model = ACIEndpointSecurityGroup
@@ -312,11 +317,8 @@ class ACIEndpointSecurityGroupSerializer(NetBoxModelSerializer):
             "name",
             "name_alias",
             "aci_tenant",
-            "aci_tenant_id",
             "aci_vrf",
-            "aci_vrf_id",
             "aci_app_profile",
-            "aci_app_profile_id",
             "admin_shutdown",
             "preferred_group_member",
             "intra_esg_isolation",
@@ -326,4 +328,13 @@ class ACIEndpointSecurityGroupSerializer(NetBoxModelSerializer):
             "custom_fields",
             "created",
             "last_updated",
+        )
+        brief_fields = (
+            "id",
+            "url",
+            "display",
+            "name",
+            "aci_tenant",
+            "aci_vrf",
+            "description",
         )

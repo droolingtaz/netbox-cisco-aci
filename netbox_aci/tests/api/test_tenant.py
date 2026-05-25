@@ -43,8 +43,8 @@ class ACITenantAPITests(
         for i in range(3):
             ACITenant.objects.create(aci_fabric=fab, name=f"t-{i}")
         cls.create_data = [
-            {"aci_fabric_id": fab.pk, "name": "api-tenant-a"},
-            {"aci_fabric_id": fab.pk, "name": "api-tenant-b"},
+            {"aci_fabric": fab.pk, "name": "api-tenant-a"},
+            {"aci_fabric": fab.pk, "name": "api-tenant-b"},
         ]
 
 
@@ -68,8 +68,8 @@ class ACIVRFAPITests(
         for i in range(3):
             ACIVRF.objects.create(aci_tenant=tenant, name=f"vrf-{i}")
         cls.create_data = [
-            {"aci_tenant_id": tenant.pk, "name": "vrf-a"},
-            {"aci_tenant_id": tenant.pk, "name": "vrf-b"},
+            {"aci_tenant": tenant.pk, "name": "vrf-a"},
+            {"aci_tenant": tenant.pk, "name": "vrf-b"},
         ]
 
 
@@ -93,13 +93,13 @@ class ACIBridgeDomainAPITests(
             ACIBridgeDomain.objects.create(aci_tenant=d["tenant"], aci_vrf=d["vrf"], name=f"bd-{i}")
         cls.create_data = [
             {
-                "aci_tenant_id": d["tenant"].pk,
-                "aci_vrf_id": d["vrf"].pk,
+                "aci_tenant": d["tenant"].pk,
+                "aci_vrf": d["vrf"].pk,
                 "name": "bd-a",
             },
             {
-                "aci_tenant_id": d["tenant"].pk,
-                "aci_vrf_id": d["vrf"].pk,
+                "aci_tenant": d["tenant"].pk,
+                "aci_vrf": d["vrf"].pk,
                 "name": "bd-b",
             },
         ]
@@ -130,15 +130,15 @@ class ACIEndpointGroupAPITests(
             )
         cls.create_data = [
             {
-                "aci_tenant_id": d["tenant"].pk,
-                "aci_app_profile_id": d["ap"].pk,
-                "aci_bridge_domain_id": d["bd"].pk,
+                "aci_tenant": d["tenant"].pk,
+                "aci_app_profile": d["ap"].pk,
+                "aci_bridge_domain": d["bd"].pk,
                 "name": "epg-a",
             },
             {
-                "aci_tenant_id": d["tenant"].pk,
-                "aci_app_profile_id": d["ap"].pk,
-                "aci_bridge_domain_id": d["bd"].pk,
+                "aci_tenant": d["tenant"].pk,
+                "aci_app_profile": d["ap"].pk,
+                "aci_bridge_domain": d["bd"].pk,
                 "name": "epg-b",
             },
         ]
@@ -166,13 +166,13 @@ class ACIEndpointSecurityGroupAPITests(
             )
         cls.create_data = [
             {
-                "aci_tenant_id": d["tenant"].pk,
-                "aci_vrf_id": d["vrf"].pk,
+                "aci_tenant": d["tenant"].pk,
+                "aci_vrf": d["vrf"].pk,
                 "name": "esg-a",
             },
             {
-                "aci_tenant_id": d["tenant"].pk,
-                "aci_vrf_id": d["vrf"].pk,
+                "aci_tenant": d["tenant"].pk,
+                "aci_vrf": d["vrf"].pk,
                 "name": "esg-b",
             },
         ]
