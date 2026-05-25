@@ -1,0 +1,27 @@
+---
+# yamllint configuration. Loose enough to allow GitHub Actions
+# workflows without spurious warnings, strict enough to catch real
+# YAML breakage.
+
+extends: default
+
+rules:
+  # GitHub Actions workflows use `on:` as a top-level key. yamllint
+  # interprets that as a truthy literal by default; relax it.
+  truthy:
+    allowed-values:
+      - "true"
+      - "false"
+      - "on"
+      - "off"
+    check-keys: false
+
+  # 80-character limit is too tight for CI workflows that embed paths
+  # like ${{ github.workspace }}/...
+  line-length:
+    max: 120
+    level: warning
+
+  # We are not interested in lint-grade nits while bootstrapping.
+  comments-indentation: disable
+  document-start: disable

@@ -20,10 +20,10 @@ from ..forms.fabric import (
 from ..models.fabric import ACIFabric, ACINode, ACIPod
 from ..tables.fabric import ACIFabricTable, ACINodeTable, ACIPodTable
 
-
 # ---------------------------------------------------------------------------
 # ACIFabric
 # ---------------------------------------------------------------------------
+
 
 class ACIFabricView(generic.ObjectView):
     queryset = ACIFabric.objects.all()
@@ -67,6 +67,7 @@ class ACIFabricBulkDeleteView(generic.BulkDeleteView):
 # ACIPod
 # ---------------------------------------------------------------------------
 
+
 class ACIPodView(generic.ObjectView):
     queryset = ACIPod.objects.select_related("aci_fabric")
 
@@ -108,6 +109,7 @@ class ACIPodBulkDeleteView(generic.BulkDeleteView):
 # ---------------------------------------------------------------------------
 # ACINode
 # ---------------------------------------------------------------------------
+
 
 class ACINodeView(generic.ObjectView):
     queryset = ACINode.objects.select_related("aci_pod", "aci_pod__aci_fabric")

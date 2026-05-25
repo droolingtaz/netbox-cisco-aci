@@ -14,15 +14,13 @@ from utilities.forms.rendering import FieldSet
 from ..choices import NodeRoleChoices, NodeTypeChoices
 from ..models.fabric import ACIFabric, ACINode, ACIPod
 
-
 # ---------------------------------------------------------------------------
 # ACIFabric
 # ---------------------------------------------------------------------------
 
+
 class ACIFabricForm(NetBoxModelForm):
-    fieldsets = (
-        FieldSet("name", "name_alias", "fabric_id", "description", name=_("Fabric")),
-    )
+    fieldsets = (FieldSet("name", "name_alias", "fabric_id", "description", name=_("Fabric")),)
 
     class Meta:
         model = ACIFabric
@@ -49,6 +47,7 @@ class ACIFabricImportForm(NetBoxModelImportForm):
 # ---------------------------------------------------------------------------
 # ACIPod
 # ---------------------------------------------------------------------------
+
 
 class ACIPodForm(NetBoxModelForm):
     aci_fabric = DynamicModelChoiceField(queryset=ACIFabric.objects.all(), label=_("Fabric"))
@@ -87,6 +86,7 @@ class ACIPodImportForm(NetBoxModelImportForm):
 # ---------------------------------------------------------------------------
 # ACINode
 # ---------------------------------------------------------------------------
+
 
 class ACINodeForm(NetBoxModelForm):
     aci_pod = DynamicModelChoiceField(queryset=ACIPod.objects.all(), label=_("Pod"))

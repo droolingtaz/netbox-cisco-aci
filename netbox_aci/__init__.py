@@ -14,6 +14,11 @@ class NetBoxACIConfig(PluginConfig):
     """
 
     name = "netbox_aci"
+    # Explicit ``label`` keeps Django and the NetBox plugin loader in
+    # agreement — several reverse() lookups in tests (e.g. the API
+    # namespace ``netbox_aci-api``) build their viewname from
+    # ``app.label``.
+    label = "netbox_aci"
     verbose_name = "Cisco ACI"
     description = (
         "Models Cisco ACI fabrics, tenants, EPGs, contracts, L3Outs, "

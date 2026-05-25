@@ -2,49 +2,45 @@
 
 from netbox.plugins import PluginMenu, PluginMenuButton, PluginMenuItem
 
+
+def _item(link: str, text: str) -> PluginMenuItem:
+    return PluginMenuItem(
+        link=f"plugins:netbox_aci:{link}_list",
+        link_text=text,
+        buttons=(
+            PluginMenuButton(
+                link=f"plugins:netbox_aci:{link}_add",
+                title="Add",
+                icon_class="mdi mdi-plus-thick",
+            ),
+        ),
+    )
+
+
 fabric_items = (
-    PluginMenuItem(
-        link="plugins:netbox_aci:acifabric_list",
-        link_text="Fabrics",
-        buttons=(
-            PluginMenuButton(
-                link="plugins:netbox_aci:acifabric_add",
-                title="Add",
-                icon_class="mdi mdi-plus-thick",
-            ),
-        ),
-    ),
-    PluginMenuItem(
-        link="plugins:netbox_aci:acipod_list",
-        link_text="Pods",
-        buttons=(
-            PluginMenuButton(
-                link="plugins:netbox_aci:acipod_add",
-                title="Add",
-                icon_class="mdi mdi-plus-thick",
-            ),
-        ),
-    ),
-    PluginMenuItem(
-        link="plugins:netbox_aci:acinode_list",
-        link_text="Nodes",
-        buttons=(
-            PluginMenuButton(
-                link="plugins:netbox_aci:acinode_add",
-                title="Add",
-                icon_class="mdi mdi-plus-thick",
-            ),
-        ),
-    ),
+    _item("acifabric", "Fabrics"),
+    _item("acipod", "Pods"),
+    _item("acinode", "Nodes"),
+)
+
+tenancy_items = (
+    _item("acitenant", "Tenants"),
+    _item("acivrf", "VRFs"),
+    _item("acibridgedomain", "Bridge Domains"),
+    _item("acibridgedomainsubnet", "BD Subnets"),
+    _item("aciappprofile", "Application Profiles"),
+    _item("aciendpointgroup", "Endpoint Groups"),
+    _item("aciusegattribute", "uSeg Attributes"),
+    _item("aciendpointsecuritygroup", "Endpoint Security Groups"),
 )
 
 menu = PluginMenu(
     label="Cisco ACI",
     groups=(
         ("Fabric", fabric_items),
-        # Subsequent phases extend this tuple — Tenancy, Access policies,
-        # Contracts, L3Outs, Static Port Bindings — so the menu groups
-        # stay aligned with the model packages on disk.
+        ("Tenancy", tenancy_items),
+        # Subsequent phases extend this tuple — Access policies,
+        # Contracts, L3Outs, Static Port Bindings.
     ),
     icon_class="mdi mdi-server-network",
 )

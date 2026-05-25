@@ -1,4 +1,14 @@
-"""DRF serializers for fabric-topology models."""
+"""DRF serializers for fabric-topology models.
+
+We use the NetBox idiom for FK fields: a single ``Serializer(nested=True)``
+field that accepts a PK on write and emits a nested representation on
+read. The earlier write-only ``<field>_id`` pattern was rejected by
+NetBox's standard APIViewTestCase, which asserts that every key in the
+create payload echoes back in the response.
+
+``Meta.brief_fields`` is also declared so the ``?brief=True`` URL flag
+works as NetBox's test cases expect.
+"""
 
 from netbox.api.serializers import NetBoxModelSerializer
 from rest_framework import serializers
@@ -28,18 +38,12 @@ class ACIFabricSerializer(NetBoxModelSerializer):
             "created",
             "last_updated",
         )
+        brief_fields = ("id", "url", "display", "name", "fabric_id", "description")
 
 
 class ACIPodSerializer(NetBoxModelSerializer):
-    url = serializers.HyperlinkedIdentityField(
-        view_name="plugins-api:netbox_aci-api:acipod-detail"
-    )
-    aci_fabric = ACIFabricSerializer(read_only=True)
-    aci_fabric_id = serializers.PrimaryKeyRelatedField(
-        queryset=ACIFabric.objects.all(),
-        source="aci_fabric",
-        write_only=True,
-    )
+    url = serializers.HyperlinkedIdentityField(view_name="plugins-api:netbox_aci-api:acipod-detail")
+    aci_fabric = ACIFabricSerializer(nested=True)
     node_count = serializers.IntegerField(read_only=True)
 
     class Meta:
@@ -51,7 +55,6 @@ class ACIPodSerializer(NetBoxModelSerializer):
             "name",
             "name_alias",
             "aci_fabric",
-            "aci_fabric_id",
             "pod_id",
             "description",
             "node_count",
@@ -60,22 +63,24 @@ class ACIPodSerializer(NetBoxModelSerializer):
             "created",
             "last_updated",
         )
+        brief_fields = (
+            "id",
+            "url",
+            "display",
+            "name",
+            "aci_fabric",
+            "pod_id",
+            "description",
+        )
 
 
 class ACINodeSerializer(NetBoxModelSerializer):
     url = serializers.HyperlinkedIdentityField(
         view_name="plugins-api:netbox_aci-api:acinode-detail"
     )
-    aci_pod = ACIPodSerializer(read_only=True)
-    aci_pod_id = serializers.PrimaryKeyRelatedField(
-        queryset=ACIPod.objects.all(),
-        source="aci_pod",
-        write_only=True,
-    )
+    aci_pod = ACIPodSerializer(nested=True)
     node_object_type = serializers.SlugRelatedField(
-        slug_field="model",
-        read_only=True,
-        allow_null=True,
+        slug_field="model", read_only=True, allow_null=True
     )
 
     class Meta:
@@ -87,7 +92,6 @@ class ACINodeSerializer(NetBoxModelSerializer):
             "name",
             "name_alias",
             "aci_pod",
-            "aci_pod_id",
             "node_id",
             "role",
             "node_type",
@@ -101,4 +105,14 @@ class ACINodeSerializer(NetBoxModelSerializer):
             "custom_fields",
             "created",
             "last_updated",
+        )
+        brief_fields = (
+            "id",
+            "url",
+            "display",
+            "name",
+            "aci_pod",
+            "node_id",
+            "role",
+            "description",
         )

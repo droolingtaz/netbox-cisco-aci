@@ -15,17 +15,21 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install ruff yamllint
+      # Pin ruff so local + CI agree on formatter output. Bump together.
+      - run: pip install ruff==0.15.14 yamllint==1.38.0
       - run: ruff check netbox_aci
       - run: ruff format --check netbox_aci
-      - run: yamllint -s .github COMPATIBILITY.md
+      # yamllint only — COMPATIBILITY.md is markdown, not YAML.
+      - run: yamllint -s .github
 
   test:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.11", "3.12"]
+        # NetBox 4.5+ requires Python 3.12 — earlier Python versions
+        # cannot even import the NetBox app, so they are excluded.
+        python-version: ["3.12"]
         netbox-version: ["v4.5.0", "v4.6.0"]
     services:
       postgres:
@@ -82,12 +86,19 @@ jobs:
           python netbox/manage.py migrate
 
       - name: Run tests
+        env:
+          # pytest-django needs to be able to import the `netbox` Django
+          # project. The checkout lives under netbox/netbox/ relative to
+          # the workspace.
+          PYTHONPATH: ${{ github.workspace }}/netbox/netbox
+          DJANGO_SETTINGS_MODULE: netbox.settings
+          NETBOX_CONFIGURATION: netbox.configuration
         run: |
           cd netbox-aci
           pytest -v
 
       - name: Upload coverage
-        if: matrix.python-version == '3.12' && matrix.netbox-version == 'v4.6.0'
+        if: matrix.netbox-version == 'v4.6.0'
         uses: codecov/codecov-action@v4
         with:
           files: ./netbox-aci/.coverage

@@ -11,7 +11,7 @@ with the NetBox plugin catalogue standards.
 - **PyPI name:** `netbox-aci`
 - **License:** Apache-2.0
 - **Supported NetBox:** 4.5.x and 4.6.x (single release supports both)
-- **Supported Python:** 3.11, 3.12
+- **Supported Python:** 3.12 (NetBox 4.5+ requires Python 3.12)
 - **Status:** Alpha — model and API may change between 0.x releases.
 
 ## Repository layout
@@ -146,9 +146,14 @@ If you (the AI) are editing this repo:
 ## Useful make targets
 
 ```bash
-make lint        # ruff + yamllint
+make lint        # ruff + yamllint (uses .yamllint.yml)
 make test        # pytest with coverage
 make migrate     # apply migrations against the dev NetBox
 make shell       # NetBox shell with the plugin pre-loaded
 make docs-serve  # mkdocs live preview
 ```
+
+The ruff and yamllint versions are pinned (see `pyproject.toml`
+`[project.optional-dependencies].test` and the CI workflow). Bump
+them together to avoid the local/CI formatter drift that bit the
+first Phase-2 PR.

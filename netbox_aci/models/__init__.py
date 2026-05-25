@@ -7,3 +7,13 @@ internal layout.
 
 from .base import ACIBaseModel, ACIFabricBaseModel, ACITenantBaseModel  # noqa: F401
 from .fabric import ACIFabric, ACINode, ACIPod  # noqa: F401
+from .tenant import (  # noqa: F401
+    ACIVRF,
+    ACIAppProfile,
+    ACIBridgeDomain,
+    ACIBridgeDomainSubnet,
+    ACIEndpointGroup,
+    ACIEndpointSecurityGroup,
+    ACITenant,
+    ACIUSegAttribute,
+)

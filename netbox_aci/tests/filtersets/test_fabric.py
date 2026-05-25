@@ -17,7 +17,9 @@ class ACIFabricFilterSetTests(TestCase):
         ACIFabric.objects.create(name="DC3", fabric_id=2, description="dr")
 
     def test_filter_by_fabric_id(self):
-        params = {"fabric_id": 1}
+        # `fabric_id` is exposed through NumberFilter, so the QueryDict-style
+        # list wrapping is required — single-value dicts choke django-filter.
+        params = {"fabric_id": [1]}
         self.assertEqual(self.filterset(params, self.queryset).qs.count(), 2)
 
     def test_search_hits_description(self):

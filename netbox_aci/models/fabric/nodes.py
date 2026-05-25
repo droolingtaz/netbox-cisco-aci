@@ -114,10 +114,7 @@ class ACINode(ACIFabricBaseModel):
         # GFK consistency: both columns or neither.
         if (self.node_object_type_id is None) != (self.node_object_id is None):
             raise ValidationError(
-                _(
-                    "node_object_type and node_object_id must be set together, "
-                    "or both left blank."
-                )
+                _("node_object_type and node_object_id must be set together, or both left blank.")
             )
 
     @property

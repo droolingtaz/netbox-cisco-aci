@@ -37,8 +37,8 @@ NODE_ID_MAX = 4000
 
 #: ContentTypes a Node may be linked to. Stored as a Q so it can be passed
 #: straight into ``limit_choices_to`` on a GenericForeignKey.
-NODE_OBJECT_TYPES = (
-    Q(app_label="dcim", model="device") | Q(app_label="virtualization", model="virtualmachine")
+NODE_OBJECT_TYPES = Q(app_label="dcim", model="device") | Q(
+    app_label="virtualization", model="virtualmachine"
 )
 
 
