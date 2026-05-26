@@ -5,7 +5,19 @@ from netbox.search import SearchIndex, register_search
 from .models.access import (
     ACIAAEP,
     ACIAAEPEPGMapping,
+    ACICDPInterfacePolicy,
     ACIDomain,
+    ACIInterfacePolicyGroup,
+    ACIInterfaceProfile,
+    ACIInterfaceProfileSelector,
+    ACILACPInterfacePolicy,
+    ACILinkLevelPolicy,
+    ACILLDPInterfacePolicy,
+    ACIMCPInterfacePolicy,
+    ACISTPInterfacePolicy,
+    ACISwitchProfile,
+    ACISwitchProfileInterfaceProfileAttachment,
+    ACISwitchProfileSelector,
     ACIVLANPool,
     ACIVLANPoolBlock,
 )
@@ -121,3 +133,78 @@ class ACIAAEPIndex(SearchIndex):
 class ACIAAEPEPGMappingIndex(SearchIndex):
     model = ACIAAEPEPGMapping
     fields = (("name", 100), ("description", 500))
+
+
+# Phase 4 — Interface policies, policy groups, profiles
+
+
+@register_search
+class ACILinkLevelPolicyIndex(SearchIndex):
+    model = ACILinkLevelPolicy
+    fields = (("name", 100), ("name_alias", 200), ("description", 500))
+
+
+@register_search
+class ACICDPInterfacePolicyIndex(SearchIndex):
+    model = ACICDPInterfacePolicy
+    fields = (("name", 100), ("name_alias", 200), ("description", 500))
+
+
+@register_search
+class ACILLDPInterfacePolicyIndex(SearchIndex):
+    model = ACILLDPInterfacePolicy
+    fields = (("name", 100), ("name_alias", 200), ("description", 500))
+
+
+@register_search
+class ACILACPInterfacePolicyIndex(SearchIndex):
+    model = ACILACPInterfacePolicy
+    fields = (("name", 100), ("name_alias", 200), ("description", 500))
+
+
+@register_search
+class ACIMCPInterfacePolicyIndex(SearchIndex):
+    model = ACIMCPInterfacePolicy
+    fields = (("name", 100), ("name_alias", 200), ("description", 500))
+
+
+@register_search
+class ACISTPInterfacePolicyIndex(SearchIndex):
+    model = ACISTPInterfacePolicy
+    fields = (("name", 100), ("name_alias", 200), ("description", 500))
+
+
+@register_search
+class ACIInterfacePolicyGroupIndex(SearchIndex):
+    model = ACIInterfacePolicyGroup
+    fields = (("name", 100), ("name_alias", 200), ("description", 500))
+
+
+@register_search
+class ACISwitchProfileIndex(SearchIndex):
+    model = ACISwitchProfile
+    fields = (("name", 100), ("name_alias", 200), ("description", 500))
+
+
+@register_search
+class ACISwitchProfileSelectorIndex(SearchIndex):
+    model = ACISwitchProfileSelector
+    fields = (("name", 100), ("name_alias", 200), ("description", 500))
+
+
+@register_search
+class ACIInterfaceProfileIndex(SearchIndex):
+    model = ACIInterfaceProfile
+    fields = (("name", 100), ("name_alias", 200), ("description", 500))
+
+
+@register_search
+class ACIInterfaceProfileSelectorIndex(SearchIndex):
+    model = ACIInterfaceProfileSelector
+    fields = (("name", 100), ("name_alias", 200), ("description", 500))
+
+
+@register_search
+class ACISwitchProfileInterfaceProfileAttachmentIndex(SearchIndex):
+    model = ACISwitchProfileInterfaceProfileAttachment
+    fields = ()

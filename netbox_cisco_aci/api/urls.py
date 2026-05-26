@@ -15,6 +15,22 @@ from .views.access import (
     ACIVLANPoolBlockViewSet,
     ACIVLANPoolViewSet,
 )
+from .views.access_groups import ACIInterfacePolicyGroupViewSet
+from .views.access_policies import (
+    ACICDPInterfacePolicyViewSet,
+    ACILACPInterfacePolicyViewSet,
+    ACILinkLevelPolicyViewSet,
+    ACILLDPInterfacePolicyViewSet,
+    ACIMCPInterfacePolicyViewSet,
+    ACISTPInterfacePolicyViewSet,
+)
+from .views.access_profiles import (
+    ACIInterfaceProfileSelectorViewSet,
+    ACIInterfaceProfileViewSet,
+    ACISwitchProfileInterfaceProfileAttachmentViewSet,
+    ACISwitchProfileSelectorViewSet,
+    ACISwitchProfileViewSet,
+)
 from .views.fabric import ACIFabricViewSet, ACINodeViewSet, ACIPodViewSet
 from .views.tenant import (
     ACIAppProfileViewSet,
@@ -52,5 +68,22 @@ router.register("vlan-pool-blocks", ACIVLANPoolBlockViewSet)
 router.register("domains", ACIDomainViewSet)
 router.register("aaeps", ACIAAEPViewSet)
 router.register("aaep-epg-mappings", ACIAAEPEPGMappingViewSet)
+
+# Phase 4 — Interface policies, policy groups, profiles
+router.register("link-level-policies", ACILinkLevelPolicyViewSet)
+router.register("cdp-policies", ACICDPInterfacePolicyViewSet)
+router.register("lldp-policies", ACILLDPInterfacePolicyViewSet)
+router.register("lacp-policies", ACILACPInterfacePolicyViewSet)
+router.register("mcp-policies", ACIMCPInterfacePolicyViewSet)
+router.register("stp-policies", ACISTPInterfacePolicyViewSet)
+router.register("interface-policy-groups", ACIInterfacePolicyGroupViewSet)
+router.register("switch-profiles", ACISwitchProfileViewSet)
+router.register("switch-profile-selectors", ACISwitchProfileSelectorViewSet)
+router.register("interface-profiles", ACIInterfaceProfileViewSet)
+router.register("interface-profile-selectors", ACIInterfaceProfileSelectorViewSet)
+router.register(
+    "switch-interface-profile-attachments",
+    ACISwitchProfileInterfaceProfileAttachmentViewSet,
+)
 
 urlpatterns = router.urls

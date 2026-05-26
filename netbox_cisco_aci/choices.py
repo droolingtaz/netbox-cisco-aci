@@ -430,3 +430,138 @@ class USegAttributeMatchOperatorChoices(ChoiceSet):
         (STARTSWITH, _("Starts with")),
         (ENDSWITH, _("Ends with")),
     ]
+
+
+# ---------------------------------------------------------------------------
+# Access policies — interface policies (Phase 4)
+# ---------------------------------------------------------------------------
+
+
+class EnabledDisabledChoices(ChoiceSet):
+    """Generic enabled/disabled admin state used by several APIC policies."""
+
+    key = "ACIPolicy.enabled_disabled"
+
+    ENABLED = "enabled"
+    DISABLED = "disabled"
+
+    CHOICES = [
+        (ENABLED, _("Enabled"), "green"),
+        (DISABLED, _("Disabled"), "gray"),
+    ]
+
+
+class LinkLevelSpeedChoices(ChoiceSet):
+    """Link Level interface speeds (``fabricHIfPol.speed``)."""
+
+    key = "ACILinkLevelPolicy.speed"
+
+    INHERIT = "inherit"
+    SPEED_100M = "100M"
+    SPEED_1G = "1G"
+    SPEED_10G = "10G"
+    SPEED_25G = "25G"
+    SPEED_40G = "40G"
+    SPEED_100G = "100G"
+    SPEED_400G = "400G"
+
+    CHOICES = [
+        (INHERIT, _("Inherit")),
+        (SPEED_100M, _("100 Mbps")),
+        (SPEED_1G, _("1 Gbps")),
+        (SPEED_10G, _("10 Gbps")),
+        (SPEED_25G, _("25 Gbps")),
+        (SPEED_40G, _("40 Gbps")),
+        (SPEED_100G, _("100 Gbps")),
+        (SPEED_400G, _("400 Gbps")),
+    ]
+
+
+class LinkLevelAutoNegChoices(ChoiceSet):
+    """Auto-negotiation state on a Link Level policy."""
+
+    key = "ACILinkLevelPolicy.auto_negotiation"
+
+    ON = "on"
+    OFF = "off"
+
+    CHOICES = [
+        (ON, _("On")),
+        (OFF, _("Off")),
+    ]
+
+
+class LinkLevelFECChoices(ChoiceSet):
+    """FEC modes available on a Link Level policy."""
+
+    key = "ACILinkLevelPolicy.fec_mode"
+
+    INHERIT = "inherit"
+    CL74_FC_FEC = "cl74-fc-fec"
+    CL91_RS_FEC = "cl91-rs-fec"
+    CONS16_RS_FEC = "cons16-rs-fec"
+    IEEE_RS_FEC = "ieee-rs-fec"
+    KP_FEC = "kp-fec"
+    DISABLE_FEC = "disable-fec"
+
+    CHOICES = [
+        (INHERIT, _("Inherit")),
+        (CL74_FC_FEC, _("CL74 FC-FEC")),
+        (CL91_RS_FEC, _("CL91 RS-FEC")),
+        (CONS16_RS_FEC, _("Consortium-16 RS-FEC")),
+        (IEEE_RS_FEC, _("IEEE RS-FEC")),
+        (KP_FEC, _("KP-FEC")),
+        (DISABLE_FEC, _("Disabled")),
+    ]
+
+
+class LACPModeChoices(ChoiceSet):
+    """LACP / port-channel modes (``lacpLagPol.mode``)."""
+
+    key = "ACILACPInterfacePolicy.mode"
+
+    OFF = "off"
+    ACTIVE = "active"
+    PASSIVE = "passive"
+    MAC_PIN = "mac-pin"
+    MAC_PIN_NIC_LOAD = "mac-pin-nic-load"
+    EXPLICIT_FAILOVER = "explicit-failover"
+
+    CHOICES = [
+        (OFF, _("Off (static)")),
+        (ACTIVE, _("LACP Active")),
+        (PASSIVE, _("LACP Passive")),
+        (MAC_PIN, _("MAC Pinning")),
+        (MAC_PIN_NIC_LOAD, _("MAC Pinning + NIC Load Balancing")),
+        (EXPLICIT_FAILOVER, _("Explicit Failover Order")),
+    ]
+
+
+class InterfacePolicyGroupTypeChoices(ChoiceSet):
+    """Interface Policy Group variant (access / PC / vPC)."""
+
+    key = "ACIInterfacePolicyGroup.pg_type"
+
+    ACCESS = "access"
+    PC = "pc"
+    VPC = "vpc"
+
+    CHOICES = [
+        (ACCESS, _("Access"), "gray"),
+        (PC, _("Port Channel"), "blue"),
+        (VPC, _("Virtual Port Channel"), "purple"),
+    ]
+
+
+class RangeAllChoices(ChoiceSet):
+    """Selector mode: explicit range vs. \u201call\u201d."""
+
+    key = "ACISelector.selector_type"
+
+    RANGE = "range"
+    ALL = "all"
+
+    CHOICES = [
+        (RANGE, _("Range")),
+        (ALL, _("All")),
+    ]
