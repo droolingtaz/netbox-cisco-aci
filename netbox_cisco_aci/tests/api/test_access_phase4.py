@@ -304,13 +304,16 @@ class ACIInterfacePolicyGroupAPITests(
     @classmethod
     def setUpTestData(cls):
         # NOTE: ACIInterfaceProfileSelector references ACIInterfacePolicyGroup
-        # via on_delete=PROTECT. The framework's test_delete_object deletes
-        # ._get_queryset().first() (first by `name` ordering). Pin every
-        # selector to a policy group whose name is NOT the first
-        # alphabetically, so the first-by-name pg has no protected child
-        # and is safe to delete.
+        # via on_delete=PROTECT. Two safety constraints must hold:
+        # 1. test_delete_object deletes _get_queryset().first() (ordered by
+        #    `name`) — so the alphabetically-first pg must have no protected
+        #    child. We point the selector at "pg-1" (NOT "pg-0").
+        # 2. test_bulk_delete_objects deletes the 3 most recently created
+        #    objects (ordered by -id). To keep "pg-1" out of that window we
+        #    create THREE additional safe policy groups (pg-3, pg-4, pg-5)
+        #    AFTER the protected pg-1, so the top-3-by-id are all unprotected.
         fab = ACIFabric.objects.create(name="API-PGFab")
-        # "pg-0" is alphabetically first; selector references "pg-1" only.
+        # First batch: pg-0, pg-1, pg-2. The selector will reference pg-1.
         for i in range(3):
             ACIInterfacePolicyGroup.objects.create(
                 aci_fabric=fab,
@@ -328,6 +331,14 @@ class ACIInterfacePolicyGroupAPITests(
             to_module=1,
             to_port=1,
         )
+        # Second batch (created AFTER pg-1, so higher ids): safe targets for
+        # the bulk-delete test that orders by -id.
+        for i in range(3, 6):
+            ACIInterfacePolicyGroup.objects.create(
+                aci_fabric=fab,
+                name=f"pg-{i}",
+                pg_type=InterfacePolicyGroupTypeChoices.ACCESS,
+            )
         cls.create_data = [
             {"aci_fabric": fab.pk, "name": "pg-a", "pg_type": "access"},
             {"aci_fabric": fab.pk, "name": "pg-b", "pg_type": "access"},
