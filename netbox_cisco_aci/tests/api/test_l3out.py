@@ -590,3 +590,148 @@ class ACIExternalEPGSubnetAPITests(
             {"aci_external_epg": eepg.pk, "name": "sub-a", "prefix": "203.0.113.0/24"},
             {"aci_external_epg": eepg.pk, "name": "sub-b", "prefix": "198.51.100.0/24"},
         ]
+
+
+# ---------------------------------------------------------------------------
+# Phase 7.1 — Static Routes API tests
+# ---------------------------------------------------------------------------
+
+from netbox_cisco_aci.choices import StaticRouteNextHopTypeChoices  # noqa: E402
+from netbox_cisco_aci.models.l3out import (  # noqa: E402
+    ACIL3OutStaticRoute,
+    ACIL3OutStaticRouteNextHop,
+)
+
+
+def _build_static_route_fixture(prefix: str):
+    """Build static-route fixture including a logical node."""
+    fab, pod, tenant, vrf, l3out, lnp, lip = _build_l3out_fixture(prefix)
+    node = ACINode.objects.create(aci_pod=pod, node_id=401, name=f"{prefix}-node", role="leaf")
+    ln = ACILogicalNode.objects.create(
+        aci_logical_node_profile=lnp,
+        aci_node=node,
+        name=f"{prefix}-ln",
+        router_id="10.99.0.1",
+    )
+    return fab, pod, tenant, vrf, l3out, lnp, lip, ln
+
+
+class ACIL3OutStaticRouteAPITests(
+    APIViewTestCases.GetObjectViewTestCase,
+    APIViewTestCases.ListObjectsViewTestCase,
+    APIViewTestCases.CreateObjectViewTestCase,
+    APIViewTestCases.UpdateObjectViewTestCase,
+    APIViewTestCases.DeleteObjectViewTestCase,
+    APITestCase,
+):
+    model = ACIL3OutStaticRoute
+    view_namespace = PLUGIN_API_NAMESPACE
+    brief_fields = [
+        "aci_logical_node",
+        "description",
+        "display",
+        "id",
+        "prefix",
+        "preference",
+        "url",
+    ]
+    bulk_update_data = {"description": "Bulk-updated"}
+
+    @classmethod
+    def setUpTestData(cls):
+        fab, pod, tenant, vrf, l3out, lnp, lip, ln = _build_static_route_fixture("sr-api")
+        prefixes = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
+        for prefix in prefixes:
+            ACIL3OutStaticRoute.objects.create(
+                aci_logical_node=ln,
+                prefix=prefix,
+            )
+        # Two more logical nodes for create data
+        node2 = ACINode.objects.create(aci_pod=pod, node_id=402, name="sr-api-node2", role="leaf")
+        node3 = ACINode.objects.create(aci_pod=pod, node_id=403, name="sr-api-node3", role="leaf")
+        ln2 = ACILogicalNode.objects.create(
+            aci_logical_node_profile=lnp,
+            aci_node=node2,
+            name="sr-api-ln2",
+            router_id="10.99.0.2",
+        )
+        ln3 = ACILogicalNode.objects.create(
+            aci_logical_node_profile=lnp,
+            aci_node=node3,
+            name="sr-api-ln3",
+            router_id="10.99.0.3",
+        )
+        cls.create_data = [
+            {
+                "aci_logical_node": ln2.pk,
+                "prefix": "203.0.113.0/24",
+                "preference": 1,
+            },
+            {
+                "aci_logical_node": ln3.pk,
+                "prefix": "198.51.100.0/24",
+                "preference": 5,
+            },
+        ]
+
+
+class ACIL3OutStaticRouteNextHopAPITests(
+    APIViewTestCases.GetObjectViewTestCase,
+    APIViewTestCases.ListObjectsViewTestCase,
+    APIViewTestCases.CreateObjectViewTestCase,
+    APIViewTestCases.UpdateObjectViewTestCase,
+    APIViewTestCases.DeleteObjectViewTestCase,
+    APITestCase,
+):
+    model = ACIL3OutStaticRouteNextHop
+    view_namespace = PLUGIN_API_NAMESPACE
+    brief_fields = [
+        "aci_static_route",
+        "description",
+        "display",
+        "id",
+        "nexthop_address",
+        "nexthop_type",
+        "url",
+    ]
+    bulk_update_data = {"description": "Bulk-updated"}
+
+    @classmethod
+    def setUpTestData(cls):
+        fab, pod, tenant, vrf, l3out, lnp, lip, ln = _build_static_route_fixture("nh-api")
+        route_a = ACIL3OutStaticRoute.objects.create(aci_logical_node=ln, prefix="10.50.0.0/16")
+        route_b = ACIL3OutStaticRoute.objects.create(aci_logical_node=ln, prefix="10.60.0.0/16")
+        route_c = ACIL3OutStaticRoute.objects.create(aci_logical_node=ln, prefix="10.70.0.0/16")
+        # 3 existing objects for GET/list tests
+        ACIL3OutStaticRouteNextHop.objects.create(
+            aci_static_route=route_a,
+            nexthop_address="192.0.2.1",
+            nexthop_type=StaticRouteNextHopTypeChoices.PREFIX,
+        )
+        ACIL3OutStaticRouteNextHop.objects.create(
+            aci_static_route=route_b,
+            nexthop_address="192.0.2.2",
+            nexthop_type=StaticRouteNextHopTypeChoices.PREFIX,
+        )
+        ACIL3OutStaticRouteNextHop.objects.create(
+            aci_static_route=route_c,
+            nexthop_address="",
+            nexthop_type=StaticRouteNextHopTypeChoices.NONE,
+        )
+        # Routes for create_data
+        route_d = ACIL3OutStaticRoute.objects.create(aci_logical_node=ln, prefix="10.80.0.0/16")
+        route_e = ACIL3OutStaticRoute.objects.create(aci_logical_node=ln, prefix="10.90.0.0/16")
+        cls.create_data = [
+            {
+                "aci_static_route": route_d.pk,
+                "nexthop_address": "198.51.100.1",
+                "nexthop_type": StaticRouteNextHopTypeChoices.PREFIX,
+                "preference": 0,
+            },
+            {
+                "aci_static_route": route_e.pk,
+                "nexthop_address": "",
+                "nexthop_type": StaticRouteNextHopTypeChoices.NONE,
+                "preference": 0,
+            },
+        ]

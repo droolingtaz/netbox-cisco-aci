@@ -43,6 +43,8 @@ from .models.l3out import (
     ACIExternalEPGSubnet,
     ACIL3Out,
     ACIL3OutInterface,
+    ACIL3OutStaticRoute,
+    ACIL3OutStaticRouteNextHop,
     ACILogicalInterfaceProfile,
     ACILogicalNode,
     ACILogicalNodeProfile,
@@ -370,3 +372,25 @@ class ACIExternalEPGIndex(SearchIndex):
 class ACIExternalEPGSubnetIndex(SearchIndex):
     model = ACIExternalEPGSubnet
     fields = (("name", 100), ("name_alias", 200), ("description", 500))
+
+
+@register_search
+class ACIL3OutStaticRouteIndex(SearchIndex):
+    model = ACIL3OutStaticRoute
+    fields = (
+        ("name", 100),
+        ("name_alias", 200),
+        ("prefix", 100),
+        ("description", 500),
+    )
+
+
+@register_search
+class ACIL3OutStaticRouteNextHopIndex(SearchIndex):
+    model = ACIL3OutStaticRouteNextHop
+    fields = (
+        ("name", 100),
+        ("name_alias", 200),
+        ("nexthop_address", 100),
+        ("description", 500),
+    )

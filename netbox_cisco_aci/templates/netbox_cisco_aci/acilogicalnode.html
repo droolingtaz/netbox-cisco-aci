@@ -25,6 +25,32 @@
   </div>
   <div class="col col-md-6">
     {% include 'inc/panels/comments.html' %}
+
+    {% with static_routes=object.static_routes.all|slice:":25" %}
+    {% if static_routes %}
+    <div class="card">
+      <h2 class="card-header">{% trans "Static Routes" %}</h2>
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>{% trans "Prefix" %}</th>
+            <th>{% trans "Preference" %}</th>
+            <th>{% trans "Next Hops" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for route in static_routes %}
+          <tr>
+            <td><a href="{{ route.get_absolute_url }}">{{ route.prefix }}</a></td>
+            <td>{{ route.preference }}</td>
+            <td>{{ route.next_hops.count }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+    {% endwith %}
   </div>
 </div>
 {% endblock %}

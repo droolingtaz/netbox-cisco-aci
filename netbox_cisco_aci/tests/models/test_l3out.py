@@ -299,3 +299,209 @@ class ACIExternalEPGSubnetModelTests(_L3OutFixture):
             ACIExternalEPGSubnet.objects.create(
                 aci_external_epg=self.eepg, name="b", prefix="10.0.0.0/8"
             )
+
+
+# ---------------------------------------------------------------------------
+# Phase 7.1 — Static Routes
+# ---------------------------------------------------------------------------
+
+from netbox_cisco_aci.choices import StaticRouteNextHopTypeChoices  # noqa: E402
+from netbox_cisco_aci.models.l3out import (  # noqa: E402
+    ACIL3OutStaticRoute,
+    ACIL3OutStaticRouteNextHop,
+)
+
+
+class ACIL3OutStaticRouteModelTests(_L3OutFixture):
+    """Tests for ACIL3OutStaticRoute."""
+
+    def setUp(self):
+        self.ln = ACILogicalNode.objects.create(
+            aci_logical_node_profile=self.lnp,
+            aci_node=self.aci_node,
+            name="ln-sr-1",
+            router_id="10.1.0.1",
+        )
+
+    def test_create_and_str(self):
+        route = ACIL3OutStaticRoute.objects.create(
+            aci_logical_node=self.ln,
+            prefix="10.50.0.0/16",
+            preference=1,
+        )
+        self.assertIn("10.50.0.0/16", str(route))
+        self.assertIn("ln-sr-1", str(route))
+        self.assertIn("->", str(route))
+
+    def test_auto_name_on_save(self):
+        route = ACIL3OutStaticRoute.objects.create(
+            aci_logical_node=self.ln,
+            prefix="0.0.0.0/0",
+        )
+        self.assertTrue(route.name.startswith("route_"))
+        # dots are legal in ACI policy names so regex keeps them;
+        # slash becomes underscore → "0.0.0.0_0" is present in the name
+        self.assertIn("0.0.0.0_0", route.name)
+
+    def test_explicit_name_preserved(self):
+        route = ACIL3OutStaticRoute.objects.create(
+            aci_logical_node=self.ln,
+            prefix="192.168.0.0/24",
+            name="my-custom-name",
+        )
+        self.assertEqual(route.name, "my-custom-name")
+
+    def test_get_absolute_url(self):
+        route = ACIL3OutStaticRoute.objects.create(
+            aci_logical_node=self.ln,
+            prefix="10.10.0.0/16",
+        )
+        self.assertIn("/static-routes/", route.get_absolute_url())
+
+    def test_invalid_prefix_raises_validation_error(self):
+        route = ACIL3OutStaticRoute(
+            aci_logical_node=self.ln,
+            prefix="not-a-prefix",
+        )
+        with self.assertRaises(ValidationError):
+            route.full_clean()
+
+    def test_ipv6_prefix_valid(self):
+        route = ACIL3OutStaticRoute.objects.create(
+            aci_logical_node=self.ln,
+            prefix="2001:db8::/32",
+        )
+        self.assertEqual(route.prefix, "2001:db8::/32")
+
+    def test_unique_constraint_node_prefix(self):
+        ACIL3OutStaticRoute.objects.create(
+            aci_logical_node=self.ln,
+            prefix="10.0.0.0/8",
+        )
+        with self.assertRaises(IntegrityError), transaction.atomic():
+            ACIL3OutStaticRoute.objects.create(
+                aci_logical_node=self.ln,
+                prefix="10.0.0.0/8",
+            )
+
+    def test_same_prefix_different_node_ok(self):
+        ln2 = ACILogicalNode.objects.create(
+            aci_logical_node_profile=self.lnp,
+            aci_node=ACINode.objects.create(
+                aci_pod=self.pod, node_id=202, name="leaf-202", role="leaf"
+            ),
+            name="ln-sr-2",
+            router_id="10.2.0.1",
+        )
+        ACIL3OutStaticRoute.objects.create(aci_logical_node=self.ln, prefix="172.16.0.0/12")
+        ACIL3OutStaticRoute.objects.create(aci_logical_node=ln2, prefix="172.16.0.0/12")
+
+
+class ACIL3OutStaticRouteNextHopModelTests(_L3OutFixture):
+    """Tests for ACIL3OutStaticRouteNextHop."""
+
+    def setUp(self):
+        self.ln = ACILogicalNode.objects.create(
+            aci_logical_node_profile=self.lnp,
+            aci_node=self.aci_node,
+            name="ln-nh-1",
+            router_id="10.3.0.1",
+        )
+        self.route = ACIL3OutStaticRoute.objects.create(
+            aci_logical_node=self.ln,
+            prefix="10.100.0.0/16",
+        )
+
+    def test_create_prefix_type(self):
+        nh = ACIL3OutStaticRouteNextHop.objects.create(
+            aci_static_route=self.route,
+            nexthop_address="192.0.2.1",
+            nexthop_type=StaticRouteNextHopTypeChoices.PREFIX,
+        )
+        self.assertIn("192.0.2.1", str(nh))
+        self.assertIn("via", str(nh))
+
+    def test_create_none_type_blank_address(self):
+        nh = ACIL3OutStaticRouteNextHop.objects.create(
+            aci_static_route=self.route,
+            nexthop_address="",
+            nexthop_type=StaticRouteNextHopTypeChoices.NONE,
+        )
+        self.assertIn("null", str(nh))
+
+    def test_none_type_with_address_raises(self):
+        nh = ACIL3OutStaticRouteNextHop(
+            aci_static_route=self.route,
+            nexthop_address="10.0.0.1",
+            nexthop_type=StaticRouteNextHopTypeChoices.NONE,
+        )
+        with self.assertRaises(ValidationError):
+            nh.full_clean()
+
+    def test_prefix_type_without_address_raises(self):
+        nh = ACIL3OutStaticRouteNextHop(
+            aci_static_route=self.route,
+            nexthop_address="",
+            nexthop_type=StaticRouteNextHopTypeChoices.PREFIX,
+        )
+        with self.assertRaises(ValidationError):
+            nh.full_clean()
+
+    def test_invalid_address_raises(self):
+        nh = ACIL3OutStaticRouteNextHop(
+            aci_static_route=self.route,
+            nexthop_address="not-an-ip",
+            nexthop_type=StaticRouteNextHopTypeChoices.PREFIX,
+        )
+        with self.assertRaises(ValidationError):
+            nh.full_clean()
+
+    def test_ipv6_nexthop_valid(self):
+        nh = ACIL3OutStaticRouteNextHop.objects.create(
+            aci_static_route=self.route,
+            nexthop_address="2001:db8::1",
+            nexthop_type=StaticRouteNextHopTypeChoices.PREFIX,
+        )
+        self.assertEqual(nh.nexthop_address, "2001:db8::1")
+
+    def test_auto_name_on_save(self):
+        nh = ACIL3OutStaticRouteNextHop.objects.create(
+            aci_static_route=self.route,
+            nexthop_address="10.0.0.5",
+            nexthop_type=StaticRouteNextHopTypeChoices.PREFIX,
+        )
+        self.assertTrue(nh.name.startswith("nh_"))
+
+    def test_get_absolute_url(self):
+        nh = ACIL3OutStaticRouteNextHop.objects.create(
+            aci_static_route=self.route,
+            nexthop_address="10.0.0.9",
+            nexthop_type=StaticRouteNextHopTypeChoices.PREFIX,
+        )
+        self.assertIn("/static-route-next-hops/", nh.get_absolute_url())
+
+    def test_uniqueness_route_address_positive(self):
+        ACIL3OutStaticRouteNextHop.objects.create(
+            aci_static_route=self.route,
+            nexthop_address="10.0.0.1",
+            nexthop_type=StaticRouteNextHopTypeChoices.PREFIX,
+        )
+        with self.assertRaises(IntegrityError), transaction.atomic():
+            ACIL3OutStaticRouteNextHop.objects.create(
+                aci_static_route=self.route,
+                nexthop_address="10.0.0.1",
+                nexthop_type=StaticRouteNextHopTypeChoices.PREFIX,
+            )
+
+    def test_different_address_same_route_ok(self):
+        ACIL3OutStaticRouteNextHop.objects.create(
+            aci_static_route=self.route,
+            nexthop_address="10.0.0.1",
+            nexthop_type=StaticRouteNextHopTypeChoices.PREFIX,
+        )
+        nh2 = ACIL3OutStaticRouteNextHop.objects.create(
+            aci_static_route=self.route,
+            nexthop_address="10.0.0.2",
+            nexthop_type=StaticRouteNextHopTypeChoices.PREFIX,
+        )
+        self.assertEqual(nh2.nexthop_address, "10.0.0.2")

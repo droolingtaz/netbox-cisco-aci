@@ -10,6 +10,8 @@ from ..models.l3out import (
     ACIExternalEPGSubnet,
     ACIL3Out,
     ACIL3OutInterface,
+    ACIL3OutStaticRoute,
+    ACIL3OutStaticRouteNextHop,
     ACILogicalInterfaceProfile,
     ACILogicalNode,
     ACILogicalNodeProfile,
@@ -296,3 +298,46 @@ class ACIExternalEPGSubnetTable(NetBoxTable):
             "tags",
         )
         default_columns = ("aci_external_epg", "prefix")
+
+
+class ACIL3OutStaticRouteTable(NetBoxTable):
+    name = tables.Column(linkify=True)
+    aci_logical_node = tables.Column(linkify=True, verbose_name="Logical Node")
+    tags = columns.TagColumn(url_name="plugins:netbox_cisco_aci:acil3outstaticroute_list")
+
+    class Meta(NetBoxTable.Meta):
+        model = ACIL3OutStaticRoute
+        fields = (
+            "pk",
+            "id",
+            "name",
+            "aci_logical_node",
+            "prefix",
+            "preference",
+            "track_policy",
+            "description",
+            "tags",
+        )
+        default_columns = ("aci_logical_node", "prefix", "preference")
+
+
+class ACIL3OutStaticRouteNextHopTable(NetBoxTable):
+    name = tables.Column(linkify=True)
+    aci_static_route = tables.Column(linkify=True, verbose_name="Static Route")
+    nexthop_type = ChoiceFieldColumn()
+    tags = columns.TagColumn(url_name="plugins:netbox_cisco_aci:acil3outstaticroutenexthop_list")
+
+    class Meta(NetBoxTable.Meta):
+        model = ACIL3OutStaticRouteNextHop
+        fields = (
+            "pk",
+            "id",
+            "name",
+            "aci_static_route",
+            "nexthop_address",
+            "nexthop_type",
+            "preference",
+            "description",
+            "tags",
+        )
+        default_columns = ("aci_static_route", "nexthop_address", "nexthop_type", "preference")

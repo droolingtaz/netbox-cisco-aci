@@ -16,6 +16,7 @@ from ..choices import (
     OSPFAreaTypeChoices,
     OSPFNetworkTypeChoices,
     QualityOfServiceClassChoices,
+    StaticRouteNextHopTypeChoices,
 )
 from ..models.fabric import ACINode
 from ..models.l3out import (
@@ -25,6 +26,8 @@ from ..models.l3out import (
     ACIExternalEPGSubnet,
     ACIL3Out,
     ACIL3OutInterface,
+    ACIL3OutStaticRoute,
+    ACIL3OutStaticRouteNextHop,
     ACILogicalInterfaceProfile,
     ACILogicalNode,
     ACILogicalNodeProfile,
@@ -715,6 +718,130 @@ class ACIExternalEPGSubnetImportForm(NetBoxModelImportForm):
             "name_alias",
             "aci_external_epg",
             "prefix",
+            "description",
+            "tags",
+        )
+
+
+# ---------------------------------------------------------------------------
+# ACIL3OutStaticRoute
+# ---------------------------------------------------------------------------
+
+_ROUTE_CONTROLS_HELP = _("JSON list of route-control tokens. Common tokens: bfd, bfd.only.")
+
+
+class ACIL3OutStaticRouteForm(NetBoxModelForm):
+    aci_logical_node = DynamicModelChoiceField(
+        queryset=ACILogicalNode.objects.all(), label=_("Logical Node")
+    )
+    route_controls = forms.JSONField(required=False, initial=list, help_text=_ROUTE_CONTROLS_HELP)
+
+    class Meta:
+        model = ACIL3OutStaticRoute
+        fields = (
+            "name",
+            "name_alias",
+            "aci_logical_node",
+            "prefix",
+            "preference",
+            "track_policy",
+            "route_controls",
+            "description",
+            "tags",
+        )
+
+
+class ACIL3OutStaticRouteBulkEditForm(NetBoxModelBulkEditForm):
+    model = ACIL3OutStaticRoute
+    preference = forms.IntegerField(required=False, min_value=1, max_value=255)
+    track_policy = forms.CharField(max_length=64, required=False)
+    description = forms.CharField(max_length=128, required=False)
+    nullable_fields = ("description", "name_alias", "track_policy")
+
+
+class ACIL3OutStaticRouteFilterForm(NetBoxModelFilterSetForm):
+    model = ACIL3OutStaticRoute
+    aci_logical_node_id = DynamicModelMultipleChoiceField(
+        queryset=ACILogicalNode.objects.all(), required=False, label=_("Logical Node")
+    )
+
+
+class ACIL3OutStaticRouteImportForm(NetBoxModelImportForm):
+    aci_logical_node = forms.ModelChoiceField(
+        queryset=ACILogicalNode.objects.all(), to_field_name="name"
+    )
+
+    class Meta:
+        model = ACIL3OutStaticRoute
+        fields = (
+            "name",
+            "name_alias",
+            "aci_logical_node",
+            "prefix",
+            "preference",
+            "track_policy",
+            "description",
+            "tags",
+        )
+
+
+# ---------------------------------------------------------------------------
+# ACIL3OutStaticRouteNextHop
+# ---------------------------------------------------------------------------
+
+
+class ACIL3OutStaticRouteNextHopForm(NetBoxModelForm):
+    aci_static_route = DynamicModelChoiceField(
+        queryset=ACIL3OutStaticRoute.objects.all(), label=_("Static Route")
+    )
+
+    class Meta:
+        model = ACIL3OutStaticRouteNextHop
+        fields = (
+            "name",
+            "name_alias",
+            "aci_static_route",
+            "nexthop_address",
+            "nexthop_type",
+            "preference",
+            "description",
+            "tags",
+        )
+
+
+class ACIL3OutStaticRouteNextHopBulkEditForm(NetBoxModelBulkEditForm):
+    model = ACIL3OutStaticRouteNextHop
+    nexthop_type = forms.ChoiceField(choices=StaticRouteNextHopTypeChoices, required=False)
+    preference = forms.IntegerField(required=False, min_value=0, max_value=255)
+    description = forms.CharField(max_length=128, required=False)
+    nullable_fields = ("description", "name_alias", "nexthop_address")
+
+
+class ACIL3OutStaticRouteNextHopFilterForm(NetBoxModelFilterSetForm):
+    model = ACIL3OutStaticRouteNextHop
+    aci_static_route_id = DynamicModelMultipleChoiceField(
+        queryset=ACIL3OutStaticRoute.objects.all(),
+        required=False,
+        label=_("Static Route"),
+    )
+    nexthop_type = forms.MultipleChoiceField(choices=StaticRouteNextHopTypeChoices, required=False)
+
+
+class ACIL3OutStaticRouteNextHopImportForm(NetBoxModelImportForm):
+    aci_static_route = forms.ModelChoiceField(
+        queryset=ACIL3OutStaticRoute.objects.all(), to_field_name="name"
+    )
+    nexthop_type = forms.ChoiceField(choices=StaticRouteNextHopTypeChoices, required=False)
+
+    class Meta:
+        model = ACIL3OutStaticRouteNextHop
+        fields = (
+            "name",
+            "name_alias",
+            "aci_static_route",
+            "nexthop_address",
+            "nexthop_type",
+            "preference",
             "description",
             "tags",
         )

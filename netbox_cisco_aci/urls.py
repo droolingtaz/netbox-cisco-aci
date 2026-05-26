@@ -251,3 +251,19 @@ urlpatterns += _crud(
     "ACIExternalEPGSubnet",
     "aciexternalepgsubnet",
 )
+
+# Phase 7.1 — L3Out Static Routes
+urlpatterns += _crud(
+    "static-routes",
+    "static-route",
+    l3o,
+    "ACIL3OutStaticRoute",
+    "acil3outstaticroute",
+)
+urlpatterns += _crud(
+    "static-route-next-hops",
+    "static-route-nh",
+    l3o,
+    "ACIL3OutStaticRouteNextHop",
+    "acil3outstaticroutenexthop",
+)

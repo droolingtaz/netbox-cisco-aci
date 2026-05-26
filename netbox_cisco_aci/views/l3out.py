@@ -7,6 +7,8 @@ from ..filtersets.l3out import (
     ACIExternalEPGSubnetFilterSet,
     ACIL3OutFilterSet,
     ACIL3OutInterfaceFilterSet,
+    ACIL3OutStaticRouteFilterSet,
+    ACIL3OutStaticRouteNextHopFilterSet,
     ACILogicalInterfaceProfileFilterSet,
     ACILogicalNodeFilterSet,
     ACILogicalNodeProfileFilterSet,
@@ -38,6 +40,14 @@ from ..forms.l3out import (
     ACIL3OutInterfaceFilterForm,
     ACIL3OutInterfaceForm,
     ACIL3OutInterfaceImportForm,
+    ACIL3OutStaticRouteBulkEditForm,
+    ACIL3OutStaticRouteFilterForm,
+    ACIL3OutStaticRouteForm,
+    ACIL3OutStaticRouteImportForm,
+    ACIL3OutStaticRouteNextHopBulkEditForm,
+    ACIL3OutStaticRouteNextHopFilterForm,
+    ACIL3OutStaticRouteNextHopForm,
+    ACIL3OutStaticRouteNextHopImportForm,
     ACILogicalInterfaceProfileBulkEditForm,
     ACILogicalInterfaceProfileFilterForm,
     ACILogicalInterfaceProfileForm,
@@ -66,6 +76,8 @@ from ..models.l3out import (
     ACIExternalEPGSubnet,
     ACIL3Out,
     ACIL3OutInterface,
+    ACIL3OutStaticRoute,
+    ACIL3OutStaticRouteNextHop,
     ACILogicalInterfaceProfile,
     ACILogicalNode,
     ACILogicalNodeProfile,
@@ -78,6 +90,8 @@ from ..tables.l3out import (
     ACIExternalEPGSubnetTable,
     ACIExternalEPGTable,
     ACIL3OutInterfaceTable,
+    ACIL3OutStaticRouteNextHopTable,
+    ACIL3OutStaticRouteTable,
     ACIL3OutTable,
     ACILogicalInterfaceProfileTable,
     ACILogicalNodeProfileTable,
@@ -255,5 +269,41 @@ _bind(
         ACIExternalEPGSubnetImportForm,
         ACIExternalEPGSubnetBulkEditForm,
         select=("aci_external_epg",),
+    ),
+)
+
+_bind(
+    "ACIL3OutStaticRoute",
+    _five_views(
+        ACIL3OutStaticRoute,
+        ACIL3OutStaticRouteTable,
+        ACIL3OutStaticRouteFilterSet,
+        ACIL3OutStaticRouteFilterForm,
+        ACIL3OutStaticRouteForm,
+        ACIL3OutStaticRouteImportForm,
+        ACIL3OutStaticRouteBulkEditForm,
+        select=(
+            "aci_logical_node",
+            "aci_logical_node__aci_logical_node_profile",
+            "aci_logical_node__aci_logical_node_profile__aci_l3out",
+            "aci_logical_node__aci_logical_node_profile__aci_l3out__aci_tenant",
+        ),
+    ),
+)
+
+_bind(
+    "ACIL3OutStaticRouteNextHop",
+    _five_views(
+        ACIL3OutStaticRouteNextHop,
+        ACIL3OutStaticRouteNextHopTable,
+        ACIL3OutStaticRouteNextHopFilterSet,
+        ACIL3OutStaticRouteNextHopFilterForm,
+        ACIL3OutStaticRouteNextHopForm,
+        ACIL3OutStaticRouteNextHopImportForm,
+        ACIL3OutStaticRouteNextHopBulkEditForm,
+        select=(
+            "aci_static_route",
+            "aci_static_route__aci_logical_node",
+        ),
     ),
 )

@@ -11,6 +11,8 @@ from ...models.l3out import (
     ACIExternalEPGSubnet,
     ACIL3Out,
     ACIL3OutInterface,
+    ACIL3OutStaticRoute,
+    ACIL3OutStaticRouteNextHop,
     ACILogicalInterfaceProfile,
     ACILogicalNode,
     ACILogicalNodeProfile,
@@ -473,5 +475,95 @@ class ACIExternalEPGSubnetSerializer(NetBoxModelSerializer):
             "display",
             "id",
             "prefix",
+            "url",
+        )
+
+
+# ---------------------------------------------------------------------------
+# ACIL3OutStaticRoute
+# ---------------------------------------------------------------------------
+
+
+class ACIL3OutStaticRouteSerializer(_AutoNameMixin, NetBoxModelSerializer):
+    url = _url("acil3outstaticroute")
+    aci_logical_node = ACILogicalNodeSerializer(nested=True)
+    name = serializers.CharField(required=False, allow_blank=True, max_length=64)
+
+    def _derive_name(self, attrs: dict) -> str:
+        node = attrs.get("aci_logical_node")
+        prefix = attrs.get("prefix", "")
+        if not node:
+            return ""
+        return _clean_name(f"route_{getattr(node, 'name', '')}_{prefix}")
+
+    class Meta:
+        model = ACIL3OutStaticRoute
+        fields = (
+            "id",
+            "url",
+            "display",
+            "name",
+            "name_alias",
+            "aci_logical_node",
+            "prefix",
+            "preference",
+            "track_policy",
+            "route_controls",
+            "description",
+            "tags",
+            "custom_fields",
+            "created",
+            "last_updated",
+        )
+        brief_fields = (
+            "aci_logical_node",
+            "description",
+            "display",
+            "id",
+            "prefix",
+            "preference",
+            "url",
+        )
+
+
+# ---------------------------------------------------------------------------
+# ACIL3OutStaticRouteNextHop
+# ---------------------------------------------------------------------------
+
+
+class ACIL3OutStaticRouteNextHopSerializer(_AutoNameMixin, NetBoxModelSerializer):
+    url = _url("acil3outstaticroutenexthop")
+    aci_static_route = ACIL3OutStaticRouteSerializer(nested=True)
+    name = serializers.CharField(required=False, allow_blank=True, max_length=64)
+
+    def _derive_name(self, attrs: dict) -> str:
+        addr = attrs.get("nexthop_address") or "null"
+        return _clean_name(f"nh_{addr}")
+
+    class Meta:
+        model = ACIL3OutStaticRouteNextHop
+        fields = (
+            "id",
+            "url",
+            "display",
+            "name",
+            "name_alias",
+            "aci_static_route",
+            "nexthop_address",
+            "nexthop_type",
+            "preference",
+            "description",
+            "tags",
+            "custom_fields",
+            "created",
+            "last_updated",
+        )
+        brief_fields = (
+            "aci_static_route",
+            "description",
+            "display",
+            "id",
+            "nexthop_address",
+            "nexthop_type",
             "url",
         )

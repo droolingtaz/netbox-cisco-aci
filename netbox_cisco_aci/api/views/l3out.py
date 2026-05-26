@@ -9,6 +9,8 @@ from ...filtersets.l3out import (
     ACIExternalEPGSubnetFilterSet,
     ACIL3OutFilterSet,
     ACIL3OutInterfaceFilterSet,
+    ACIL3OutStaticRouteFilterSet,
+    ACIL3OutStaticRouteNextHopFilterSet,
     ACILogicalInterfaceProfileFilterSet,
     ACILogicalNodeFilterSet,
     ACILogicalNodeProfileFilterSet,
@@ -22,6 +24,8 @@ from ...models.l3out import (
     ACIExternalEPGSubnet,
     ACIL3Out,
     ACIL3OutInterface,
+    ACIL3OutStaticRoute,
+    ACIL3OutStaticRouteNextHop,
     ACILogicalInterfaceProfile,
     ACILogicalNode,
     ACILogicalNodeProfile,
@@ -35,6 +39,8 @@ from ..serializers.l3out import (
     ACIExternalEPGSubnetSerializer,
     ACIL3OutInterfaceSerializer,
     ACIL3OutSerializer,
+    ACIL3OutStaticRouteNextHopSerializer,
+    ACIL3OutStaticRouteSerializer,
     ACILogicalInterfaceProfileSerializer,
     ACILogicalNodeProfileSerializer,
     ACILogicalNodeSerializer,
@@ -124,3 +130,26 @@ class ACIExternalEPGSubnetViewSet(NetBoxModelViewSet):
     queryset = ACIExternalEPGSubnet.objects.select_related("aci_external_epg")
     serializer_class = ACIExternalEPGSubnetSerializer
     filterset_class = ACIExternalEPGSubnetFilterSet
+
+
+class ACIL3OutStaticRouteViewSet(NetBoxModelViewSet):
+    queryset = ACIL3OutStaticRoute.objects.select_related(
+        "aci_logical_node",
+        "aci_logical_node__aci_logical_node_profile",
+        "aci_logical_node__aci_logical_node_profile__aci_l3out",
+        "aci_logical_node__aci_logical_node_profile__aci_l3out__aci_tenant",
+    )
+    serializer_class = ACIL3OutStaticRouteSerializer
+    filterset_class = ACIL3OutStaticRouteFilterSet
+
+
+class ACIL3OutStaticRouteNextHopViewSet(NetBoxModelViewSet):
+    queryset = ACIL3OutStaticRouteNextHop.objects.select_related(
+        "aci_static_route",
+        "aci_static_route__aci_logical_node",
+        "aci_static_route__aci_logical_node__aci_logical_node_profile",
+        "aci_static_route__aci_logical_node__aci_logical_node_profile__aci_l3out",
+        "aci_static_route__aci_logical_node__aci_logical_node_profile__aci_l3out__aci_tenant",
+    )
+    serializer_class = ACIL3OutStaticRouteNextHopSerializer
+    filterset_class = ACIL3OutStaticRouteNextHopFilterSet

@@ -52,6 +52,8 @@ from .views.l3out import (
     ACIExternalEPGSubnetViewSet,
     ACIExternalEPGViewSet,
     ACIL3OutInterfaceViewSet,
+    ACIL3OutStaticRouteNextHopViewSet,
+    ACIL3OutStaticRouteViewSet,
     ACIL3OutViewSet,
     ACILogicalInterfaceProfileViewSet,
     ACILogicalNodeProfileViewSet,
@@ -139,5 +141,9 @@ router.register("ospf-interface-attachments", ACIOSPFInterfaceAttachmentViewSet)
 router.register("eigrp-interface-policies", ACIEIGRPInterfacePolicyViewSet)
 router.register("external-epgs", ACIExternalEPGViewSet)
 router.register("external-epg-subnets", ACIExternalEPGSubnetViewSet)
+
+# Phase 7.1 — L3Out Static Routes
+router.register("static-routes", ACIL3OutStaticRouteViewSet)
+router.register("static-route-next-hops", ACIL3OutStaticRouteNextHopViewSet)
 
 urlpatterns = router.urls

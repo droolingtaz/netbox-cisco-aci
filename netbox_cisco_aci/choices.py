@@ -509,6 +509,20 @@ class OSPFAreaTypeChoices(ChoiceSet):
     ]
 
 
+class StaticRouteNextHopTypeChoices(ChoiceSet):
+    """Type of next hop on an L3Out static route entry (``ipNexthopP.nhType``)."""
+
+    key = "ACIL3OutStaticRouteNextHop.nexthop_type"
+
+    PREFIX = "prefix"
+    NONE = "none"
+
+    CHOICES = [
+        (PREFIX, _("Prefix (normal next-hop)")),
+        (NONE, _("None (null route)")),
+    ]
+
+
 # ---------------------------------------------------------------------------
 # uSeg EPG attributes
 # ---------------------------------------------------------------------------

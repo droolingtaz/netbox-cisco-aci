@@ -48,6 +48,8 @@ from ..models.l3out import (
     ACIExternalEPGSubnet,
     ACIL3Out,
     ACIL3OutInterface,
+    ACIL3OutStaticRoute,
+    ACIL3OutStaticRouteNextHop,
     ACILogicalInterfaceProfile,
     ACILogicalNode,
     ACILogicalNodeProfile,
@@ -305,6 +307,16 @@ class ACIEIGRPInterfacePolicyType:
     pass
 
 
+@strawberry_django.type(ACIL3OutStaticRoute, fields="__all__")
+class ACIL3OutStaticRouteType:
+    pass
+
+
+@strawberry_django.type(ACIL3OutStaticRouteNextHop, fields="__all__")
+class ACIL3OutStaticRouteNextHopType:
+    pass
+
+
 @strawberry_django.type(ACIExternalEPG, fields="__all__")
 class ACIExternalEPGType:
     pass
@@ -484,6 +496,16 @@ class Query:
 
     aci_external_epg_subnet: ACIExternalEPGSubnetType | None = strawberry_django.field()
     aci_external_epg_subnet_list: list[ACIExternalEPGSubnetType] = strawberry_django.field()
+
+    aci_l3out_static_route: ACIL3OutStaticRouteType | None = strawberry_django.field()
+    aci_l3out_static_route_list: list[ACIL3OutStaticRouteType] = strawberry_django.field()
+
+    aci_l3out_static_route_next_hop: ACIL3OutStaticRouteNextHopType | None = (
+        strawberry_django.field()
+    )
+    aci_l3out_static_route_next_hop_list: list[ACIL3OutStaticRouteNextHopType] = (
+        strawberry_django.field()
+    )
 
 
 schema = [Query]

@@ -10,6 +10,7 @@ from ..choices import (
     OSPFAreaTypeChoices,
     OSPFNetworkTypeChoices,
     QualityOfServiceClassChoices,
+    StaticRouteNextHopTypeChoices,
 )
 from ..models.fabric import ACINode
 from ..models.l3out import (
@@ -19,6 +20,8 @@ from ..models.l3out import (
     ACIExternalEPGSubnet,
     ACIL3Out,
     ACIL3OutInterface,
+    ACIL3OutStaticRoute,
+    ACIL3OutStaticRouteNextHop,
     ACILogicalInterfaceProfile,
     ACILogicalNode,
     ACILogicalNodeProfile,
@@ -264,3 +267,36 @@ class ACIExternalEPGSubnetFilterSet(_SearchMixin, NetBoxModelFilterSet):
     class Meta:
         model = ACIExternalEPGSubnet
         fields = ("id", "name", "name_alias", "description", "prefix")
+
+
+class ACIL3OutStaticRouteFilterSet(_SearchMixin, NetBoxModelFilterSet):
+    aci_logical_node_id = django_filters.ModelMultipleChoiceFilter(
+        queryset=ACILogicalNode.objects.all(),
+        field_name="aci_logical_node",
+        label="Logical Node (ID)",
+    )
+
+    class Meta:
+        model = ACIL3OutStaticRoute
+        fields = ("id", "name", "name_alias", "description", "prefix", "preference")
+
+
+class ACIL3OutStaticRouteNextHopFilterSet(_SearchMixin, NetBoxModelFilterSet):
+    aci_static_route_id = django_filters.ModelMultipleChoiceFilter(
+        queryset=ACIL3OutStaticRoute.objects.all(),
+        field_name="aci_static_route",
+        label="Static Route (ID)",
+    )
+    nexthop_type = django_filters.MultipleChoiceFilter(choices=StaticRouteNextHopTypeChoices)
+
+    class Meta:
+        model = ACIL3OutStaticRouteNextHop
+        fields = (
+            "id",
+            "name",
+            "name_alias",
+            "description",
+            "nexthop_address",
+            "nexthop_type",
+            "preference",
+        )
