@@ -12,8 +12,8 @@ EPGs), and **per-interface EPG/BD/Subnet bindings** so you can see the
 ACI policy applied to any device or port at a glance.
 
 [![CI](https://github.com/droolingtaz/netbox-cisco-aci/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/droolingtaz/netbox-cisco-aci/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/droolingtaz/netbox-cisco-aci/branch/main/graph/badge.svg)](https://codecov.io/gh/droolingtaz/netbox-cisco-aci)
-[![PyPI](https://img.shields.io/pypi/v/netbox-cisco-aci.svg?label=pypi)](https://pypi.org/project/netbox-cisco-aci/)
+[![codecov](https://codecov.io/gh/droolingtaz/netbox-cisco-aci/branch/main/graph/badge.svg?precision=1)](https://app.codecov.io/gh/droolingtaz/netbox-cisco-aci)
+[![PyPI](https://img.shields.io/pypi/v/netbox-cisco-aci?label=pypi&logo=pypi&logoColor=white)](https://pypi.org/project/netbox-cisco-aci/)
 [![Python](https://img.shields.io/badge/python-3.12-blue.svg)](https://pypi.org/project/netbox-cisco-aci/)
 [![NetBox](https://img.shields.io/badge/netbox-4.5%20%7C%204.6-26a69a.svg)](COMPATIBILITY.md)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
