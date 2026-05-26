@@ -12,7 +12,8 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('extras', '0138_customfieldchoiceset_choice_colors'),
+        ('contenttypes', '0002_remove_content_type_name'),
+        ('extras', '0001_initial'),
         ('netbox_cisco_aci', '0004_phase3_field_fixes'),
     ]
 
