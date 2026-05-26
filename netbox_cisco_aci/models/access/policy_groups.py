@@ -125,10 +125,14 @@ class ACIInterfacePolicyGroup(ACIFabricBaseModel):
     def clean(self) -> None:
         super().clean()
         # LACP is required for port-channel / vPC bundles.
-        if self.pg_type in (
-            InterfacePolicyGroupTypeChoices.PC,
-            InterfacePolicyGroupTypeChoices.VPC,
-        ) and not self.lacp_policy_id:
+        if (
+            self.pg_type
+            in (
+                InterfacePolicyGroupTypeChoices.PC,
+                InterfacePolicyGroupTypeChoices.VPC,
+            )
+            and not self.lacp_policy_id
+        ):
             raise ValidationError(
                 {"lacp_policy": _("A LACP policy is required for PC/vPC policy groups.")}
             )
@@ -142,9 +146,7 @@ class ACIInterfacePolicyGroup(ACIFabricBaseModel):
             if ref.aci_fabric_id != self.aci_fabric_id:
                 raise ValidationError(
                     {
-                        field: _(
-                            "%(ref)s belongs to a different Fabric than this Policy Group."
-                        )
+                        field: _("%(ref)s belongs to a different Fabric than this Policy Group.")
                         % {"ref": ref.name}
                     }
                 )

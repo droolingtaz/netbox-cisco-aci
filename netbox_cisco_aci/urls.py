@@ -113,9 +113,7 @@ urlpatterns += _crud(
 )
 
 # Phase 4 — Interface policies, policy groups, profiles
-urlpatterns += _crud(
-    "link-level-policies", "link", acp, "ACILinkLevelPolicy", "acilinklevelpolicy"
-)
+urlpatterns += _crud("link-level-policies", "link", acp, "ACILinkLevelPolicy", "acilinklevelpolicy")
 urlpatterns += _crud("cdp-policies", "cdp", acp, "ACICDPInterfacePolicy", "acicdpinterfacepolicy")
 urlpatterns += _crud(
     "lldp-policies", "lldp", acp, "ACILLDPInterfacePolicy", "acilldpinterfacepolicy"
@@ -132,9 +130,7 @@ urlpatterns += _crud(
     "ACIInterfacePolicyGroup",
     "aciinterfacepolicygroup",
 )
-urlpatterns += _crud(
-    "switch-profiles", "sp", apr, "ACISwitchProfile", "aciswitchprofile"
-)
+urlpatterns += _crud("switch-profiles", "sp", apr, "ACISwitchProfile", "aciswitchprofile")
 urlpatterns += _crud(
     "switch-profile-selectors",
     "sps",
@@ -142,9 +138,7 @@ urlpatterns += _crud(
     "ACISwitchProfileSelector",
     "aciswitchprofileselector",
 )
-urlpatterns += _crud(
-    "interface-profiles", "ip", apr, "ACIInterfaceProfile", "aciinterfaceprofile"
-)
+urlpatterns += _crud("interface-profiles", "ip", apr, "ACIInterfaceProfile", "aciinterfaceprofile")
 urlpatterns += _crud(
     "interface-profile-selectors",
     "ips",

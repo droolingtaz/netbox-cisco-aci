@@ -1,0 +1,24 @@
+{% extends 'generic/object.html' %}
+{% load helpers %}
+{% load i18n %}
+
+{% block content %}
+<div class="row">
+  <div class="col col-md-6">
+    <div class="card">
+      <h2 class="card-header">{% trans "Switch ↔ Interface Profile Attachment" %}</h2>
+      <table class="table table-hover attr-table">
+        <tr><th scope="row">{% trans "Switch Profile" %}</th>
+          <td><a href="{{ object.switch_profile.get_absolute_url }}">{{ object.switch_profile.name }}</a></td></tr>
+        <tr><th scope="row">{% trans "Interface Profile" %}</th>
+          <td><a href="{{ object.interface_profile.get_absolute_url }}">{{ object.interface_profile.name }}</a></td></tr>
+        <tr><th scope="row">{% trans "Fabric" %}</th>
+          <td><a href="{{ object.switch_profile.aci_fabric.get_absolute_url }}">{{ object.switch_profile.aci_fabric }}</a></td></tr>
+      </table>
+    </div>
+    {% include 'inc/panels/tags.html' %}
+    {% include 'inc/panels/custom_fields.html' %}
+  </div>
+  <div class="col col-md-6">{% include 'inc/panels/comments.html' %}</div>
+</div>
+{% endblock %}

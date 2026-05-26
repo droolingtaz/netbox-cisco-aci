@@ -25,9 +25,7 @@ def _url(view: str):
 class ACIInterfacePolicyGroupSerializer(NetBoxModelSerializer):
     url = _url("aciinterfacepolicygroup")
     aci_fabric = ACIFabricSerializer(nested=True)
-    link_level_policy = ACILinkLevelPolicySerializer(
-        nested=True, required=False, allow_null=True
-    )
+    link_level_policy = ACILinkLevelPolicySerializer(nested=True, required=False, allow_null=True)
     cdp_policy = ACICDPInterfacePolicySerializer(nested=True, required=False, allow_null=True)
     lldp_policy = ACILLDPInterfacePolicySerializer(nested=True, required=False, allow_null=True)
     lacp_policy = ACILACPInterfacePolicySerializer(nested=True, required=False, allow_null=True)

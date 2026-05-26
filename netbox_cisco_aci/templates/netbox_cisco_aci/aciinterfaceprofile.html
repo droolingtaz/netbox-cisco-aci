@@ -1,0 +1,59 @@
+{% extends 'generic/object.html' %}
+{% load helpers %}
+{% load i18n %}
+
+{% block content %}
+<div class="row">
+  <div class="col col-md-6">
+    <div class="card">
+      <h2 class="card-header">{% trans "Interface Profile" %}</h2>
+      <table class="table table-hover attr-table">
+        <tr><th scope="row">{% trans "Name" %}</th><td>{{ object.name }}</td></tr>
+        <tr><th scope="row">{% trans "Alias" %}</th><td>{{ object.name_alias|placeholder }}</td></tr>
+        <tr><th scope="row">{% trans "Fabric" %}</th>
+          <td><a href="{{ object.aci_fabric.get_absolute_url }}">{{ object.aci_fabric }}</a></td></tr>
+        <tr><th scope="row">{% trans "Description" %}</th><td>{{ object.description|placeholder }}</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h2 class="card-header">{% trans "Interface selectors" %}</h2>
+      <table class="table table-hover attr-table">
+        <thead><tr><th>{% trans "Name" %}</th><th>{% trans "Range" %}</th><th>{% trans "Policy Group" %}</th></tr></thead>
+        {% for sel in object.selectors.all %}
+          <tr>
+            <td><a href="{{ sel.get_absolute_url }}">{{ sel.name }}</a></td>
+            <td>{{ sel.from_module }}/{{ sel.from_port }}-{{ sel.to_module }}/{{ sel.to_port }}</td>
+            <td>
+              {% if sel.policy_group %}
+                <a href="{{ sel.policy_group.get_absolute_url }}">{{ sel.policy_group.name }}</a>
+              {% else %}
+                {{ ""|placeholder }}
+              {% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="3" class="text-muted">{% trans "No selectors defined." %}</td></tr>
+        {% endfor %}
+      </table>
+    </div>
+    {% include 'inc/panels/tags.html' %}
+    {% include 'inc/panels/custom_fields.html' %}
+  </div>
+  <div class="col col-md-6">
+    <div class="card">
+      <h2 class="card-header">{% trans "Attached Switch Profiles" %}</h2>
+      <table class="table table-hover attr-table">
+        <thead><tr><th>{% trans "Switch Profile" %}</th></tr></thead>
+        {% for att in object.switch_profile_attachments.all %}
+          <tr>
+            <td><a href="{{ att.switch_profile.get_absolute_url }}">{{ att.switch_profile.name }}</a></td>
+          </tr>
+        {% empty %}
+          <tr><td class="text-muted">{% trans "Not attached to any switch profile." %}</td></tr>
+        {% endfor %}
+      </table>
+    </div>
+    {% include 'inc/panels/comments.html' %}
+  </div>
+</div>
+{% endblock %}

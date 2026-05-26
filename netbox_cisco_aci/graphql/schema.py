@@ -263,9 +263,7 @@ class Query:
     aci_switch_profile_list: list[ACISwitchProfileType] = strawberry_django.field()
 
     aci_switch_profile_selector: ACISwitchProfileSelectorType | None = strawberry_django.field()
-    aci_switch_profile_selector_list: list[ACISwitchProfileSelectorType] = (
-        strawberry_django.field()
-    )
+    aci_switch_profile_selector_list: list[ACISwitchProfileSelectorType] = strawberry_django.field()
 
     aci_interface_profile: ACIInterfaceProfileType | None = strawberry_django.field()
     aci_interface_profile_list: list[ACIInterfaceProfileType] = strawberry_django.field()

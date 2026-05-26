@@ -1,0 +1,61 @@
+{% extends 'generic/object.html' %}
+{% load helpers %}
+{% load i18n %}
+
+{% block content %}
+<div class="row">
+  <div class="col col-md-6">
+    <div class="card">
+      <h2 class="card-header">{% trans "Interface Policy Group" %}</h2>
+      <table class="table table-hover attr-table">
+        <tr><th scope="row">{% trans "Name" %}</th><td>{{ object.name }}</td></tr>
+        <tr><th scope="row">{% trans "Alias" %}</th><td>{{ object.name_alias|placeholder }}</td></tr>
+        <tr><th scope="row">{% trans "Fabric" %}</th>
+          <td><a href="{{ object.aci_fabric.get_absolute_url }}">{{ object.aci_fabric }}</a></td></tr>
+        <tr><th scope="row">{% trans "Type" %}</th>
+          <td>{% badge object.get_pg_type_display bg_color=object.get_pg_type_color %}</td></tr>
+        <tr><th scope="row">{% trans "Description" %}</th><td>{{ object.description|placeholder }}</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h2 class="card-header">{% trans "Policy references" %}</h2>
+      <table class="table table-hover attr-table">
+        <tr><th scope="row">{% trans "Link Level" %}</th>
+          <td>{% if object.link_level_policy %}<a href="{{ object.link_level_policy.get_absolute_url }}">{{ object.link_level_policy.name }}</a>{% else %}{{ ""|placeholder }}{% endif %}</td></tr>
+        <tr><th scope="row">{% trans "CDP" %}</th>
+          <td>{% if object.cdp_policy %}<a href="{{ object.cdp_policy.get_absolute_url }}">{{ object.cdp_policy.name }}</a>{% else %}{{ ""|placeholder }}{% endif %}</td></tr>
+        <tr><th scope="row">{% trans "LLDP" %}</th>
+          <td>{% if object.lldp_policy %}<a href="{{ object.lldp_policy.get_absolute_url }}">{{ object.lldp_policy.name }}</a>{% else %}{{ ""|placeholder }}{% endif %}</td></tr>
+        <tr><th scope="row">{% trans "LACP" %}</th>
+          <td>{% if object.lacp_policy %}<a href="{{ object.lacp_policy.get_absolute_url }}">{{ object.lacp_policy.name }}</a>{% else %}{{ ""|placeholder }}{% endif %}</td></tr>
+        <tr><th scope="row">{% trans "MCP" %}</th>
+          <td>{% if object.mcp_policy %}<a href="{{ object.mcp_policy.get_absolute_url }}">{{ object.mcp_policy.name }}</a>{% else %}{{ ""|placeholder }}{% endif %}</td></tr>
+        <tr><th scope="row">{% trans "STP" %}</th>
+          <td>{% if object.stp_policy %}<a href="{{ object.stp_policy.get_absolute_url }}">{{ object.stp_policy.name }}</a>{% else %}{{ ""|placeholder }}{% endif %}</td></tr>
+        <tr><th scope="row">{% trans "AAEP" %}</th>
+          <td>{% if object.aaep %}<a href="{{ object.aaep.get_absolute_url }}">{{ object.aaep.name }}</a>{% else %}{{ ""|placeholder }}{% endif %}</td></tr>
+      </table>
+    </div>
+    {% include 'inc/panels/tags.html' %}
+    {% include 'inc/panels/custom_fields.html' %}
+  </div>
+  <div class="col col-md-6">
+    <div class="card">
+      <h2 class="card-header">{% trans "Used by Interface Profile selectors" %}</h2>
+      <table class="table table-hover attr-table">
+        <thead><tr><th>{% trans "Selector" %}</th><th>{% trans "Interface Profile" %}</th><th>{% trans "Range" %}</th></tr></thead>
+        {% for sel in object.selectors.all %}
+          <tr>
+            <td><a href="{{ sel.get_absolute_url }}">{{ sel.name }}</a></td>
+            <td><a href="{{ sel.interface_profile.get_absolute_url }}">{{ sel.interface_profile.name }}</a></td>
+            <td>{{ sel.from_module }}/{{ sel.from_port }}-{{ sel.to_module }}/{{ sel.to_port }}</td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="3" class="text-muted">{% trans "Not referenced by any interface selector." %}</td></tr>
+        {% endfor %}
+      </table>
+    </div>
+    {% include 'inc/panels/comments.html' %}
+  </div>
+</div>
+{% endblock %}

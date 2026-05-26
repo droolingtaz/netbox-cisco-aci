@@ -13,6 +13,21 @@ and this project adheres to [Semantic Versioning 2.0.0](https://semver.org/).
 
 ### Added
 
+- **Phase 4 — Switch & Interface Profiles and per-port policies**:
+  - Six per-port policy templates: `ACILinkLevelPolicy`,
+    `ACICDPInterfacePolicy`, `ACILLDPInterfacePolicy`,
+    `ACILACPInterfacePolicy`, `ACIMCPInterfacePolicy`,
+    `ACISTPInterfacePolicy`.
+  - `ACIInterfacePolicyGroup` (Access / PC / vPC variants) with
+    nullable FKs to each of the six policy templates plus AAEP, and a
+    cross-fabric guard on every reference.
+  - `ACISwitchProfile` with `ACISwitchProfileSelector` children
+    (range or all-leaves selection).
+  - `ACIInterfaceProfile` with `ACIInterfaceProfileSelector` children
+    (module/port range, bound to an Interface Policy Group).
+  - `ACISwitchProfileInterfaceProfileAttachment` through-model
+    linking Switch Profiles to Interface Profiles, with a cross-fabric
+    guard.
 - **Cloud / Kubernetes compatibility contract.** Documented in
   `docs/cloud-compatibility.md` and `AGENTS.md`; enforced by a new
   `cloud-compat` CI job (`scripts/check_cloud_compat.py`) that fails

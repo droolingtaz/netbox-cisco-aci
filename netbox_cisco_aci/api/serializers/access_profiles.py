@@ -116,9 +116,7 @@ class ACIInterfaceProfileSerializer(NetBoxModelSerializer):
 class ACIInterfaceProfileSelectorSerializer(NetBoxModelSerializer):
     url = _url("aciinterfaceprofileselector")
     interface_profile = ACIInterfaceProfileSerializer(nested=True)
-    policy_group = ACIInterfacePolicyGroupSerializer(
-        nested=True, required=False, allow_null=True
-    )
+    policy_group = ACIInterfacePolicyGroupSerializer(nested=True, required=False, allow_null=True)
 
     class Meta:
         model = ACIInterfaceProfileSelector

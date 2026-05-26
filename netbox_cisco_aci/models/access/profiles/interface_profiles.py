@@ -117,9 +117,7 @@ class ACIInterfaceProfileSelector(ACIFabricBaseModel):
         super().clean()
         # Lexicographic ordering on (module, port).
         if (self.from_module, self.from_port) > (self.to_module, self.to_port):
-            raise ValidationError(
-                _("(from_module, from_port) must be <= (to_module, to_port).")
-            )
+            raise ValidationError(_("(from_module, from_port) must be <= (to_module, to_port)."))
         # Cross-fabric guard: policy group must belong to the same fabric
         # as the interface profile.
         if self.policy_group_id and self.interface_profile_id:

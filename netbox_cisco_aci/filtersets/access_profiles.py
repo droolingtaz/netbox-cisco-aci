@@ -130,6 +130,5 @@ class ACISwitchProfileInterfaceProfileAttachmentFilterSet(NetBoxModelFilterSet):
         if not value.strip():
             return queryset
         return queryset.filter(
-            Q(switch_profile__name__icontains=value)
-            | Q(interface_profile__name__icontains=value)
+            Q(switch_profile__name__icontains=value) | Q(interface_profile__name__icontains=value)
         )

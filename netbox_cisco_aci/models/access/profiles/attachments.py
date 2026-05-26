@@ -56,7 +56,5 @@ class ACISwitchProfileInterfaceProfileAttachment(NetBoxModel):
         if self.switch_profile_id and self.interface_profile_id:
             if self.switch_profile.aci_fabric_id != self.interface_profile.aci_fabric_id:
                 raise ValidationError(
-                    _(
-                        "Switch Profile and Interface Profile must belong to the same Fabric."
-                    )
+                    _("Switch Profile and Interface Profile must belong to the same Fabric.")
                 )
