@@ -13,6 +13,9 @@ namespace; reverse() lookups against ``plugins:netbox_cisco_aci:...`` use it.
 from django.urls import path
 
 from .views import access as acc
+from .views import access_groups as acg
+from .views import access_policies as acp
+from .views import access_profiles as apr
 from .views import fabric as fab
 from .views import tenant as tn
 
@@ -107,4 +110,46 @@ urlpatterns += _crud(
     acc,
     "ACIAAEPEPGMapping",
     "aciaaepepgmapping",
+)
+
+# Phase 4 — Interface policies, policy groups, profiles
+urlpatterns += _crud("link-level-policies", "link", acp, "ACILinkLevelPolicy", "acilinklevelpolicy")
+urlpatterns += _crud("cdp-policies", "cdp", acp, "ACICDPInterfacePolicy", "acicdpinterfacepolicy")
+urlpatterns += _crud(
+    "lldp-policies", "lldp", acp, "ACILLDPInterfacePolicy", "acilldpinterfacepolicy"
+)
+urlpatterns += _crud(
+    "lacp-policies", "lacp", acp, "ACILACPInterfacePolicy", "acilacpinterfacepolicy"
+)
+urlpatterns += _crud("mcp-policies", "mcp", acp, "ACIMCPInterfacePolicy", "acimcpinterfacepolicy")
+urlpatterns += _crud("stp-policies", "stp", acp, "ACISTPInterfacePolicy", "acistpinterfacepolicy")
+urlpatterns += _crud(
+    "interface-policy-groups",
+    "pg",
+    acg,
+    "ACIInterfacePolicyGroup",
+    "aciinterfacepolicygroup",
+)
+urlpatterns += _crud("switch-profiles", "sp", apr, "ACISwitchProfile", "aciswitchprofile")
+urlpatterns += _crud(
+    "switch-profile-selectors",
+    "sps",
+    apr,
+    "ACISwitchProfileSelector",
+    "aciswitchprofileselector",
+)
+urlpatterns += _crud("interface-profiles", "ip", apr, "ACIInterfaceProfile", "aciinterfaceprofile")
+urlpatterns += _crud(
+    "interface-profile-selectors",
+    "ips",
+    apr,
+    "ACIInterfaceProfileSelector",
+    "aciinterfaceprofileselector",
+)
+urlpatterns += _crud(
+    "switch-interface-profile-attachments",
+    "swip-attach",
+    apr,
+    "ACISwitchProfileInterfaceProfileAttachment",
+    "aciswitchprofileinterfaceprofileattachment",
 )

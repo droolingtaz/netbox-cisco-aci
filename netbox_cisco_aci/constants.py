@@ -77,3 +77,32 @@ MGMT_TENANT_NAME = "mgmt"
 
 #: Tenants Cisco ships pre-configured. Surfaced in forms as read-only-ish.
 RESERVED_TENANT_NAMES = (COMMON_TENANT_NAME, INFRA_TENANT_NAME, MGMT_TENANT_NAME)
+
+
+# ---------------------------------------------------------------------------
+# Access policies (Phase 4)
+# ---------------------------------------------------------------------------
+
+#: Lowest legal switch line-card module id (Cisco-documented).
+MODULE_ID_MIN = 1
+
+#: Highest legal switch line-card module id.
+MODULE_ID_MAX = 9
+
+#: Lowest legal physical port id within a module.
+PORT_ID_MIN = 1
+
+#: Highest legal physical port id within a module (covers densest leaves).
+PORT_ID_MAX = 128
+
+#: Minimum number of links in a LACP bundle.
+LACP_LINKS_MIN = 1
+
+#: Maximum number of links in a LACP bundle.
+LACP_LINKS_MAX = 16
+
+#: Minimum link-debounce interval (ms) for a Link Level policy.
+LINK_DEBOUNCE_MIN = 0
+
+#: Maximum link-debounce interval (ms) for a Link Level policy.
+LINK_DEBOUNCE_MAX = 5000

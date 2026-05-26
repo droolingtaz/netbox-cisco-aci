@@ -1,0 +1,59 @@
+{% extends 'generic/object.html' %}
+{% load helpers %}
+{% load i18n %}
+
+{% block content %}
+<div class="row">
+  <div class="col col-md-6">
+    <div class="card">
+      <h2 class="card-header">{% trans "Switch Profile" %}</h2>
+      <table class="table table-hover attr-table">
+        <tr><th scope="row">{% trans "Name" %}</th><td>{{ object.name }}</td></tr>
+        <tr><th scope="row">{% trans "Alias" %}</th><td>{{ object.name_alias|placeholder }}</td></tr>
+        <tr><th scope="row">{% trans "Fabric" %}</th>
+          <td><a href="{{ object.aci_fabric.get_absolute_url }}">{{ object.aci_fabric }}</a></td></tr>
+        <tr><th scope="row">{% trans "Description" %}</th><td>{{ object.description|placeholder }}</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h2 class="card-header">{% trans "Node selectors" %}</h2>
+      <table class="table table-hover attr-table">
+        <thead><tr><th>{% trans "Name" %}</th><th>{% trans "Type" %}</th><th>{% trans "Range" %}</th></tr></thead>
+        {% for sel in object.selectors.all %}
+          <tr>
+            <td><a href="{{ sel.get_absolute_url }}">{{ sel.name }}</a></td>
+            <td>{{ sel.get_selector_type_display }}</td>
+            <td>
+              {% if sel.selector_type == 'all' %}
+                {% trans "All nodes" %}
+              {% else %}
+                {{ sel.from_node_id }}-{{ sel.to_node_id }}
+              {% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="3" class="text-muted">{% trans "No selectors defined." %}</td></tr>
+        {% endfor %}
+      </table>
+    </div>
+    {% include 'inc/panels/tags.html' %}
+    {% include 'inc/panels/custom_fields.html' %}
+  </div>
+  <div class="col col-md-6">
+    <div class="card">
+      <h2 class="card-header">{% trans "Attached Interface Profiles" %}</h2>
+      <table class="table table-hover attr-table">
+        <thead><tr><th>{% trans "Interface Profile" %}</th></tr></thead>
+        {% for att in object.interface_profile_attachments.all %}
+          <tr>
+            <td><a href="{{ att.interface_profile.get_absolute_url }}">{{ att.interface_profile.name }}</a></td>
+          </tr>
+        {% empty %}
+          <tr><td class="text-muted">{% trans "No interface profiles attached." %}</td></tr>
+        {% endfor %}
+      </table>
+    </div>
+    {% include 'inc/panels/comments.html' %}
+  </div>
+</div>
+{% endblock %}

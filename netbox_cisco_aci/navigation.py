@@ -31,6 +31,24 @@ access_items = (
     _item("aciaaepepgmapping", "AAEP → EPG Mappings"),
 )
 
+interface_policy_items = (
+    _item("acilinklevelpolicy", "Link Level"),
+    _item("acicdpinterfacepolicy", "CDP"),
+    _item("acilldpinterfacepolicy", "LLDP"),
+    _item("acilacpinterfacepolicy", "LACP"),
+    _item("acimcpinterfacepolicy", "MCP"),
+    _item("acistpinterfacepolicy", "STP"),
+    _item("aciinterfacepolicygroup", "Policy Groups"),
+)
+
+access_profile_items = (
+    _item("aciswitchprofile", "Switch Profiles"),
+    _item("aciswitchprofileselector", "Switch Profile Selectors"),
+    _item("aciinterfaceprofile", "Interface Profiles"),
+    _item("aciinterfaceprofileselector", "Interface Profile Selectors"),
+    _item("aciswitchprofileinterfaceprofileattachment", "Switch ↔ Interface Attachments"),
+)
+
 tenancy_items = (
     _item("acitenant", "Tenants"),
     _item("acivrf", "VRFs"),
@@ -48,6 +66,8 @@ menu = PluginMenu(
         ("Fabric", fabric_items),
         ("Tenancy", tenancy_items),
         ("Access Policies", access_items),
+        ("Interface Policies", interface_policy_items),
+        ("Access Profiles", access_profile_items),
         # Subsequent phases extend this tuple — Contracts, L3Outs,
         # Static Port Bindings.
     ),

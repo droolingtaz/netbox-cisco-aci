@@ -1,0 +1,38 @@
+{% extends 'generic/object.html' %}
+{% load helpers %}
+{% load i18n %}
+
+{% block content %}
+<div class="row">
+  <div class="col col-md-6">
+    <div class="card">
+      <h2 class="card-header">{% trans "LACP Interface Policy" %}</h2>
+      <table class="table table-hover attr-table">
+        <tr><th scope="row">{% trans "Name" %}</th><td>{{ object.name }}</td></tr>
+        <tr><th scope="row">{% trans "Alias" %}</th><td>{{ object.name_alias|placeholder }}</td></tr>
+        <tr><th scope="row">{% trans "Fabric" %}</th>
+          <td><a href="{{ object.aci_fabric.get_absolute_url }}">{{ object.aci_fabric }}</a></td></tr>
+        <tr><th scope="row">{% trans "Mode" %}</th><td>{{ object.get_mode_display }}</td></tr>
+        <tr><th scope="row">{% trans "Min links" %}</th><td>{{ object.min_links }}</td></tr>
+        <tr><th scope="row">{% trans "Max links" %}</th><td>{{ object.max_links }}</td></tr>
+        <tr><th scope="row">{% trans "Description" %}</th><td>{{ object.description|placeholder }}</td></tr>
+      </table>
+    </div>
+    {% include 'inc/panels/tags.html' %}
+    {% include 'inc/panels/custom_fields.html' %}
+  </div>
+  <div class="col col-md-6">
+    <div class="card">
+      <h2 class="card-header">{% trans "Control flags" %}</h2>
+      <table class="table table-hover attr-table">
+        <tr><th>{% trans "Fast select hot standby" %}</th><td>{{ object.control_fast_select_hot_standby|yesno }}</td></tr>
+        <tr><th>{% trans "Graceful convergence" %}</th><td>{{ object.control_graceful_convergence|yesno }}</td></tr>
+        <tr><th>{% trans "Load defer" %}</th><td>{{ object.control_load_defer|yesno }}</td></tr>
+        <tr><th>{% trans "Suspend individual port" %}</th><td>{{ object.control_suspend_individual_port|yesno }}</td></tr>
+        <tr><th>{% trans "Symmetric hashing" %}</th><td>{{ object.control_symmetric_hashing|yesno }}</td></tr>
+      </table>
+    </div>
+    {% include 'inc/panels/comments.html' %}
+  </div>
+</div>
+{% endblock %}

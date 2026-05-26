@@ -1,0 +1,37 @@
+{% extends 'generic/object.html' %}
+{% load helpers %}
+{% load i18n %}
+
+{% block content %}
+<div class="row">
+  <div class="col col-md-6">
+    <div class="card">
+      <h2 class="card-header">{% trans "Interface Profile Selector" %}</h2>
+      <table class="table table-hover attr-table">
+        <tr><th scope="row">{% trans "Name" %}</th><td>{{ object.name }}</td></tr>
+        <tr><th scope="row">{% trans "Alias" %}</th><td>{{ object.name_alias|placeholder }}</td></tr>
+        <tr><th scope="row">{% trans "Interface Profile" %}</th>
+          <td><a href="{{ object.interface_profile.get_absolute_url }}">{{ object.interface_profile.name }}</a></td></tr>
+        <tr><th scope="row">{% trans "Fabric" %}</th>
+          <td><a href="{{ object.aci_fabric.get_absolute_url }}">{{ object.aci_fabric }}</a></td></tr>
+        <tr><th scope="row">{% trans "From module" %}</th><td>{{ object.from_module }}</td></tr>
+        <tr><th scope="row">{% trans "From port" %}</th><td>{{ object.from_port }}</td></tr>
+        <tr><th scope="row">{% trans "To module" %}</th><td>{{ object.to_module }}</td></tr>
+        <tr><th scope="row">{% trans "To port" %}</th><td>{{ object.to_port }}</td></tr>
+        <tr><th scope="row">{% trans "Policy Group" %}</th>
+          <td>
+            {% if object.policy_group %}
+              <a href="{{ object.policy_group.get_absolute_url }}">{{ object.policy_group.name }}</a>
+            {% else %}
+              {{ ""|placeholder }}
+            {% endif %}
+          </td></tr>
+        <tr><th scope="row">{% trans "Description" %}</th><td>{{ object.description|placeholder }}</td></tr>
+      </table>
+    </div>
+    {% include 'inc/panels/tags.html' %}
+    {% include 'inc/panels/custom_fields.html' %}
+  </div>
+  <div class="col col-md-6">{% include 'inc/panels/comments.html' %}</div>
+</div>
+{% endblock %}

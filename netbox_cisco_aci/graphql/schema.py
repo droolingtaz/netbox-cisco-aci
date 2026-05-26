@@ -10,7 +10,19 @@ import strawberry_django
 from ..models.access import (
     ACIAAEP,
     ACIAAEPEPGMapping,
+    ACICDPInterfacePolicy,
     ACIDomain,
+    ACIInterfacePolicyGroup,
+    ACIInterfaceProfile,
+    ACIInterfaceProfileSelector,
+    ACILACPInterfacePolicy,
+    ACILinkLevelPolicy,
+    ACILLDPInterfacePolicy,
+    ACIMCPInterfacePolicy,
+    ACISTPInterfacePolicy,
+    ACISwitchProfile,
+    ACISwitchProfileInterfaceProfileAttachment,
+    ACISwitchProfileSelector,
     ACIVLANPool,
     ACIVLANPoolBlock,
 )
@@ -111,6 +123,66 @@ class ACIAAEPEPGMappingType:
     pass
 
 
+@strawberry_django.type(ACILinkLevelPolicy, fields="__all__")
+class ACILinkLevelPolicyType:
+    pass
+
+
+@strawberry_django.type(ACICDPInterfacePolicy, fields="__all__")
+class ACICDPInterfacePolicyType:
+    pass
+
+
+@strawberry_django.type(ACILLDPInterfacePolicy, fields="__all__")
+class ACILLDPInterfacePolicyType:
+    pass
+
+
+@strawberry_django.type(ACILACPInterfacePolicy, fields="__all__")
+class ACILACPInterfacePolicyType:
+    pass
+
+
+@strawberry_django.type(ACIMCPInterfacePolicy, fields="__all__")
+class ACIMCPInterfacePolicyType:
+    pass
+
+
+@strawberry_django.type(ACISTPInterfacePolicy, fields="__all__")
+class ACISTPInterfacePolicyType:
+    pass
+
+
+@strawberry_django.type(ACIInterfacePolicyGroup, fields="__all__")
+class ACIInterfacePolicyGroupType:
+    pass
+
+
+@strawberry_django.type(ACISwitchProfile, fields="__all__")
+class ACISwitchProfileType:
+    pass
+
+
+@strawberry_django.type(ACISwitchProfileSelector, fields="__all__")
+class ACISwitchProfileSelectorType:
+    pass
+
+
+@strawberry_django.type(ACIInterfaceProfile, fields="__all__")
+class ACIInterfaceProfileType:
+    pass
+
+
+@strawberry_django.type(ACIInterfaceProfileSelector, fields="__all__")
+class ACIInterfaceProfileSelectorType:
+    pass
+
+
+@strawberry_django.type(ACISwitchProfileInterfaceProfileAttachment, fields="__all__")
+class ACISwitchProfileInterfaceProfileAttachmentType:
+    pass
+
+
 # ---------------------------------------------------------------------------
 # Query root
 # ---------------------------------------------------------------------------
@@ -165,6 +237,50 @@ class Query:
 
     aci_aaep_epg_mapping: ACIAAEPEPGMappingType | None = strawberry_django.field()
     aci_aaep_epg_mapping_list: list[ACIAAEPEPGMappingType] = strawberry_django.field()
+
+    aci_link_level_policy: ACILinkLevelPolicyType | None = strawberry_django.field()
+    aci_link_level_policy_list: list[ACILinkLevelPolicyType] = strawberry_django.field()
+
+    aci_cdp_interface_policy: ACICDPInterfacePolicyType | None = strawberry_django.field()
+    aci_cdp_interface_policy_list: list[ACICDPInterfacePolicyType] = strawberry_django.field()
+
+    aci_lldp_interface_policy: ACILLDPInterfacePolicyType | None = strawberry_django.field()
+    aci_lldp_interface_policy_list: list[ACILLDPInterfacePolicyType] = strawberry_django.field()
+
+    aci_lacp_interface_policy: ACILACPInterfacePolicyType | None = strawberry_django.field()
+    aci_lacp_interface_policy_list: list[ACILACPInterfacePolicyType] = strawberry_django.field()
+
+    aci_mcp_interface_policy: ACIMCPInterfacePolicyType | None = strawberry_django.field()
+    aci_mcp_interface_policy_list: list[ACIMCPInterfacePolicyType] = strawberry_django.field()
+
+    aci_stp_interface_policy: ACISTPInterfacePolicyType | None = strawberry_django.field()
+    aci_stp_interface_policy_list: list[ACISTPInterfacePolicyType] = strawberry_django.field()
+
+    aci_interface_policy_group: ACIInterfacePolicyGroupType | None = strawberry_django.field()
+    aci_interface_policy_group_list: list[ACIInterfacePolicyGroupType] = strawberry_django.field()
+
+    aci_switch_profile: ACISwitchProfileType | None = strawberry_django.field()
+    aci_switch_profile_list: list[ACISwitchProfileType] = strawberry_django.field()
+
+    aci_switch_profile_selector: ACISwitchProfileSelectorType | None = strawberry_django.field()
+    aci_switch_profile_selector_list: list[ACISwitchProfileSelectorType] = strawberry_django.field()
+
+    aci_interface_profile: ACIInterfaceProfileType | None = strawberry_django.field()
+    aci_interface_profile_list: list[ACIInterfaceProfileType] = strawberry_django.field()
+
+    aci_interface_profile_selector: ACIInterfaceProfileSelectorType | None = (
+        strawberry_django.field()
+    )
+    aci_interface_profile_selector_list: list[ACIInterfaceProfileSelectorType] = (
+        strawberry_django.field()
+    )
+
+    aci_switch_profile_interface_profile_attachment: (
+        ACISwitchProfileInterfaceProfileAttachmentType | None
+    ) = strawberry_django.field()
+    aci_switch_profile_interface_profile_attachment_list: list[
+        ACISwitchProfileInterfaceProfileAttachmentType
+    ] = strawberry_django.field()
 
 
 schema = [Query]
