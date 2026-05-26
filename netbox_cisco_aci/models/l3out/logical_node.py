@@ -83,8 +83,7 @@ class ACILogicalNode(ACIBaseModel):
             raise ValidationError(
                 {
                     "loopback_address": _(
-                        "Loopback address is required when 'Use router ID as loopback' "
-                        "is disabled."
+                        "Loopback address is required when 'Use router ID as loopback' is disabled."
                     )
                 }
             )
@@ -100,9 +99,5 @@ class ACILogicalNode(ACIBaseModel):
             )
             if node_fabric is not None and lnp_fabric is not None and node_fabric != lnp_fabric:
                 raise ValidationError(
-                    {
-                        "aci_node": _(
-                            "The selected node lives in a different fabric than the L3Out."
-                        )
-                    }
+                    {"aci_node": _("The selected node lives in a different fabric than the L3Out.")}
                 )

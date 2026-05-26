@@ -67,6 +67,4 @@ class ACIEIGRPInterfacePolicy(ACITenantBaseModel):
         return f"{self.aci_tenant.name} / {self.name}"
 
     def get_absolute_url(self) -> str:
-        return reverse(
-            "plugins:netbox_cisco_aci:acieigrpinterfacepolicy", args=[self.pk]
-        )
+        return reverse("plugins:netbox_cisco_aci:acieigrpinterfacepolicy", args=[self.pk])

@@ -88,9 +88,7 @@ class ACIContractRelation(ACIBaseModel):
 
     def __str__(self) -> str:
         target = (
-            self.aci_endpoint_group
-            or self.aci_endpoint_security_group
-            or self.aci_external_epg
+            self.aci_endpoint_group or self.aci_endpoint_security_group or self.aci_external_epg
         )
         target_name = target.name if target is not None else "<unattached>"
         return f"{self.aci_contract.name} {self.role} {target_name}"
@@ -100,11 +98,7 @@ class ACIContractRelation(ACIBaseModel):
 
     @property
     def target(self):
-        return (
-            self.aci_endpoint_group
-            or self.aci_endpoint_security_group
-            or self.aci_external_epg
-        )
+        return self.aci_endpoint_group or self.aci_endpoint_security_group or self.aci_external_epg
 
     def clean(self) -> None:
         super().clean()
@@ -129,9 +123,7 @@ class ACIContractRelation(ACIBaseModel):
         if has_epg:
             target_tenant_id = getattr(self.aci_endpoint_group, "aci_tenant_id", None)
         elif has_esg:
-            target_tenant_id = getattr(
-                self.aci_endpoint_security_group, "aci_tenant_id", None
-            )
+            target_tenant_id = getattr(self.aci_endpoint_security_group, "aci_tenant_id", None)
         else:
             ext = self.aci_external_epg
             l3out = getattr(ext, "aci_l3out", None)

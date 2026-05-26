@@ -236,9 +236,7 @@ class ACIContractRelationSerializer(NetBoxModelSerializer):
     aci_endpoint_security_group = ACIEndpointSecurityGroupSerializer(
         nested=True, required=False, allow_null=True
     )
-    aci_external_epg = ACIExternalEPGSerializer(
-        nested=True, required=False, allow_null=True
-    )
+    aci_external_epg = ACIExternalEPGSerializer(nested=True, required=False, allow_null=True)
 
     class Meta:
         model = ACIContractRelation

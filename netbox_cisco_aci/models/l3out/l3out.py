@@ -91,10 +91,7 @@ class ACIL3Out(ACITenantBaseModel):
 
         # At least one routing protocol must be enabled.
         if not (
-            self.protocol_bgp
-            or self.protocol_ospf
-            or self.protocol_eigrp
-            or self.protocol_static
+            self.protocol_bgp or self.protocol_ospf or self.protocol_eigrp or self.protocol_static
         ):
             raise ValidationError(
                 _("At least one routing protocol (BGP / OSPF / EIGRP / Static) must be enabled.")

@@ -457,9 +457,7 @@ class Query:
     aci_logical_node: ACILogicalNodeType | None = strawberry_django.field()
     aci_logical_node_list: list[ACILogicalNodeType] = strawberry_django.field()
 
-    aci_logical_interface_profile: ACILogicalInterfaceProfileType | None = (
-        strawberry_django.field()
-    )
+    aci_logical_interface_profile: ACILogicalInterfaceProfileType | None = strawberry_django.field()
     aci_logical_interface_profile_list: list[ACILogicalInterfaceProfileType] = (
         strawberry_django.field()
     )
@@ -473,17 +471,13 @@ class Query:
     aci_ospf_interface_policy: ACIOSPFInterfacePolicyType | None = strawberry_django.field()
     aci_ospf_interface_policy_list: list[ACIOSPFInterfacePolicyType] = strawberry_django.field()
 
-    aci_ospf_interface_attachment: ACIOSPFInterfaceAttachmentType | None = (
-        strawberry_django.field()
-    )
+    aci_ospf_interface_attachment: ACIOSPFInterfaceAttachmentType | None = strawberry_django.field()
     aci_ospf_interface_attachment_list: list[ACIOSPFInterfaceAttachmentType] = (
         strawberry_django.field()
     )
 
     aci_eigrp_interface_policy: ACIEIGRPInterfacePolicyType | None = strawberry_django.field()
-    aci_eigrp_interface_policy_list: list[ACIEIGRPInterfacePolicyType] = (
-        strawberry_django.field()
-    )
+    aci_eigrp_interface_policy_list: list[ACIEIGRPInterfacePolicyType] = strawberry_django.field()
 
     aci_external_epg: ACIExternalEPGType | None = strawberry_django.field()
     aci_external_epg_list: list[ACIExternalEPGType] = strawberry_django.field()

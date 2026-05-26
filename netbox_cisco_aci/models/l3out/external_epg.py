@@ -121,6 +121,4 @@ class ACIExternalEPGSubnet(ACIBaseModel):
                 ) from exc
 
         if self.scope_controls and not isinstance(self.scope_controls, list):
-            raise ValidationError(
-                {"scope_controls": _("Must be a JSON list of strings.")}
-            )
+            raise ValidationError({"scope_controls": _("Must be a JSON list of strings.")})

@@ -32,8 +32,7 @@ class ACIInterfaceContextPanel(PluginTemplateExtension):
         )
 
         l3out_interfaces = list(
-            ACIL3OutInterface.objects.filter(dcim_interface=interface)
-            .select_related(
+            ACIL3OutInterface.objects.filter(dcim_interface=interface).select_related(
                 "aci_logical_interface_profile",
                 "aci_logical_interface_profile__aci_logical_node_profile",
                 "aci_logical_interface_profile__aci_logical_node_profile__aci_l3out",

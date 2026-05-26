@@ -12,7 +12,6 @@ from ..choices import (
     SubjectFilterActionChoices,
     SubjectFilterDirectionChoices,
 )
-from ..models.l3out import ACIExternalEPG
 from ..models.contracts import (
     ACIContract,
     ACIContractRelation,
@@ -21,6 +20,7 @@ from ..models.contracts import (
     ACISubject,
     ACISubjectFilter,
 )
+from ..models.l3out import ACIExternalEPG
 from ..models.tenant import (
     ACIEndpointGroup,
     ACIEndpointSecurityGroup,

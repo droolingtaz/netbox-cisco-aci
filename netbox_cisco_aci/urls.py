@@ -212,9 +212,7 @@ urlpatterns += _crud(
     "ACILogicalNodeProfile",
     "acilogicalnodeprofile",
 )
-urlpatterns += _crud(
-    "logical-nodes", "ln", l3o, "ACILogicalNode", "acilogicalnode"
-)
+urlpatterns += _crud("logical-nodes", "ln", l3o, "ACILogicalNode", "acilogicalnode")
 urlpatterns += _crud(
     "logical-interface-profiles",
     "lip",
@@ -222,9 +220,7 @@ urlpatterns += _crud(
     "ACILogicalInterfaceProfile",
     "acilogicalinterfaceprofile",
 )
-urlpatterns += _crud(
-    "l3out-interfaces", "l3if", l3o, "ACIL3OutInterface", "acil3outinterface"
-)
+urlpatterns += _crud("l3out-interfaces", "l3if", l3o, "ACIL3OutInterface", "acil3outinterface")
 urlpatterns += _crud("bgp-peers", "bgp", l3o, "ACIBGPPeer", "acibgppeer")
 urlpatterns += _crud(
     "ospf-interface-policies",
@@ -247,9 +243,7 @@ urlpatterns += _crud(
     "ACIEIGRPInterfacePolicy",
     "acieigrpinterfacepolicy",
 )
-urlpatterns += _crud(
-    "external-epgs", "ext-epg", l3o, "ACIExternalEPG", "aciexternalepg"
-)
+urlpatterns += _crud("external-epgs", "ext-epg", l3o, "ACIExternalEPG", "aciexternalepg")
 urlpatterns += _crud(
     "external-epg-subnets",
     "ext-epg-sub",

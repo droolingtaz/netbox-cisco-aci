@@ -10,7 +10,6 @@ from ...choices import L3OutInterfaceTypeChoices
 from ...constants import VLAN_ID_MAX, VLAN_ID_MIN
 from ..base import ACIBaseModel
 
-
 _ENCAP_REQUIRED_TYPES = {
     L3OutInterfaceTypeChoices.SUB_INTERFACE,
     L3OutInterfaceTypeChoices.SVI,
@@ -76,14 +75,7 @@ class ACILogicalInterfaceProfile(ACIBaseModel):
                     )
                 }
             )
-        if (
-            self.interface_type == L3OutInterfaceTypeChoices.ROUTED
-            and self.encap_vlan is not None
-        ):
+        if self.interface_type == L3OutInterfaceTypeChoices.ROUTED and self.encap_vlan is not None:
             raise ValidationError(
-                {
-                    "encap_vlan": _(
-                        "Encap VLAN must be blank for routed interface types."
-                    )
-                }
+                {"encap_vlan": _("Encap VLAN must be blank for routed interface types.")}
             )

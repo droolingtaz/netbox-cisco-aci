@@ -50,9 +50,7 @@ class ACIL3OutViewSet(NetBoxModelViewSet):
 
 
 class ACILogicalNodeProfileViewSet(NetBoxModelViewSet):
-    queryset = ACILogicalNodeProfile.objects.select_related(
-        "aci_l3out", "aci_l3out__aci_tenant"
-    )
+    queryset = ACILogicalNodeProfile.objects.select_related("aci_l3out", "aci_l3out__aci_tenant")
     serializer_class = ACILogicalNodeProfileSerializer
     filterset_class = ACILogicalNodeProfileFilterSet
 
@@ -117,9 +115,7 @@ class ACIEIGRPInterfacePolicyViewSet(NetBoxModelViewSet):
 
 
 class ACIExternalEPGViewSet(NetBoxModelViewSet):
-    queryset = ACIExternalEPG.objects.select_related(
-        "aci_l3out", "aci_l3out__aci_tenant"
-    )
+    queryset = ACIExternalEPG.objects.select_related("aci_l3out", "aci_l3out__aci_tenant")
     serializer_class = ACIExternalEPGSerializer
     filterset_class = ACIExternalEPGFilterSet
 

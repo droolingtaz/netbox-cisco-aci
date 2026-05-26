@@ -96,9 +96,7 @@ class ACILogicalInterfaceProfileTable(NetBoxTable):
     name = tables.Column(linkify=True)
     aci_logical_node_profile = tables.Column(linkify=True, verbose_name="LNP")
     interface_type = ChoiceFieldColumn()
-    tags = columns.TagColumn(
-        url_name="plugins:netbox_cisco_aci:acilogicalinterfaceprofile_list"
-    )
+    tags = columns.TagColumn(url_name="plugins:netbox_cisco_aci:acilogicalinterfaceprofile_list")
 
     class Meta(NetBoxTable.Meta):
         model = ACILogicalInterfaceProfile
@@ -213,9 +211,7 @@ class ACIOSPFInterfaceAttachmentTable(NetBoxTable):
     aci_logical_interface_profile = tables.Column(linkify=True, verbose_name="LIP")
     aci_ospf_interface_policy = tables.Column(linkify=True, verbose_name="OSPF Policy")
     ospf_area_type = ChoiceFieldColumn()
-    tags = columns.TagColumn(
-        url_name="plugins:netbox_cisco_aci:aciospfinterfaceattachment_list"
-    )
+    tags = columns.TagColumn(url_name="plugins:netbox_cisco_aci:aciospfinterfaceattachment_list")
 
     class Meta(NetBoxTable.Meta):
         model = ACIOSPFInterfaceAttachment

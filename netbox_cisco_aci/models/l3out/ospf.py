@@ -104,16 +104,12 @@ def _validate_ospf_area_id(value: str) -> None:
     if _OSPF_AREA_DOTTED.match(value):
         for octet in value.split("."):
             if not 0 <= int(octet) <= 255:
-                raise ValidationError(
-                    _("Invalid OSPF area ID %(v)s.") % {"v": value}
-                )
+                raise ValidationError(_("Invalid OSPF area ID %(v)s.") % {"v": value})
         return
     try:
         n = int(value)
     except (TypeError, ValueError) as exc:
-        raise ValidationError(
-            _("Invalid OSPF area ID %(v)s.") % {"v": value}
-        ) from exc
+        raise ValidationError(_("Invalid OSPF area ID %(v)s.") % {"v": value}) from exc
     if not 0 <= n <= 0xFFFFFFFF:
         raise ValidationError(_("OSPF area ID out of range."))
 
@@ -168,9 +164,7 @@ class ACIOSPFInterfaceAttachment(ACIBaseModel):
         return f"{lip} OSPF area {self.ospf_area_id}"
 
     def get_absolute_url(self) -> str:
-        return reverse(
-            "plugins:netbox_cisco_aci:aciospfinterfaceattachment", args=[self.pk]
-        )
+        return reverse("plugins:netbox_cisco_aci:aciospfinterfaceattachment", args=[self.pk])
 
     def clean(self) -> None:
         super().clean()
@@ -180,23 +174,15 @@ class ACIOSPFInterfaceAttachment(ACIBaseModel):
 
         # Cross-tenant guard: policy tenant must match L3Out tenant or be `common`.
         if self.aci_ospf_interface_policy_id and self.aci_logical_interface_profile_id:
-            policy_tenant_id = getattr(
-                self.aci_ospf_interface_policy, "aci_tenant_id", None
-            )
+            policy_tenant_id = getattr(self.aci_ospf_interface_policy, "aci_tenant_id", None)
             lip = self.aci_logical_interface_profile
             l3out_tenant_id = getattr(
                 getattr(getattr(lip, "aci_logical_node_profile", None), "aci_l3out", None),
                 "aci_tenant_id",
                 None,
             )
-            if (
-                policy_tenant_id
-                and l3out_tenant_id
-                and policy_tenant_id != l3out_tenant_id
-            ):
-                policy_tenant_name = getattr(
-                    self.aci_ospf_interface_policy.aci_tenant, "name", ""
-                )
+            if policy_tenant_id and l3out_tenant_id and policy_tenant_id != l3out_tenant_id:
+                policy_tenant_name = getattr(self.aci_ospf_interface_policy.aci_tenant, "name", "")
                 if policy_tenant_name != COMMON_TENANT_NAME:
                     raise ValidationError(
                         {

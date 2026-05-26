@@ -279,9 +279,7 @@ class ACIL3OutInterfaceForm(NetBoxModelForm):
     aci_logical_interface_profile = DynamicModelChoiceField(
         queryset=ACILogicalInterfaceProfile.objects.all(), label=_("LIP")
     )
-    dcim_interface = DynamicModelChoiceField(
-        queryset=Interface.objects.all(), label=_("Interface")
-    )
+    dcim_interface = DynamicModelChoiceField(queryset=Interface.objects.all(), label=_("Interface"))
     secondary_ip_addresses = forms.JSONField(
         required=False, initial=list, help_text=_("JSON list of IP/CIDR strings.")
     )
@@ -355,9 +353,7 @@ class ACIBGPPeerForm(NetBoxModelForm):
     address_family_controls = forms.JSONField(
         required=False, initial=list, help_text=_TOKEN_LIST_HELP
     )
-    private_asn_controls = forms.JSONField(
-        required=False, initial=list, help_text=_TOKEN_LIST_HELP
-    )
+    private_asn_controls = forms.JSONField(required=False, initial=list, help_text=_TOKEN_LIST_HELP)
 
     class Meta:
         model = ACIBGPPeer

@@ -17,6 +17,7 @@ from netbox_cisco_aci.models.contracts import (
     ACISubjectFilter,
 )
 from netbox_cisco_aci.models.fabric import ACIFabric
+from netbox_cisco_aci.models.l3out import ACIExternalEPG, ACIL3Out
 from netbox_cisco_aci.models.tenant import (
     ACIVRF,
     ACIAppProfile,
@@ -309,6 +310,9 @@ class ACIContractRelationAPITests(
         "role",
         "url",
     ]
+    # Only patch description to avoid XOR-field conflicts across the three
+    # different FK paths (EPG / ESG / External EPG).
+    update_data = {"description": "Updated via PATCH"}
     bulk_update_data = {"description": "Bulk-updated"}
 
     @classmethod
@@ -326,13 +330,28 @@ class ACIContractRelationAPITests(
             for i in range(5)
         ]
         contract = ACIContract.objects.create(aci_tenant=tenant, name="c-r")
-        for i in range(3):
+        # Existing rows: 2 EPG-attached + 1 External EPG-attached
+        for i in range(2):
             ACIContractRelation.objects.create(
                 aci_contract=contract,
                 aci_endpoint_group=epgs[i],
                 role=ContractRelationRoleChoices.PROVIDER,
                 name=f"r-{i}",
             )
+        # External EPG path
+        l3out = ACIL3Out.objects.create(
+            aci_tenant=tenant,
+            aci_vrf=vrf,
+            name="c-r-l3out",
+            protocol_static=True,
+        )
+        eepg = ACIExternalEPG.objects.create(aci_l3out=l3out, name="c-r-ext")
+        ACIContractRelation.objects.create(
+            aci_contract=contract,
+            aci_external_epg=eepg,
+            role=ContractRelationRoleChoices.CONSUMER,
+            name="r-extepg",
+        )
         cls.create_data = [
             {
                 "aci_contract": contract.pk,
@@ -345,5 +364,11 @@ class ACIContractRelationAPITests(
                 "aci_endpoint_group": epgs[4].pk,
                 "role": ContractRelationRoleChoices.CONSUMER,
                 "name": "r-b",
+            },
+            {
+                "aci_contract": contract.pk,
+                "aci_external_epg": eepg.pk,
+                "role": ContractRelationRoleChoices.PROVIDER,
+                "name": "r-c",
             },
         ]
