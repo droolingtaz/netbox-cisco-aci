@@ -16,6 +16,7 @@ from .views import access as acc
 from .views import access_groups as acg
 from .views import access_policies as acp
 from .views import access_profiles as apr
+from .views import bindings as bnd
 from .views import contracts as ctr
 from .views import fabric as fab
 from .views import tenant as tn
@@ -169,4 +170,34 @@ urlpatterns += _crud(
     ctr,
     "ACIContractRelation",
     "acicontractrelation",
+)
+
+# Phase 6 — Static Port Bindings
+urlpatterns += _crud(
+    "static-port-bindings",
+    "spb",
+    bnd,
+    "ACIStaticPortBinding",
+    "acistaticportbinding",
+)
+urlpatterns += _crud(
+    "vpc-binding-pairs",
+    "vpc-pair",
+    bnd,
+    "ACIVPCBindingPair",
+    "acivpcbindingpair",
+)
+urlpatterns += _crud(
+    "domain-bindings",
+    "dom-binding",
+    bnd,
+    "ACIDomainBinding",
+    "acidomainbinding",
+)
+urlpatterns += _crud(
+    "interface-fabric-memberships",
+    "ifm",
+    bnd,
+    "ACIInterfaceFabricMembership",
+    "aciinterfacefabricmembership",
 )

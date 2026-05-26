@@ -14,6 +14,12 @@ from .access import (  # noqa: F401
     ACIVLANPoolBlock,
 )
 from .base import ACIBaseModel, ACIFabricBaseModel, ACITenantBaseModel  # noqa: F401
+from .bindings import (  # noqa: F401
+    ACIDomainBinding,
+    ACIInterfaceFabricMembership,
+    ACIStaticPortBinding,
+    ACIVPCBindingPair,
+)
 from .contracts import (  # noqa: F401
     ACIContract,
     ACIContractRelation,

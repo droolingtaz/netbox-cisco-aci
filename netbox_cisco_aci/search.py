@@ -21,6 +21,12 @@ from .models.access import (
     ACIVLANPool,
     ACIVLANPoolBlock,
 )
+from .models.bindings import (
+    ACIDomainBinding,
+    ACIInterfaceFabricMembership,
+    ACIStaticPortBinding,
+    ACIVPCBindingPair,
+)
 from .models.contracts import (
     ACIContract,
     ACIContractRelation,
@@ -254,4 +260,31 @@ class ACISubjectFilterIndex(SearchIndex):
 @register_search
 class ACIContractRelationIndex(SearchIndex):
     model = ACIContractRelation
+    fields = (("name", 100), ("name_alias", 200), ("description", 500))
+
+
+# Phase 6 — Static Port Bindings
+
+
+@register_search
+class ACIStaticPortBindingIndex(SearchIndex):
+    model = ACIStaticPortBinding
+    fields = (("name", 100), ("name_alias", 200), ("description", 500))
+
+
+@register_search
+class ACIVPCBindingPairIndex(SearchIndex):
+    model = ACIVPCBindingPair
+    fields = (("name", 100), ("name_alias", 200), ("description", 500))
+
+
+@register_search
+class ACIDomainBindingIndex(SearchIndex):
+    model = ACIDomainBinding
+    fields = (("name", 100), ("name_alias", 200), ("description", 500))
+
+
+@register_search
+class ACIInterfaceFabricMembershipIndex(SearchIndex):
+    model = ACIInterfaceFabricMembership
     fields = (("name", 100), ("name_alias", 200), ("description", 500))

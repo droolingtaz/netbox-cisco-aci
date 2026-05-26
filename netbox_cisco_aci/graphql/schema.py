@@ -26,6 +26,12 @@ from ..models.access import (
     ACIVLANPool,
     ACIVLANPoolBlock,
 )
+from ..models.bindings import (
+    ACIDomainBinding,
+    ACIInterfaceFabricMembership,
+    ACIStaticPortBinding,
+    ACIVPCBindingPair,
+)
 from ..models.contracts import (
     ACIContract,
     ACIContractRelation,
@@ -221,6 +227,26 @@ class ACIContractRelationType:
     pass
 
 
+@strawberry_django.type(ACIStaticPortBinding, fields="__all__")
+class ACIStaticPortBindingType:
+    pass
+
+
+@strawberry_django.type(ACIVPCBindingPair, fields="__all__")
+class ACIVPCBindingPairType:
+    pass
+
+
+@strawberry_django.type(ACIDomainBinding, fields="__all__")
+class ACIDomainBindingType:
+    pass
+
+
+@strawberry_django.type(ACIInterfaceFabricMembership, fields="__all__")
+class ACIInterfaceFabricMembershipType:
+    pass
+
+
 # ---------------------------------------------------------------------------
 # Query root
 # ---------------------------------------------------------------------------
@@ -337,6 +363,22 @@ class Query:
 
     aci_contract_relation: ACIContractRelationType | None = strawberry_django.field()
     aci_contract_relation_list: list[ACIContractRelationType] = strawberry_django.field()
+
+    aci_static_port_binding: ACIStaticPortBindingType | None = strawberry_django.field()
+    aci_static_port_binding_list: list[ACIStaticPortBindingType] = strawberry_django.field()
+
+    aci_vpc_binding_pair: ACIVPCBindingPairType | None = strawberry_django.field()
+    aci_vpc_binding_pair_list: list[ACIVPCBindingPairType] = strawberry_django.field()
+
+    aci_domain_binding: ACIDomainBindingType | None = strawberry_django.field()
+    aci_domain_binding_list: list[ACIDomainBindingType] = strawberry_django.field()
+
+    aci_interface_fabric_membership: ACIInterfaceFabricMembershipType | None = (
+        strawberry_django.field()
+    )
+    aci_interface_fabric_membership_list: list[ACIInterfaceFabricMembershipType] = (
+        strawberry_django.field()
+    )
 
 
 schema = [Query]

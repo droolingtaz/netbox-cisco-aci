@@ -398,6 +398,44 @@ class ResolutionImmediacyChoices(ChoiceSet):
     ]
 
 
+class StaticPortBindingTypeChoices(ChoiceSet):
+    """How an EPG is bound to a physical interface (``fvRsPathAtt.tDn``)."""
+
+    key = "ACIStaticPortBinding.binding_type"
+
+    REGULAR = "regular"
+    PC = "pc"
+    VPC = "vpc"
+    DIRECT_PC = "direct-port-channel"
+    FEX = "fex"
+
+    CHOICES = [
+        (REGULAR, _("Access port"), "gray"),
+        (PC, _("Port Channel member"), "blue"),
+        (VPC, _("vPC member"), "purple"),
+        (DIRECT_PC, _("Direct Port Channel"), "cyan"),
+        (FEX, _("FEX host port"), "orange"),
+    ]
+
+
+class InterfaceFabricRoleChoices(ChoiceSet):
+    """Role of a physical interface inside an ACI fabric."""
+
+    key = "ACIInterfaceFabricMembership.interface_role"
+
+    FABRIC = "fabric"
+    HOST = "host"
+    PEER_LINK = "peer-link"
+    MGMT = "mgmt"
+
+    CHOICES = [
+        (FABRIC, _("Fabric uplink"), "blue"),
+        (HOST, _("Host downlink"), "green"),
+        (PEER_LINK, _("vPC peer-link"), "purple"),
+        (MGMT, _("Management"), "gray"),
+    ]
+
+
 # ---------------------------------------------------------------------------
 # L3Out
 # ---------------------------------------------------------------------------

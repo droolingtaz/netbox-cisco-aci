@@ -1,0 +1,68 @@
+{% load helpers %}
+{% load i18n %}
+
+<div class="card">
+  <h2 class="card-header">{% trans "Cisco ACI Context" %}</h2>
+  <div class="card-body">
+    <p>
+      <strong>{% trans "Fabric Role" %}:</strong>
+      {% if interface_fabric_membership %}
+        {{ interface_fabric_membership.get_interface_role_display }}
+        {% trans "on" %}
+        <a href="{{ interface_fabric_membership.aci_node.get_absolute_url }}">{{ interface_fabric_membership.aci_node }}</a>
+      {% else %}—{% endif %}
+    </p>
+  </div>
+
+  {% if static_port_bindings %}
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>{% trans "EPG" %}</th>
+          <th>{% trans "Encap" %}</th>
+          <th>{% trans "Mode" %}</th>
+          <th>{% trans "Immediacy" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for b in static_port_bindings %}
+          <tr>
+            <td><a href="{{ b.aci_endpoint_group.get_absolute_url }}">{{ b.aci_endpoint_group.name }}</a></td>
+            <td>{{ b.encap_vlan }}</td>
+            <td>{{ b.get_mode_display }}</td>
+            <td>{{ b.get_deployment_immediacy_display }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+
+  {% if subnets %}
+    <div class="card-body">
+      <h5>{% trans "Reachable Subnets" %}</h5>
+      <ul>
+        {% for s in subnets %}
+          <li><a href="{{ s.get_absolute_url }}">{{ s }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  {% if provided_contracts or consumed_contracts %}
+    <div class="card-body">
+      <h5>{% trans "Contracts" %}</h5>
+      <p>
+        <strong>{% trans "Provided" %}:</strong>
+        {% for r in provided_contracts %}
+          <a href="{{ r.aci_contract.get_absolute_url }}">{{ r.aci_contract.name }}</a>{% if not forloop.last %}, {% endif %}
+        {% empty %}—{% endfor %}
+      </p>
+      <p>
+        <strong>{% trans "Consumed" %}:</strong>
+        {% for r in consumed_contracts %}
+          <a href="{{ r.aci_contract.get_absolute_url }}">{{ r.aci_contract.name }}</a>{% if not forloop.last %}, {% endif %}
+        {% empty %}—{% endfor %}
+      </p>
+    </div>
+  {% endif %}
+</div>
