@@ -13,6 +13,35 @@ and this project adheres to [Semantic Versioning 2.0.0](https://semver.org/).
 
 ### Added
 
+- **Phase 6 — Static Port Bindings and Device/Interface visibility**:
+  - `ACIStaticPortBinding` — binds an `ACIEndpointGroup` to a
+    `dcim.Interface` with explicit encap VLAN, binding type
+    (`regular` / `pc` / `vpc`), mode, primary encap VLAN (uSeg only),
+    and deployment immediacy. APIC's `fvRsPathAtt` analog.
+  - `ACIVPCBindingPair` — groups two `ACIStaticPortBinding`s as the
+    two leaf sides of a single vPC, with check constraint that the
+    two bindings differ and validation that both reference the same
+    EPG, encap, and fabric while landing on distinct devices.
+  - `ACIDomainBinding` — `fvRsDomAtt` analog binding an EPG to an
+    `ACIDomain` with deployment / resolution immediacy and same-fabric
+    enforcement.
+  - `ACIInterfaceFabricMembership` — per-interface ACI Node attribution
+    so a `dcim.Interface` resolves cleanly to its ACI fabric without
+    walking through the device.
+  - Auto-derived APIC-compatible `name` for all four binding models
+    via `Model.save()` and matching API serializer logic — the name
+    is generated from the FK relationships when not supplied, and
+    sanitized to APIC's policy-name regex.
+  - Device and Interface visibility panels (NetBox
+    `PluginTemplateExtension`) that surface every binding on a
+    `dcim.Device` or `dcim.Interface` detail page so operators can
+    see which EPGs / domains / bridge-domains / subnets are attached
+    without leaving NetBox's native pages.
+  - Full UI, REST API, GraphQL, search index, navigation,
+    NetBoxTable, and FilterSet coverage for all four new models.
+  - 128 new tests covering models, forms, filtersets, API CRUD, and
+    template-extension rendering — bringing the suite to 931 tests.
+
 - **Phase 5 — Contracts, Subjects, Filters, and Contract Relations**:
   - `ACIContract` (per-tenant, with `scope` and optional `qos_class`)
   - `ACISubject` (children of a Contract) with a `reverse_filter_ports`

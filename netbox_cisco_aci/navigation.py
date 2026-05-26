@@ -58,6 +58,13 @@ contract_items = (
     _item("acicontractrelation", "Contract Relations"),
 )
 
+binding_items = (
+    _item("acistaticportbinding", "Static Port Bindings"),
+    _item("acivpcbindingpair", "vPC Binding Pairs"),
+    _item("acidomainbinding", "Domain Bindings"),
+    _item("aciinterfacefabricmembership", "Interface Fabric Memberships"),
+)
+
 tenancy_items = (
     _item("acitenant", "Tenants"),
     _item("acivrf", "VRFs"),
@@ -78,7 +85,8 @@ menu = PluginMenu(
         ("Interface Policies", interface_policy_items),
         ("Access Profiles", access_profile_items),
         ("Contracts", contract_items),
-        # Subsequent phases extend this tuple — L3Outs, Static Port Bindings.
+        ("Static Port Bindings", binding_items),
+        # Subsequent phases extend this tuple — L3Outs.
     ),
     icon_class="mdi mdi-server-network",
 )

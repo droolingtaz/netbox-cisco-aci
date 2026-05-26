@@ -1,0 +1,66 @@
+{% load helpers %}
+{% load i18n %}
+
+<div class="card">
+  <h2 class="card-header">{% trans "Cisco ACI Context" %}</h2>
+  <div class="card-body">
+    {% if aci_node %}
+      <p>
+        <strong>{% trans "ACI Node" %}:</strong>
+        <a href="{{ aci_node.get_absolute_url }}">{{ aci_node }}</a>
+        {% if aci_fabric %}
+          &middot; <strong>{% trans "Fabric" %}:</strong>
+          <a href="{{ aci_fabric.get_absolute_url }}">{{ aci_fabric }}</a>
+        {% endif %}
+        {% if aci_pod %}
+          &middot; <strong>{% trans "Pod" %}:</strong>
+          <a href="{{ aci_pod.get_absolute_url }}">{{ aci_pod }}</a>
+        {% endif %}
+      </p>
+    {% else %}
+      <p class="text-muted">{% trans "Not linked to an ACI Node." %}</p>
+    {% endif %}
+
+    <p>
+      {{ epg_count }} {% trans "EPGs" %},
+      {{ bd_count }} {% trans "BDs" %},
+      {{ vrf_count }} {% trans "VRFs" %}
+      {% trans "across" %} {{ binding_count }} {% trans "static port bindings" %}.
+    </p>
+  </div>
+
+  {% if static_port_bindings %}
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>{% trans "Interface" %}</th>
+          <th>{% trans "EPG" %}</th>
+          <th>{% trans "BD" %}</th>
+          <th>{% trans "VRF" %}</th>
+          <th>{% trans "Encap" %}</th>
+          <th>{% trans "Mode" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for b in static_port_bindings %}
+          <tr>
+            <td><a href="{{ b.dcim_interface.get_absolute_url }}">{{ b.dcim_interface }}</a></td>
+            <td><a href="{{ b.aci_endpoint_group.get_absolute_url }}">{{ b.aci_endpoint_group.name }}</a></td>
+            <td>
+              {% if b.aci_endpoint_group.aci_bridge_domain %}
+                <a href="{{ b.aci_endpoint_group.aci_bridge_domain.get_absolute_url }}">{{ b.aci_endpoint_group.aci_bridge_domain.name }}</a>
+              {% else %}—{% endif %}
+            </td>
+            <td>
+              {% if b.aci_endpoint_group.aci_bridge_domain and b.aci_endpoint_group.aci_bridge_domain.aci_vrf %}
+                <a href="{{ b.aci_endpoint_group.aci_bridge_domain.aci_vrf.get_absolute_url }}">{{ b.aci_endpoint_group.aci_bridge_domain.aci_vrf.name }}</a>
+              {% else %}—{% endif %}
+            </td>
+            <td>{{ b.encap_vlan }}</td>
+            <td>{{ b.get_mode_display }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+</div>

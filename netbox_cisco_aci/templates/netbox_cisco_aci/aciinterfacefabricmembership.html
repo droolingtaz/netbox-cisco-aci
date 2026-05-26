@@ -1,0 +1,27 @@
+{% extends 'generic/object.html' %}
+{% load helpers %}
+{% load i18n %}
+
+{% block content %}
+<div class="row">
+  <div class="col col-md-6">
+    <div class="card">
+      <h2 class="card-header">{% trans "Interface Fabric Membership" %}</h2>
+      <table class="table table-hover attr-table">
+        <tr><th scope="row">{% trans "Name" %}</th><td>{{ object.name|placeholder }}</td></tr>
+        <tr><th scope="row">{% trans "Interface" %}</th>
+          <td><a href="{{ object.dcim_interface.get_absolute_url }}">{{ object.dcim_interface }}</a></td></tr>
+        <tr><th scope="row">{% trans "ACI Node" %}</th>
+          <td><a href="{{ object.aci_node.get_absolute_url }}">{{ object.aci_node }}</a></td></tr>
+        <tr><th scope="row">{% trans "Interface role" %}</th><td>{{ object.get_interface_role_display }}</td></tr>
+        <tr><th scope="row">{% trans "Description" %}</th><td>{{ object.description|placeholder }}</td></tr>
+      </table>
+    </div>
+    {% include 'inc/panels/tags.html' %}
+    {% include 'inc/panels/custom_fields.html' %}
+  </div>
+  <div class="col col-md-6">
+    {% include 'inc/panels/comments.html' %}
+  </div>
+</div>
+{% endblock %}

@@ -23,6 +23,12 @@ from .access_profiles import (  # noqa: F401
     ACISwitchProfileSelectorSerializer,
     ACISwitchProfileSerializer,
 )
+from .bindings import (  # noqa: F401
+    ACIDomainBindingSerializer,
+    ACIInterfaceFabricMembershipSerializer,
+    ACIStaticPortBindingSerializer,
+    ACIVPCBindingPairSerializer,
+)
 from .contracts import (  # noqa: F401
     ACIContractRelationSerializer,
     ACIContractSerializer,

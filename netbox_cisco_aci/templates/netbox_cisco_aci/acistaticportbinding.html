@@ -1,0 +1,32 @@
+{% extends 'generic/object.html' %}
+{% load helpers %}
+{% load i18n %}
+
+{% block content %}
+<div class="row">
+  <div class="col col-md-6">
+    <div class="card">
+      <h2 class="card-header">{% trans "Static Port Binding" %}</h2>
+      <table class="table table-hover attr-table">
+        <tr><th scope="row">{% trans "Name" %}</th><td>{{ object.name|placeholder }}</td></tr>
+        <tr><th scope="row">{% trans "Alias" %}</th><td>{{ object.name_alias|placeholder }}</td></tr>
+        <tr><th scope="row">{% trans "EPG" %}</th>
+          <td><a href="{{ object.aci_endpoint_group.get_absolute_url }}">{{ object.aci_endpoint_group }}</a></td></tr>
+        <tr><th scope="row">{% trans "Interface" %}</th>
+          <td><a href="{{ object.dcim_interface.get_absolute_url }}">{{ object.dcim_interface }}</a></td></tr>
+        <tr><th scope="row">{% trans "Binding type" %}</th><td>{{ object.get_binding_type_display }}</td></tr>
+        <tr><th scope="row">{% trans "Encap VLAN" %}</th><td>{{ object.encap_vlan }}</td></tr>
+        <tr><th scope="row">{% trans "Mode" %}</th><td>{{ object.get_mode_display }}</td></tr>
+        <tr><th scope="row">{% trans "Primary encap VLAN" %}</th><td>{{ object.primary_encap_vlan|placeholder }}</td></tr>
+        <tr><th scope="row">{% trans "Deployment immediacy" %}</th><td>{{ object.get_deployment_immediacy_display }}</td></tr>
+        <tr><th scope="row">{% trans "Description" %}</th><td>{{ object.description|placeholder }}</td></tr>
+      </table>
+    </div>
+    {% include 'inc/panels/tags.html' %}
+    {% include 'inc/panels/custom_fields.html' %}
+  </div>
+  <div class="col col-md-6">
+    {% include 'inc/panels/comments.html' %}
+  </div>
+</div>
+{% endblock %}

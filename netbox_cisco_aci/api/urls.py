@@ -31,6 +31,12 @@ from .views.access_profiles import (
     ACISwitchProfileSelectorViewSet,
     ACISwitchProfileViewSet,
 )
+from .views.bindings import (
+    ACIDomainBindingViewSet,
+    ACIInterfaceFabricMembershipViewSet,
+    ACIStaticPortBindingViewSet,
+    ACIVPCBindingPairViewSet,
+)
 from .views.contracts import (
     ACIContractRelationViewSet,
     ACIContractViewSet,
@@ -101,5 +107,11 @@ router.register("filters", ACIFilterViewSet)
 router.register("filter-entries", ACIFilterEntryViewSet)
 router.register("subject-filters", ACISubjectFilterViewSet)
 router.register("contract-relations", ACIContractRelationViewSet)
+
+# Phase 6 — Static Port Bindings
+router.register("static-port-bindings", ACIStaticPortBindingViewSet)
+router.register("vpc-binding-pairs", ACIVPCBindingPairViewSet)
+router.register("domain-bindings", ACIDomainBindingViewSet)
+router.register("interface-fabric-memberships", ACIInterfaceFabricMembershipViewSet)
 
 urlpatterns = router.urls
