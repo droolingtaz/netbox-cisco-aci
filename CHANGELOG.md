@@ -31,6 +31,12 @@ and this project adheres to [Semantic Versioning 2.0.0](https://semver.org/).
     so contracts can be applied to L3Out-facing endpoints.
   - Device and Interface "Cisco ACI Context" panels now also surface
     L3Out attachments.
+- **L3Out static routes**: `ACIL3OutStaticRoute` (per-node static route
+  with prefix, preference, track policy, and BFD control bit) and
+  `ACIL3OutStaticRouteNextHop` (per-route next-hop entries supporting
+  both prefix and null-route types, with per-hop preference for ECMP
+  weighting). The Logical Node detail page and the device "Cisco ACI
+  Context" template extension now also surface static routes.
 
 ### Changed
 

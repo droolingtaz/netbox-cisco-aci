@@ -1,0 +1,65 @@
+{% extends 'generic/object.html' %}
+{% load helpers %}
+{% load i18n %}
+
+{% block content %}
+<div class="row">
+  <div class="col col-md-6">
+    <div class="card">
+      <h2 class="card-header">{% trans "L3Out Static Route" %}</h2>
+      <table class="table table-hover attr-table">
+        <tr><th scope="row">{% trans "Name" %}</th><td>{{ object.name }}</td></tr>
+        <tr><th scope="row">{% trans "Alias" %}</th><td>{{ object.name_alias|placeholder }}</td></tr>
+        <tr>
+          <th scope="row">{% trans "Logical Node" %}</th>
+          <td><a href="{{ object.aci_logical_node.get_absolute_url }}">{{ object.aci_logical_node }}</a></td>
+        </tr>
+        <tr>
+          <th scope="row">{% trans "Logical Node Profile" %}</th>
+          <td><a href="{{ object.aci_logical_node.aci_logical_node_profile.get_absolute_url }}">{{ object.aci_logical_node.aci_logical_node_profile }}</a></td>
+        </tr>
+        <tr>
+          <th scope="row">{% trans "L3Out" %}</th>
+          <td><a href="{{ object.aci_logical_node.aci_logical_node_profile.aci_l3out.get_absolute_url }}">{{ object.aci_logical_node.aci_logical_node_profile.aci_l3out }}</a></td>
+        </tr>
+        <tr><th scope="row">{% trans "Prefix" %}</th><td>{{ object.prefix }}</td></tr>
+        <tr><th scope="row">{% trans "Preference" %}</th><td>{{ object.preference }}</td></tr>
+        <tr><th scope="row">{% trans "Track policy" %}</th><td>{{ object.track_policy|placeholder }}</td></tr>
+        <tr><th scope="row">{% trans "Route controls" %}</th><td>{{ object.route_controls|join:", "|placeholder }}</td></tr>
+        <tr><th scope="row">{% trans "Description" %}</th><td>{{ object.description|placeholder }}</td></tr>
+      </table>
+    </div>
+    {% include 'inc/panels/tags.html' %}
+    {% include 'inc/panels/custom_fields.html' %}
+  </div>
+  <div class="col col-md-6">
+    {% include 'inc/panels/comments.html' %}
+
+    {% with next_hops=object.next_hops.all %}
+    {% if next_hops %}
+    <div class="card">
+      <h2 class="card-header">{% trans "Next Hops" %}</h2>
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>{% trans "Address" %}</th>
+            <th>{% trans "Type" %}</th>
+            <th>{% trans "Preference" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for nh in next_hops %}
+          <tr>
+            <td><a href="{{ nh.get_absolute_url }}">{{ nh.nexthop_address|default:"null" }}</a></td>
+            <td>{{ nh.get_nexthop_type_display }}</td>
+            <td>{{ nh.preference }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+    {% endwith %}
+  </div>
+</div>
+{% endblock %}

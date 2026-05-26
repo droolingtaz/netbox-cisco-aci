@@ -75,6 +75,8 @@ l3out_items = (
     _item("aciospfinterfacepolicy", "OSPF Interface Policies"),
     _item("aciospfinterfaceattachment", "OSPF Interface Attachments"),
     _item("acieigrpinterfacepolicy", "EIGRP Interface Policies"),
+    _item("acil3outstaticroute", "L3Out Static Routes"),
+    _item("acil3outstaticroutenexthop", "L3Out Static Route Next Hops"),
     _item("aciexternalepg", "External EPGs"),
     _item("aciexternalepgsubnet", "External EPG Subnets"),
 )

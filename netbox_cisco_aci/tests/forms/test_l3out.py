@@ -321,3 +321,92 @@ class L3OutFormTests(TestCase):
             }
         )
         self.assertFalse(form.is_valid())
+
+
+# ---------------------------------------------------------------------------
+# Phase 7.1 — Static Route form tests
+# ---------------------------------------------------------------------------
+
+from netbox_cisco_aci.choices import StaticRouteNextHopTypeChoices  # noqa: E402
+from netbox_cisco_aci.forms.l3out import (  # noqa: E402
+    ACIL3OutStaticRouteForm,
+    ACIL3OutStaticRouteNextHopForm,
+)
+from netbox_cisco_aci.models.l3out import (  # noqa: E402
+    ACIL3OutStaticRoute,
+    ACILogicalNode,
+)
+
+
+class StaticRouteFormTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        from netbox_cisco_aci.models.fabric import ACIFabric, ACINode, ACIPod
+
+        cls.fab = ACIFabric.objects.create(name="DC-SRForm")
+        cls.pod = ACIPod.objects.create(aci_fabric=cls.fab, pod_id=1, name="pod-1")
+        cls.tenant = ACITenant.objects.create(aci_fabric=cls.fab, name="t-srform")
+        cls.vrf = ACIVRF.objects.create(aci_tenant=cls.tenant, name="vrf-srform")
+        from netbox_cisco_aci.models.l3out import ACIL3Out, ACILogicalNodeProfile
+
+        cls.l3out = ACIL3Out.objects.create(
+            aci_tenant=cls.tenant, aci_vrf=cls.vrf, name="l3out-srform"
+        )
+        cls.lnp = ACILogicalNodeProfile.objects.create(aci_l3out=cls.l3out, name="lnp-srform")
+        cls.aci_node = ACINode.objects.create(
+            aci_pod=cls.pod, node_id=201, name="leaf-201", role="leaf"
+        )
+        cls.ln = ACILogicalNode.objects.create(
+            aci_logical_node_profile=cls.lnp,
+            aci_node=cls.aci_node,
+            name="ln-srform",
+            router_id="10.5.0.1",
+        )
+
+    def test_valid_static_route_form(self):
+        form = ACIL3OutStaticRouteForm(
+            data={
+                "name": "test-route",
+                "aci_logical_node": self.ln.pk,
+                "prefix": "192.168.1.0/24",
+                "preference": 1,
+                "route_controls": "[]",
+            }
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+
+    def test_invalid_static_route_form_missing_prefix(self):
+        form = ACIL3OutStaticRouteForm(
+            data={
+                "name": "bad-route",
+                "aci_logical_node": self.ln.pk,
+                "preference": 1,
+            }
+        )
+        self.assertFalse(form.is_valid())
+        self.assertIn("prefix", form.errors)
+
+    def test_valid_nexthop_form(self):
+        route = ACIL3OutStaticRoute.objects.create(aci_logical_node=self.ln, prefix="10.20.0.0/16")
+        form = ACIL3OutStaticRouteNextHopForm(
+            data={
+                "name": "nh-test",
+                "aci_static_route": route.pk,
+                "nexthop_address": "10.0.0.1",
+                "nexthop_type": StaticRouteNextHopTypeChoices.PREFIX,
+                "preference": 0,
+            }
+        )
+        self.assertTrue(form.is_valid(), form.errors)
+
+    def test_invalid_nexthop_form_missing_route(self):
+        form = ACIL3OutStaticRouteNextHopForm(
+            data={
+                "name": "nh-bad",
+                "nexthop_address": "10.0.0.1",
+                "nexthop_type": StaticRouteNextHopTypeChoices.PREFIX,
+                "preference": 0,
+            }
+        )
+        self.assertFalse(form.is_valid())
+        self.assertIn("aci_static_route", form.errors)

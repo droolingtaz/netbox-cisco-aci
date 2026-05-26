@@ -348,3 +348,87 @@ class L3OutFilterSetTests(TestCase):
             ACIExternalEPGSubnet.objects.all(),
         ).qs
         self.assertSequenceEqual(list(qs), [self.subnet_a])
+
+
+# ---------------------------------------------------------------------------
+# Phase 7.1 — Static Route filterset tests
+# ---------------------------------------------------------------------------
+
+from netbox_cisco_aci.choices import StaticRouteNextHopTypeChoices  # noqa: E402
+from netbox_cisco_aci.filtersets.l3out import (  # noqa: E402
+    ACIL3OutStaticRouteFilterSet,
+    ACIL3OutStaticRouteNextHopFilterSet,
+)
+from netbox_cisco_aci.models.l3out import (  # noqa: E402
+    ACIL3OutStaticRoute,
+    ACIL3OutStaticRouteNextHop,
+)
+
+
+class StaticRouteFilterSetTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        from netbox_cisco_aci.models.fabric import ACIFabric, ACINode, ACIPod
+
+        fab = ACIFabric.objects.create(name="DC-SRFS")
+        pod = ACIPod.objects.create(aci_fabric=fab, pod_id=1, name="pod-1")
+        tenant = ACITenant.objects.create(aci_fabric=fab, name="t-srfs")
+        vrf = ACIVRF.objects.create(aci_tenant=tenant, name="vrf-srfs")
+        from netbox_cisco_aci.models.l3out import ACIL3Out, ACILogicalNode, ACILogicalNodeProfile
+
+        l3out = ACIL3Out.objects.create(aci_tenant=tenant, aci_vrf=vrf, name="l3out-srfs")
+        lnp = ACILogicalNodeProfile.objects.create(aci_l3out=l3out, name="lnp-srfs")
+        node_a = ACINode.objects.create(aci_pod=pod, node_id=301, name="leaf-301", role="leaf")
+        node_b = ACINode.objects.create(aci_pod=pod, node_id=302, name="leaf-302", role="leaf")
+        cls.ln_a = ACILogicalNode.objects.create(
+            aci_logical_node_profile=lnp, aci_node=node_a, name="ln-a", router_id="10.6.0.1"
+        )
+        cls.ln_b = ACILogicalNode.objects.create(
+            aci_logical_node_profile=lnp, aci_node=node_b, name="ln-b", router_id="10.6.0.2"
+        )
+        cls.route_a = ACIL3OutStaticRoute.objects.create(
+            aci_logical_node=cls.ln_a, prefix="10.0.0.0/8"
+        )
+        cls.route_b = ACIL3OutStaticRoute.objects.create(
+            aci_logical_node=cls.ln_b, prefix="172.16.0.0/12"
+        )
+        cls.nh_prefix = ACIL3OutStaticRouteNextHop.objects.create(
+            aci_static_route=cls.route_a,
+            nexthop_address="10.0.0.1",
+            nexthop_type=StaticRouteNextHopTypeChoices.PREFIX,
+        )
+        cls.nh_null = ACIL3OutStaticRouteNextHop.objects.create(
+            aci_static_route=cls.route_a,
+            nexthop_address="",
+            nexthop_type=StaticRouteNextHopTypeChoices.NONE,
+        )
+
+    def test_filter_by_logical_node(self):
+        qs = ACIL3OutStaticRouteFilterSet({"aci_logical_node_id": [self.ln_a.pk]}).qs
+        self.assertIn(self.route_a, qs)
+        self.assertNotIn(self.route_b, qs)
+
+    def test_filter_by_prefix(self):
+        qs = ACIL3OutStaticRouteFilterSet({"prefix": ["10.0.0.0/8"]}).qs
+        self.assertIn(self.route_a, qs)
+        self.assertNotIn(self.route_b, qs)
+
+    def test_filter_nexthop_by_static_route(self):
+        qs = ACIL3OutStaticRouteNextHopFilterSet({"aci_static_route_id": [self.route_a.pk]}).qs
+        self.assertIn(self.nh_prefix, qs)
+        self.assertIn(self.nh_null, qs)
+        self.assertEqual(qs.count(), 2)
+
+    def test_filter_nexthop_by_type_prefix(self):
+        qs = ACIL3OutStaticRouteNextHopFilterSet(
+            {"nexthop_type": [StaticRouteNextHopTypeChoices.PREFIX]}
+        ).qs
+        self.assertIn(self.nh_prefix, qs)
+        self.assertNotIn(self.nh_null, qs)
+
+    def test_filter_nexthop_by_type_none(self):
+        qs = ACIL3OutStaticRouteNextHopFilterSet(
+            {"nexthop_type": [StaticRouteNextHopTypeChoices.NONE]}
+        ).qs
+        self.assertIn(self.nh_null, qs)
+        self.assertNotIn(self.nh_prefix, qs)

@@ -5,7 +5,7 @@ from netbox.plugins import PluginTemplateExtension
 
 from ..models.bindings import ACIStaticPortBinding
 from ..models.fabric import ACINode
-from ..models.l3out import ACILogicalNode
+from ..models.l3out import ACIL3OutStaticRoute, ACILogicalNode
 
 
 class ACIDeviceContextPanel(PluginTemplateExtension):
@@ -33,6 +33,7 @@ class ACIDeviceContextPanel(PluginTemplateExtension):
 
         aci_node = self._resolve_node(device)
         logical_nodes = []
+        logical_node_static_routes = []  # list of (logical_node, routes) pairs
         if aci_node is not None:
             logical_nodes = list(
                 ACILogicalNode.objects.filter(aci_node=aci_node)
@@ -43,6 +44,11 @@ class ACIDeviceContextPanel(PluginTemplateExtension):
                 )
                 .order_by("aci_logical_node_profile__aci_l3out__name", "name")[:50]
             )
+            for ln in logical_nodes:
+                routes = list(
+                    ACIL3OutStaticRoute.objects.filter(aci_logical_node=ln).order_by("prefix")[:10]
+                )
+                logical_node_static_routes.append((ln, routes))
         bindings_qs = (
             ACIStaticPortBinding.objects.filter(dcim_interface__device_id=device.pk)
             .select_related(
@@ -82,5 +88,9 @@ class ACIDeviceContextPanel(PluginTemplateExtension):
                 "vrf_count": len(vrf_ids),
                 "binding_count": len(bindings),
                 "logical_nodes": logical_nodes,
+                "logical_node_static_routes": logical_node_static_routes,
+                "static_routes_by_logical_node": {
+                    ln.pk: routes for ln, routes in logical_node_static_routes
+                },
             },
         )
