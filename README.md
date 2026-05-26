@@ -11,9 +11,13 @@ Interface profiles, L3Outs (with BGP / OSPF / EIGRP peers and External
 EPGs), and **per-interface EPG/BD/Subnet bindings** so you can see the
 ACI policy applied to any device or port at a glance.
 
-[![PyPI](https://img.shields.io/pypi/v/netbox-cisco-aci.svg)](https://pypi.org/project/netbox-cisco-aci/)
-[![Python versions](https://img.shields.io/pypi/pyversions/netbox-cisco-aci.svg)](https://pypi.org/project/netbox-cisco-aci/)
+[![CI](https://github.com/droolingtaz/netbox-cisco-aci/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/droolingtaz/netbox-cisco-aci/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/droolingtaz/netbox-cisco-aci/branch/main/graph/badge.svg)](https://codecov.io/gh/droolingtaz/netbox-cisco-aci)
+[![PyPI](https://img.shields.io/pypi/v/netbox-cisco-aci.svg?label=pypi)](https://pypi.org/project/netbox-cisco-aci/)
+[![Python](https://img.shields.io/badge/python-3.12-blue.svg)](https://pypi.org/project/netbox-cisco-aci/)
+[![NetBox](https://img.shields.io/badge/netbox-4.5%20%7C%204.6-26a69a.svg)](COMPATIBILITY.md)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![Docs](https://img.shields.io/badge/docs-mkdocs--material-526CFE.svg)](https://droolingtaz.github.io/netbox-cisco-aci/)
 
 ## Compatibility
 

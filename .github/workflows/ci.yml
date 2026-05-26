@@ -110,9 +110,22 @@ jobs:
           cd netbox-cisco-aci
           pytest -v
 
-      - name: Upload coverage
+      - name: Upload coverage to Codecov
+        # Upload from one matrix entry only to keep the Codecov picture
+        # clean (the two matrix entries cover the same Python version
+        # and produce the same line numbers — uploading both just spams
+        # Codecov with duplicate reports).
         if: matrix.netbox-version == 'v4.6.0'
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
-          files: ./netbox-cisco-aci/.coverage
+          files: ./netbox-cisco-aci/coverage.xml
+          flags: netbox-${{ matrix.netbox-version }}
+          # Do not fail the build if Codecov is misconfigured or down —
+          # coverage is observability, not a gate. The real coverage gate
+          # is `--cov-fail-under=65` in pyproject.toml, which fails the
+          # `test` job locally before we even reach the upload step.
           fail_ci_if_error: false
+          # Token is optional for public repos; required for private.
+          # The workflow tries the secret; if absent, codecov-action
+          # falls back to tokenless OIDC where possible.
+          token: ${{ secrets.CODECOV_TOKEN }}

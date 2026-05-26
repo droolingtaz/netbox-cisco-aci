@@ -31,7 +31,7 @@ backplane. That puts hard limits on what a plugin can do safely.
 ## What the plugin will never do
 
 The full forbidden-pattern list lives in
-[`AGENTS.md`](../AGENTS.md) under
+[`AGENTS.md`](https://github.com/droolingtaz/netbox-cisco-aci/blob/main/AGENTS.md) under
 *"Cloud / Kubernetes compatibility (HARD CONTRACT)"*. The short
 version:
 
@@ -51,7 +51,7 @@ version:
 ## How the contract is enforced
 
 A dedicated CI job (`cloud-compat`) runs
-[`scripts/check_cloud_compat.py`](../scripts/check_cloud_compat.py) on
+[`scripts/check_cloud_compat.py`](https://github.com/droolingtaz/netbox-cisco-aci/blob/main/scripts/check_cloud_compat.py) on
 every push and pull request. The job is part of the required check set
 on `main` — a violation fails the build and blocks the merge.
 

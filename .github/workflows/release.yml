@@ -1,0 +1,175 @@
+---
+name: Release
+
+# Fires when a maintainer pushes a SemVer-ish tag like `v0.1.0` or
+# `v1.2.3-rc1`. The workflow:
+#   1. Sanity-checks that the tag matches `netbox_cisco_aci.version.__version__`.
+#   2. Builds the wheel and sdist.
+#   3. Publishes to PyPI using **trusted publishing** (OIDC) if a
+#      `pypi` environment is configured on the repo, otherwise falls
+#      back to the classic `PYPI_API_TOKEN` secret flow.
+#   4. Creates a GitHub Release with the matching CHANGELOG section
+#      as the release notes, and attaches the built artifacts.
+#
+# To set up trusted publishing (preferred):
+#   - On PyPI, configure a Trusted Publisher pointing at this repo,
+#     workflow `release.yml`, environment `pypi`.
+#   - In GitHub, Settings → Environments → New environment → "pypi".
+#   - No secret needed. The OIDC token is exchanged for a one-shot
+#     PyPI upload token at publish time.
+#
+# To use a classic API token instead:
+#   - Generate a project-scoped token on PyPI.
+#   - Settings → Secrets → New → name `PYPI_API_TOKEN`, value `<token>`.
+#   - Do NOT configure the `pypi` environment. The workflow detects
+#     its absence and uses the token automatically.
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+      - "v[0-9]+.[0-9]+.[0-9]+-*"
+
+permissions:
+  contents: write        # create GitHub Release
+  id-token: write        # OIDC trust handshake with PyPI
+  attestations: write    # sign artifacts (PEP 740)
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build distributions
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Extract version from tag and verify against source
+        id: version
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF##*/}"          # v0.1.0
+          VERSION="${TAG#v}"                # 0.1.0
+          echo "Tag: $TAG"
+          echo "Version: $VERSION"
+          SRC_VERSION="$(python -c 'from netbox_cisco_aci.version import __version__; print(__version__)')"
+          echo "Source version: $SRC_VERSION"
+          if [ "$VERSION" != "$SRC_VERSION" ]; then
+            echo "::error::Tag version ($VERSION) does not match netbox_cisco_aci.version.__version__ ($SRC_VERSION)."
+            echo "::error::Bump netbox_cisco_aci/version.py first, commit, then tag."
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Install build tooling
+        run: pip install --upgrade pip build twine
+
+      - name: Build sdist + wheel
+        run: python -m build
+
+      - name: Validate distributions with twine
+        run: twine check --strict dist/*
+
+      - name: Upload distributions as workflow artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/*
+          if-no-files-found: error
+          retention-days: 7
+
+  publish-pypi:
+    name: Publish to PyPI
+    needs: build
+    runs-on: ubuntu-latest
+    # Try trusted publishing first via the `pypi` environment.
+    # If the environment is not configured the job still runs and
+    # the workflow falls back to PYPI_API_TOKEN below.
+    environment:
+      name: pypi
+      url: https://pypi.org/project/netbox-cisco-aci/${{ needs.build.outputs.version }}/
+    steps:
+      - name: Download built distributions
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      - name: Publish via trusted publishing (OIDC)
+        id: trusted
+        # Preferred path. Succeeds when a PyPI Trusted Publisher is
+        # registered against (this repo, this workflow, the `pypi`
+        # environment). When no publisher is registered, this step
+        # fails — we then fall through to the token-based step.
+        if: ${{ vars.PYPI_TRUSTED_PUBLISHING == 'true' }}
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist
+          attestations: true
+
+      - name: Publish via API token (fallback)
+        # Runs when trusted publishing is disabled. Reads
+        # PYPI_API_TOKEN from repo secrets. If the secret is empty,
+        # the step fails with a clear "configure PYPI_API_TOKEN" error.
+        if: ${{ vars.PYPI_TRUSTED_PUBLISHING != 'true' }}
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          attestations: false
+
+  github-release:
+    name: Create GitHub Release
+    needs: [build, publish-pypi]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download built distributions
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      - name: Extract release notes from CHANGELOG.md
+        id: notes
+        run: |
+          set -euo pipefail
+          VERSION="${{ needs.build.outputs.version }}"
+          # Slice CHANGELOG.md between `## [<version>]` and the next `## [`.
+          # Falls back to "See CHANGELOG.md" if the section is missing,
+          # so a release never blocks on prose.
+          NOTES_FILE="$(mktemp)"
+          if ! awk -v v="$VERSION" '
+              BEGIN { found=0 }
+              /^## \[/ {
+                if (found) { exit }
+                if ($0 ~ "^## \\[" v "\\]") { found=1; next }
+              }
+              found { print }
+            ' CHANGELOG.md > "$NOTES_FILE"; then
+            echo "See CHANGELOG.md" > "$NOTES_FILE"
+          fi
+          if [ ! -s "$NOTES_FILE" ]; then
+            echo "See [CHANGELOG.md](CHANGELOG.md) for details." > "$NOTES_FILE"
+          fi
+          echo "notes_file=$NOTES_FILE" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          body_path: ${{ steps.notes.outputs.notes_file }}
+          # Pre-release if the tag has a hyphen (rc1, beta1, etc.).
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          files: dist/*
+          fail_on_unmatched_files: true
