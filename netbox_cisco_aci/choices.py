@@ -196,6 +196,60 @@ class ContractRelationRoleChoices(ChoiceSet):
     ]
 
 
+class SubjectFilterDirectionChoices(ChoiceSet):
+    """Direction of a filter attached to a subject."""
+
+    key = "ACISubjectFilter.direction"
+
+    BOTH = "both"
+    IN = "in"
+    OUT = "out"
+
+    CHOICES = [
+        (BOTH, _("Both")),
+        (IN, _("In (consumer-to-provider)")),
+        (OUT, _("Out (provider-to-consumer)")),
+    ]
+
+
+class SubjectFilterActionChoices(ChoiceSet):
+    """Action applied by a filter inside a subject."""
+
+    key = "ACISubjectFilter.action"
+
+    PERMIT = "permit"
+    DENY = "deny"
+    REDIRECT = "redirect"
+    COPY = "copy"
+    LOG = "log"
+
+    CHOICES = [
+        (PERMIT, _("Permit"), "green"),
+        (DENY, _("Deny"), "red"),
+        (REDIRECT, _("Redirect"), "blue"),
+        (COPY, _("Copy"), "purple"),
+        (LOG, _("Log"), "gray"),
+    ]
+
+
+class SubjectFilterPriorityChoices(ChoiceSet):
+    """APIC subject-filter priority levels."""
+
+    key = "ACISubjectFilter.priority"
+
+    DEFAULT = "default"
+    LEVEL1 = "level1"
+    LEVEL2 = "level2"
+    LEVEL3 = "level3"
+
+    CHOICES = [
+        (DEFAULT, _("Default")),
+        (LEVEL1, _("Level 1")),
+        (LEVEL2, _("Level 2")),
+        (LEVEL3, _("Level 3")),
+    ]
+
+
 class ContractFilterEntryEtherTypeChoices(ChoiceSet):
     """Ethertype values supported by contract filter entries."""
 

@@ -1,0 +1,40 @@
+{% extends 'generic/object.html' %}
+{% load helpers %}
+{% load i18n %}
+
+{% block content %}
+<div class="row">
+  <div class="col col-md-6">
+    <div class="card">
+      <h2 class="card-header">{% trans "Filter" %}</h2>
+      <table class="table table-hover attr-table">
+        <tr><th scope="row">{% trans "Name" %}</th><td>{{ object.name }}</td></tr>
+        <tr><th scope="row">{% trans "Alias" %}</th><td>{{ object.name_alias|placeholder }}</td></tr>
+        <tr><th scope="row">{% trans "Tenant" %}</th>
+          <td><a href="{{ object.aci_tenant.get_absolute_url }}">{{ object.aci_tenant }}</a></td></tr>
+        <tr><th scope="row">{% trans "Description" %}</th><td>{{ object.description|placeholder }}</td></tr>
+      </table>
+    </div>
+    {% include 'inc/panels/tags.html' %}
+    {% include 'inc/panels/custom_fields.html' %}
+  </div>
+  <div class="col col-md-6">
+    <div class="card">
+      <h2 class="card-header">{% trans "Entries" %}</h2>
+      <table class="table table-hover attr-table">
+        <thead><tr><th>Name</th><th>EtherType</th><th>IP proto</th></tr></thead>
+        {% for e in object.entries.all %}
+          <tr>
+            <td><a href="{{ e.get_absolute_url }}">{{ e.name }}</a></td>
+            <td>{{ e.ether_type }}</td>
+            <td>{{ e.ip_protocol|placeholder }}</td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="3" class="text-muted">{% trans "No entries." %}</td></tr>
+        {% endfor %}
+      </table>
+    </div>
+    {% include 'inc/panels/comments.html' %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends 'generic/object.html' %}
+{% load helpers %}
+{% load i18n %}
+
+{% block content %}
+<div class="row">
+  <div class="col col-md-6">
+    <div class="card">
+      <h2 class="card-header">{% trans "Filter Entry" %}</h2>
+      <table class="table table-hover attr-table">
+        <tr><th scope="row">{% trans "Name" %}</th><td>{{ object.name }}</td></tr>
+        <tr><th scope="row">{% trans "Alias" %}</th><td>{{ object.name_alias|placeholder }}</td></tr>
+        <tr><th scope="row">{% trans "Filter" %}</th>
+          <td><a href="{{ object.aci_filter.get_absolute_url }}">{{ object.aci_filter }}</a></td></tr>
+        <tr><th scope="row">{% trans "EtherType" %}</th><td>{{ object.ether_type }}</td></tr>
+        <tr><th scope="row">{% trans "IP protocol" %}</th><td>{{ object.ip_protocol|placeholder }}</td></tr>
+        <tr><th scope="row">{% trans "Description" %}</th><td>{{ object.description|placeholder }}</td></tr>
+      </table>
+    </div>
+    {% include 'inc/panels/tags.html' %}
+    {% include 'inc/panels/custom_fields.html' %}
+  </div>
+  <div class="col col-md-6">
+    <div class="card">
+      <h2 class="card-header">{% trans "L4 / TCP" %}</h2>
+      <table class="table table-hover attr-table">
+        <tr><th scope="row">{% trans "Source port range" %}</th>
+          <td>{{ object.source_port_from|default_if_none:"—" }} – {{ object.source_port_to|default_if_none:"—" }}</td></tr>
+        <tr><th scope="row">{% trans "Destination port range" %}</th>
+          <td>{{ object.destination_port_from|default_if_none:"—" }} – {{ object.destination_port_to|default_if_none:"—" }}</td></tr>
+        <tr><th scope="row">{% trans "TCP rules" %}</th><td>{{ object.tcp_rules|placeholder }}</td></tr>
+        <tr><th scope="row">{% trans "Stateful" %}</th><td>{{ object.stateful|yesno }}</td></tr>
+        <tr><th scope="row">{% trans "Match only fragments" %}</th><td>{{ object.match_only_fragments|yesno }}</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h2 class="card-header">{% trans "L2 / ICMP" %}</h2>
+      <table class="table table-hover attr-table">
+        <tr><th scope="row">{% trans "ARP opcode" %}</th><td>{{ object.arp_opcode|placeholder }}</td></tr>
+        <tr><th scope="row">{% trans "ICMPv4 type" %}</th><td>{{ object.icmp_v4_type|placeholder }}</td></tr>
+        <tr><th scope="row">{% trans "ICMPv6 type" %}</th><td>{{ object.icmp_v6_type|placeholder }}</td></tr>
+      </table>
+    </div>
+    {% include 'inc/panels/comments.html' %}
+  </div>
+</div>
+{% endblock %}

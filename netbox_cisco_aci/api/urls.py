@@ -31,6 +31,14 @@ from .views.access_profiles import (
     ACISwitchProfileSelectorViewSet,
     ACISwitchProfileViewSet,
 )
+from .views.contracts import (
+    ACIContractRelationViewSet,
+    ACIContractViewSet,
+    ACIFilterEntryViewSet,
+    ACIFilterViewSet,
+    ACISubjectFilterViewSet,
+    ACISubjectViewSet,
+)
 from .views.fabric import ACIFabricViewSet, ACINodeViewSet, ACIPodViewSet
 from .views.tenant import (
     ACIAppProfileViewSet,
@@ -85,5 +93,13 @@ router.register(
     "switch-interface-profile-attachments",
     ACISwitchProfileInterfaceProfileAttachmentViewSet,
 )
+
+# Phase 5 — Contracts / Subjects / Filters / Relations
+router.register("contracts", ACIContractViewSet)
+router.register("subjects", ACISubjectViewSet)
+router.register("filters", ACIFilterViewSet)
+router.register("filter-entries", ACIFilterEntryViewSet)
+router.register("subject-filters", ACISubjectFilterViewSet)
+router.register("contract-relations", ACIContractRelationViewSet)
 
 urlpatterns = router.urls

@@ -49,6 +49,15 @@ access_profile_items = (
     _item("aciswitchprofileinterfaceprofileattachment", "Switch ↔ Interface Attachments"),
 )
 
+contract_items = (
+    _item("acicontract", "Contracts"),
+    _item("acisubject", "Subjects"),
+    _item("acisubjectfilter", "Subject Filters"),
+    _item("acifilter", "Filters"),
+    _item("acifilterentry", "Filter Entries"),
+    _item("acicontractrelation", "Contract Relations"),
+)
+
 tenancy_items = (
     _item("acitenant", "Tenants"),
     _item("acivrf", "VRFs"),
@@ -68,8 +77,8 @@ menu = PluginMenu(
         ("Access Policies", access_items),
         ("Interface Policies", interface_policy_items),
         ("Access Profiles", access_profile_items),
-        # Subsequent phases extend this tuple — Contracts, L3Outs,
-        # Static Port Bindings.
+        ("Contracts", contract_items),
+        # Subsequent phases extend this tuple — L3Outs, Static Port Bindings.
     ),
     icon_class="mdi mdi-server-network",
 )

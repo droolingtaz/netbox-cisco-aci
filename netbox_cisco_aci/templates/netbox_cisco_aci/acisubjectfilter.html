@@ -1,0 +1,30 @@
+{% extends 'generic/object.html' %}
+{% load helpers %}
+{% load i18n %}
+
+{% block content %}
+<div class="row">
+  <div class="col col-md-6">
+    <div class="card">
+      <h2 class="card-header">{% trans "Subject Filter" %}</h2>
+      <table class="table table-hover attr-table">
+        <tr><th scope="row">{% trans "Name" %}</th><td>{{ object.name }}</td></tr>
+        <tr><th scope="row">{% trans "Alias" %}</th><td>{{ object.name_alias|placeholder }}</td></tr>
+        <tr><th scope="row">{% trans "Subject" %}</th>
+          <td><a href="{{ object.aci_subject.get_absolute_url }}">{{ object.aci_subject }}</a></td></tr>
+        <tr><th scope="row">{% trans "Filter" %}</th>
+          <td><a href="{{ object.aci_filter.get_absolute_url }}">{{ object.aci_filter }}</a></td></tr>
+        <tr><th scope="row">{% trans "Direction" %}</th><td>{{ object.get_direction_display }}</td></tr>
+        <tr><th scope="row">{% trans "Action" %}</th><td>{{ object.get_action_display }}</td></tr>
+        <tr><th scope="row">{% trans "Priority" %}</th><td>{{ object.get_priority_display }}</td></tr>
+        <tr><th scope="row">{% trans "Description" %}</th><td>{{ object.description|placeholder }}</td></tr>
+      </table>
+    </div>
+    {% include 'inc/panels/tags.html' %}
+    {% include 'inc/panels/custom_fields.html' %}
+  </div>
+  <div class="col col-md-6">
+    {% include 'inc/panels/comments.html' %}
+  </div>
+</div>
+{% endblock %}

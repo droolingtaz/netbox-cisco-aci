@@ -16,6 +16,7 @@ from .views import access as acc
 from .views import access_groups as acg
 from .views import access_policies as acp
 from .views import access_profiles as apr
+from .views import contracts as ctr
 from .views import fabric as fab
 from .views import tenant as tn
 
@@ -152,4 +153,20 @@ urlpatterns += _crud(
     apr,
     "ACISwitchProfileInterfaceProfileAttachment",
     "aciswitchprofileinterfaceprofileattachment",
+)
+
+# Phase 5 — Contracts / Subjects / Filters / Relations
+urlpatterns += _crud("contracts", "contract", ctr, "ACIContract", "acicontract")
+urlpatterns += _crud("subjects", "subject", ctr, "ACISubject", "acisubject")
+urlpatterns += _crud("filters", "filter", ctr, "ACIFilter", "acifilter")
+urlpatterns += _crud("filter-entries", "filter-entry", ctr, "ACIFilterEntry", "acifilterentry")
+urlpatterns += _crud(
+    "subject-filters", "subject-filter", ctr, "ACISubjectFilter", "acisubjectfilter"
+)
+urlpatterns += _crud(
+    "contract-relations",
+    "contract-relation",
+    ctr,
+    "ACIContractRelation",
+    "acicontractrelation",
 )

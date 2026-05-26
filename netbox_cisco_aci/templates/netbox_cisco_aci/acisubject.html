@@ -1,0 +1,46 @@
+{% extends 'generic/object.html' %}
+{% load helpers %}
+{% load i18n %}
+
+{% block content %}
+<div class="row">
+  <div class="col col-md-6">
+    <div class="card">
+      <h2 class="card-header">{% trans "Subject" %}</h2>
+      <table class="table table-hover attr-table">
+        <tr><th scope="row">{% trans "Name" %}</th><td>{{ object.name }}</td></tr>
+        <tr><th scope="row">{% trans "Alias" %}</th><td>{{ object.name_alias|placeholder }}</td></tr>
+        <tr><th scope="row">{% trans "Contract" %}</th>
+          <td><a href="{{ object.aci_contract.get_absolute_url }}">{{ object.aci_contract }}</a></td></tr>
+        <tr><th scope="row">{% trans "Apply both directions" %}</th>
+          <td>{{ object.apply_both_directions|yesno }}</td></tr>
+        <tr><th scope="row">{% trans "Reverse filter ports" %}</th>
+          <td>{{ object.reverse_filter_ports|yesno }}</td></tr>
+        <tr><th scope="row">{% trans "QoS class" %}</th><td>{{ object.qos_class|placeholder }}</td></tr>
+        <tr><th scope="row">{% trans "Target DSCP" %}</th><td>{{ object.target_dscp|placeholder }}</td></tr>
+        <tr><th scope="row">{% trans "Description" %}</th><td>{{ object.description|placeholder }}</td></tr>
+      </table>
+    </div>
+    {% include 'inc/panels/tags.html' %}
+    {% include 'inc/panels/custom_fields.html' %}
+  </div>
+  <div class="col col-md-6">
+    <div class="card">
+      <h2 class="card-header">{% trans "Filter Attachments" %}</h2>
+      <table class="table table-hover attr-table">
+        <thead><tr><th>Filter</th><th>Direction</th><th>Action</th></tr></thead>
+        {% for fa in object.filter_attachments.all %}
+          <tr>
+            <td><a href="{{ fa.aci_filter.get_absolute_url }}">{{ fa.aci_filter.name }}</a></td>
+            <td>{{ fa.get_direction_display }}</td>
+            <td>{{ fa.get_action_display }}</td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="3" class="text-muted">{% trans "No filters attached." %}</td></tr>
+        {% endfor %}
+      </table>
+    </div>
+    {% include 'inc/panels/comments.html' %}
+  </div>
+</div>
+{% endblock %}

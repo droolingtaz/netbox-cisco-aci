@@ -21,6 +21,14 @@ from .models.access import (
     ACIVLANPool,
     ACIVLANPoolBlock,
 )
+from .models.contracts import (
+    ACIContract,
+    ACIContractRelation,
+    ACIFilter,
+    ACIFilterEntry,
+    ACISubject,
+    ACISubjectFilter,
+)
 from .models.fabric import ACIFabric, ACINode, ACIPod
 from .models.tenant import (
     ACIVRF,
@@ -208,3 +216,42 @@ class ACIInterfaceProfileSelectorIndex(SearchIndex):
 class ACISwitchProfileInterfaceProfileAttachmentIndex(SearchIndex):
     model = ACISwitchProfileInterfaceProfileAttachment
     fields = ()
+
+
+# Phase 5 — Contracts / Subjects / Filters / Relations
+
+
+@register_search
+class ACIContractIndex(SearchIndex):
+    model = ACIContract
+    fields = (("name", 100), ("name_alias", 200), ("description", 500))
+
+
+@register_search
+class ACISubjectIndex(SearchIndex):
+    model = ACISubject
+    fields = (("name", 100), ("name_alias", 200), ("description", 500))
+
+
+@register_search
+class ACIFilterIndex(SearchIndex):
+    model = ACIFilter
+    fields = (("name", 100), ("name_alias", 200), ("description", 500))
+
+
+@register_search
+class ACIFilterEntryIndex(SearchIndex):
+    model = ACIFilterEntry
+    fields = (("name", 100), ("name_alias", 200), ("description", 500))
+
+
+@register_search
+class ACISubjectFilterIndex(SearchIndex):
+    model = ACISubjectFilter
+    fields = (("name", 100), ("name_alias", 200), ("description", 500))
+
+
+@register_search
+class ACIContractRelationIndex(SearchIndex):
+    model = ACIContractRelation
+    fields = (("name", 100), ("name_alias", 200), ("description", 500))
