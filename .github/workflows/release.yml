@@ -54,13 +54,23 @@ jobs:
 
       - name: Extract version from tag and verify against source
         id: version
+        # Loads `netbox_cisco_aci/version.py` directly via importlib so we
+        # bypass `netbox_cisco_aci/__init__.py` (which imports NetBox at
+        # module level and would crash on a vanilla runner without the
+        # full NetBox stack installed).
         run: |
           set -euo pipefail
           TAG="${GITHUB_REF##*/}"          # v0.1.0
           VERSION="${TAG#v}"                # 0.1.0
           echo "Tag: $TAG"
           echo "Version: $VERSION"
-          SRC_VERSION="$(python -c 'from netbox_cisco_aci.version import __version__; print(__version__)')"
+          SRC_VERSION="$(python -c '
+          import importlib.util
+          spec = importlib.util.spec_from_file_location("version", "netbox_cisco_aci/version.py")
+          mod = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(mod)
+          print(mod.__version__)
+          ')"
           echo "Source version: $SRC_VERSION"
           if [ "$VERSION" != "$SRC_VERSION" ]; then
             echo "::error::Tag version ($VERSION) does not match netbox_cisco_aci.version.__version__ ($SRC_VERSION)."
