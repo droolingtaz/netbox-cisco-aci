@@ -21,7 +21,7 @@ maintainers = [
 ]
 keywords = ["netbox", "netbox-plugin", "cisco", "aci", "apic"]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Framework :: Django",
     "Framework :: Django :: 5.0",
     "Framework :: Django :: 5.1",
@@ -101,11 +101,11 @@ ignore = ["E501"]   # ruff format handles line length
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "netbox.settings"
 python_files = ["test_*.py"]
-# `--cov-fail-under` is intentionally omitted during 0.x scaffolding
-# while the plugin surface is still growing rapidly. Once the data
-# model stabilises (~v0.5) the gate will be reintroduced at 65 and
-# the target lifted to 70 per the NBL plugin-catalogue guidance.
-addopts = "--strict-markers --cov=netbox_cisco_aci --cov-report=term-missing"
+# Coverage gate re-enabled at v0.1.0. The model surface is now stable
+# and the suite sits well above 65% (typically ~95%); the gate exists
+# to fail the build if a future PR drops coverage materially. Bump to
+# 70 (then 75) once we add the L3Out sync layer per the NBL guidance.
+addopts = "--strict-markers --cov=netbox_cisco_aci --cov-report=term-missing --cov-report=xml --cov-fail-under=65"
 
 [tool.coverage.run]
 source = ["netbox_cisco_aci"]

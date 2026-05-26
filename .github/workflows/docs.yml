@@ -1,0 +1,73 @@
+---
+name: Docs
+
+# Builds the MkDocs Material site from `docs/` + `mkdocs.yml` and
+# deploys it to GitHub Pages on every push to main. The first run
+# requires Pages to be enabled in repo settings:
+#   Settings → Pages → Build and deployment → Source: "GitHub Actions"
+# After that, every merge to main publishes automatically.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/**"
+      - "mkdocs.yml"
+      - "README.md"
+      - "CHANGELOG.md"
+      - "COMPATIBILITY.md"
+      - ".github/workflows/docs.yml"
+      - "pyproject.toml"
+  workflow_dispatch:
+
+# Allow only one concurrent docs deploy per ref. New pushes cancel
+# in-flight builds (the latest content is what we want live).
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    name: Build site
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install docs dependencies
+        run: |
+          pip install --upgrade pip
+          # Install just the [docs] extra so we don't pull in NetBox.
+          pip install -e ".[docs]"
+
+      - name: Build site (strict)
+        # `--strict` turns warnings into errors so broken anchors and
+        # missing nav targets fail the build instead of silently
+        # shipping a 404-laden site.
+        run: mkdocs build --strict
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    name: Deploy to Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

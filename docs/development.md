@@ -31,4 +31,4 @@ make shell       # NetBox shell with plugin pre-loaded
 5. Add tests under `netbox_cisco_aci/tests/` mirroring the package layout.
 6. Update `CHANGELOG.md`.
 
-See [AGENTS.md](../AGENTS.md) for the full conventions list.
+See [AGENTS.md](https://github.com/droolingtaz/netbox-cisco-aci/blob/main/AGENTS.md) for the full conventions list.

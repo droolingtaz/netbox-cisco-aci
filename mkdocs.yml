@@ -1,0 +1,94 @@
+# MkDocs configuration for the netbox-cisco-aci documentation site.
+#
+# Built and deployed by `.github/workflows/docs.yml` on every push to
+# main. Live site: https://droolingtaz.github.io/netbox-cisco-aci/
+#
+# To preview locally:
+#   pip install -e .[docs]
+#   mkdocs serve
+
+site_name: netbox-cisco-aci
+site_description: >-
+  NetBox plugin for operational visibility and documentation of Cisco
+  ACI fabrics — Tenants, VRFs, BDs, EPGs, contracts, AAEPs, L3Outs,
+  and per-interface EPG/BD/subnet bindings.
+site_url: https://droolingtaz.github.io/netbox-cisco-aci/
+repo_url: https://github.com/droolingtaz/netbox-cisco-aci
+repo_name: droolingtaz/netbox-cisco-aci
+edit_uri: edit/main/docs/
+
+# `docs_dir` is the default `docs/`. We also pull README and CHANGELOG
+# into the site via the include-markdown plugin (see `markdown_extensions`
+# / `plugins` below) so they stay single-sourced.
+
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.indexes
+    - navigation.top
+    - search.highlight
+    - search.share
+    - search.suggest
+    - content.code.copy
+    - content.code.annotate
+    - content.action.edit
+    - content.tabs.link
+    - toc.follow
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      accent: deep purple
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      accent: deep purple
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  icon:
+    repo: fontawesome/brands/github
+
+plugins:
+  - search
+  - include-markdown
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+
+nav:
+  - Home: index.md
+  - Compatibility:
+      - NetBox versions: compatibility.md
+      - Cloud / Kubernetes: cloud-compatibility.md
+  - Configuration: configuration.md
+  - Development: development.md
+  - Changelog: changelog.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/droolingtaz/netbox-cisco-aci
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/netbox-cisco-aci/
