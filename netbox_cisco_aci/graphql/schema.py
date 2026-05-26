@@ -26,6 +26,14 @@ from ..models.access import (
     ACIVLANPool,
     ACIVLANPoolBlock,
 )
+from ..models.contracts import (
+    ACIContract,
+    ACIContractRelation,
+    ACIFilter,
+    ACIFilterEntry,
+    ACISubject,
+    ACISubjectFilter,
+)
 from ..models.fabric import ACIFabric, ACINode, ACIPod
 from ..models.tenant import (
     ACIVRF,
@@ -183,6 +191,36 @@ class ACISwitchProfileInterfaceProfileAttachmentType:
     pass
 
 
+@strawberry_django.type(ACIContract, fields="__all__")
+class ACIContractType:
+    pass
+
+
+@strawberry_django.type(ACISubject, fields="__all__")
+class ACISubjectType:
+    pass
+
+
+@strawberry_django.type(ACIFilter, fields="__all__")
+class ACIFilterType:
+    pass
+
+
+@strawberry_django.type(ACIFilterEntry, fields="__all__")
+class ACIFilterEntryType:
+    pass
+
+
+@strawberry_django.type(ACISubjectFilter, fields="__all__")
+class ACISubjectFilterType:
+    pass
+
+
+@strawberry_django.type(ACIContractRelation, fields="__all__")
+class ACIContractRelationType:
+    pass
+
+
 # ---------------------------------------------------------------------------
 # Query root
 # ---------------------------------------------------------------------------
@@ -281,6 +319,24 @@ class Query:
     aci_switch_profile_interface_profile_attachment_list: list[
         ACISwitchProfileInterfaceProfileAttachmentType
     ] = strawberry_django.field()
+
+    aci_contract: ACIContractType | None = strawberry_django.field()
+    aci_contract_list: list[ACIContractType] = strawberry_django.field()
+
+    aci_subject: ACISubjectType | None = strawberry_django.field()
+    aci_subject_list: list[ACISubjectType] = strawberry_django.field()
+
+    aci_filter: ACIFilterType | None = strawberry_django.field()
+    aci_filter_list: list[ACIFilterType] = strawberry_django.field()
+
+    aci_filter_entry: ACIFilterEntryType | None = strawberry_django.field()
+    aci_filter_entry_list: list[ACIFilterEntryType] = strawberry_django.field()
+
+    aci_subject_filter: ACISubjectFilterType | None = strawberry_django.field()
+    aci_subject_filter_list: list[ACISubjectFilterType] = strawberry_django.field()
+
+    aci_contract_relation: ACIContractRelationType | None = strawberry_django.field()
+    aci_contract_relation_list: list[ACIContractRelationType] = strawberry_django.field()
 
 
 schema = [Query]

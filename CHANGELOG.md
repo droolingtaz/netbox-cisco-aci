@@ -13,6 +13,27 @@ and this project adheres to [Semantic Versioning 2.0.0](https://semver.org/).
 
 ### Added
 
+- **Phase 5 — Contracts, Subjects, Filters, and Contract Relations**:
+  - `ACIContract` (per-tenant, with `scope` and optional `qos_class`)
+  - `ACISubject` (children of a Contract) with a `reverse_filter_ports`
+    guard that is only valid when `apply_both_directions` is true
+  - `ACIFilter` (per-tenant) and `ACIFilterEntry` children with strict
+    validation: TCP/UDP port pairs require both source and destination
+    sides to be either fully specified or fully omitted; ARP opcode is
+    only allowed when `ether_type='arp'`; ICMP type/code is only allowed
+    when `ip_protocol` is `icmp` or `icmpv6`.
+  - `ACISubjectFilter` through-model linking Subjects to Filters with
+    optional per-binding `direction` / `action` / `priority` overrides.
+  - `ACIContractRelation` through-model attaching a Contract as
+    provider, consumer, or taboo to *either* an EPG **xor** an ESG
+    (enforced via a check constraint plus `clean()`).
+  - Cross-tenant carve-out: relations and bindings may reference
+    objects in the same tenant or in the `common` tenant of the same
+    fabric; everything else is rejected with a clear error.
+  - Full UI, REST API, GraphQL, search index, navigation, and
+    NetBoxTable coverage for all six new models.
+  - 173 new tests covering models, forms, filtersets, and API CRUD.
+
 - **Phase 4 — Switch & Interface Profiles and per-port policies**:
   - Six per-port policy templates: `ACILinkLevelPolicy`,
     `ACICDPInterfacePolicy`, `ACILLDPInterfacePolicy`,
