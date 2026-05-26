@@ -49,6 +49,8 @@ from .l3out import (  # noqa: F401
     ACIExternalEPGSubnetSerializer,
     ACIL3OutInterfaceSerializer,
     ACIL3OutSerializer,
+    ACIL3OutStaticRouteNextHopSerializer,
+    ACIL3OutStaticRouteSerializer,
     ACILogicalInterfaceProfileSerializer,
     ACILogicalNodeProfileSerializer,
     ACILogicalNodeSerializer,

@@ -631,8 +631,8 @@ class ACIL3OutStaticRouteAPITests(
         "description",
         "display",
         "id",
-        "prefix",
         "preference",
+        "prefix",
         "url",
     ]
     bulk_update_data = {"description": "Bulk-updated"}

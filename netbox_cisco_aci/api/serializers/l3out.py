@@ -520,8 +520,8 @@ class ACIL3OutStaticRouteSerializer(_AutoNameMixin, NetBoxModelSerializer):
             "description",
             "display",
             "id",
-            "prefix",
             "preference",
+            "prefix",
             "url",
         )
 
