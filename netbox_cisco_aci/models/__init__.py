@@ -29,6 +29,19 @@ from .contracts import (  # noqa: F401
     ACISubjectFilter,
 )
 from .fabric import ACIFabric, ACINode, ACIPod  # noqa: F401
+from .l3out import (  # noqa: F401
+    ACIBGPPeer,
+    ACIEIGRPInterfacePolicy,
+    ACIExternalEPG,
+    ACIExternalEPGSubnet,
+    ACIL3Out,
+    ACIL3OutInterface,
+    ACILogicalInterfaceProfile,
+    ACILogicalNode,
+    ACILogicalNodeProfile,
+    ACIOSPFInterfaceAttachment,
+    ACIOSPFInterfacePolicy,
+)
 from .tenant import (  # noqa: F401
     ACIVRF,
     ACIAppProfile,

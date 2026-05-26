@@ -60,7 +60,10 @@ class ACISubjectFilterViewSet(NetBoxModelViewSet):
 
 class ACIContractRelationViewSet(NetBoxModelViewSet):
     queryset = ACIContractRelation.objects.select_related(
-        "aci_contract", "aci_endpoint_group", "aci_endpoint_security_group"
+        "aci_contract",
+        "aci_endpoint_group",
+        "aci_endpoint_security_group",
+        "aci_external_epg",
     )
     serializer_class = ACIContractRelationSerializer
     filterset_class = ACIContractRelationFilterSet

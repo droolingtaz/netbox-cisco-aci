@@ -41,6 +41,19 @@ from ..models.contracts import (
     ACISubjectFilter,
 )
 from ..models.fabric import ACIFabric, ACINode, ACIPod
+from ..models.l3out import (
+    ACIBGPPeer,
+    ACIEIGRPInterfacePolicy,
+    ACIExternalEPG,
+    ACIExternalEPGSubnet,
+    ACIL3Out,
+    ACIL3OutInterface,
+    ACILogicalInterfaceProfile,
+    ACILogicalNode,
+    ACILogicalNodeProfile,
+    ACIOSPFInterfaceAttachment,
+    ACIOSPFInterfacePolicy,
+)
 from ..models.tenant import (
     ACIVRF,
     ACIAppProfile,
@@ -247,6 +260,61 @@ class ACIInterfaceFabricMembershipType:
     pass
 
 
+@strawberry_django.type(ACIL3Out, fields="__all__")
+class ACIL3OutType:
+    pass
+
+
+@strawberry_django.type(ACILogicalNodeProfile, fields="__all__")
+class ACILogicalNodeProfileType:
+    pass
+
+
+@strawberry_django.type(ACILogicalNode, fields="__all__")
+class ACILogicalNodeType:
+    pass
+
+
+@strawberry_django.type(ACILogicalInterfaceProfile, fields="__all__")
+class ACILogicalInterfaceProfileType:
+    pass
+
+
+@strawberry_django.type(ACIL3OutInterface, fields="__all__")
+class ACIL3OutInterfaceType:
+    pass
+
+
+@strawberry_django.type(ACIBGPPeer, fields="__all__")
+class ACIBGPPeerType:
+    pass
+
+
+@strawberry_django.type(ACIOSPFInterfacePolicy, fields="__all__")
+class ACIOSPFInterfacePolicyType:
+    pass
+
+
+@strawberry_django.type(ACIOSPFInterfaceAttachment, fields="__all__")
+class ACIOSPFInterfaceAttachmentType:
+    pass
+
+
+@strawberry_django.type(ACIEIGRPInterfacePolicy, fields="__all__")
+class ACIEIGRPInterfacePolicyType:
+    pass
+
+
+@strawberry_django.type(ACIExternalEPG, fields="__all__")
+class ACIExternalEPGType:
+    pass
+
+
+@strawberry_django.type(ACIExternalEPGSubnet, fields="__all__")
+class ACIExternalEPGSubnetType:
+    pass
+
+
 # ---------------------------------------------------------------------------
 # Query root
 # ---------------------------------------------------------------------------
@@ -379,6 +447,49 @@ class Query:
     aci_interface_fabric_membership_list: list[ACIInterfaceFabricMembershipType] = (
         strawberry_django.field()
     )
+
+    aci_l3out: ACIL3OutType | None = strawberry_django.field()
+    aci_l3out_list: list[ACIL3OutType] = strawberry_django.field()
+
+    aci_logical_node_profile: ACILogicalNodeProfileType | None = strawberry_django.field()
+    aci_logical_node_profile_list: list[ACILogicalNodeProfileType] = strawberry_django.field()
+
+    aci_logical_node: ACILogicalNodeType | None = strawberry_django.field()
+    aci_logical_node_list: list[ACILogicalNodeType] = strawberry_django.field()
+
+    aci_logical_interface_profile: ACILogicalInterfaceProfileType | None = (
+        strawberry_django.field()
+    )
+    aci_logical_interface_profile_list: list[ACILogicalInterfaceProfileType] = (
+        strawberry_django.field()
+    )
+
+    aci_l3out_interface: ACIL3OutInterfaceType | None = strawberry_django.field()
+    aci_l3out_interface_list: list[ACIL3OutInterfaceType] = strawberry_django.field()
+
+    aci_bgp_peer: ACIBGPPeerType | None = strawberry_django.field()
+    aci_bgp_peer_list: list[ACIBGPPeerType] = strawberry_django.field()
+
+    aci_ospf_interface_policy: ACIOSPFInterfacePolicyType | None = strawberry_django.field()
+    aci_ospf_interface_policy_list: list[ACIOSPFInterfacePolicyType] = strawberry_django.field()
+
+    aci_ospf_interface_attachment: ACIOSPFInterfaceAttachmentType | None = (
+        strawberry_django.field()
+    )
+    aci_ospf_interface_attachment_list: list[ACIOSPFInterfaceAttachmentType] = (
+        strawberry_django.field()
+    )
+
+    aci_eigrp_interface_policy: ACIEIGRPInterfacePolicyType | None = strawberry_django.field()
+    aci_eigrp_interface_policy_list: list[ACIEIGRPInterfacePolicyType] = (
+        strawberry_django.field()
+    )
+
+    aci_external_epg: ACIExternalEPGType | None = strawberry_django.field()
+    aci_external_epg_list: list[ACIExternalEPGType] = strawberry_django.field()
+
+    aci_external_epg_subnet: ACIExternalEPGSubnetType | None = strawberry_django.field()
+    aci_external_epg_subnet_list: list[ACIExternalEPGSubnetType] = strawberry_django.field()
 
 
 schema = [Query]

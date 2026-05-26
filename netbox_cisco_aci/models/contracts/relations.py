@@ -12,11 +12,11 @@ from ..base import ACIBaseModel
 
 
 class ACIContractRelation(ACIBaseModel):
-    """Provider / consumer relationship from an EPG or ESG to a Contract.
+    """Provider / consumer relationship from an EPG / ESG / External EPG to a Contract.
 
     Exactly one of ``aci_endpoint_group`` / ``aci_endpoint_security_group``
-    must be set. The Contract's tenant must match the EPG/ESG's tenant
-    or be the ``common`` tenant.
+    / ``aci_external_epg`` must be set. The Contract's tenant must match the
+    target's tenant or be the ``common`` tenant.
     """
 
     aci_contract = models.ForeignKey(
@@ -41,6 +41,14 @@ class ACIContractRelation(ACIBaseModel):
         null=True,
         verbose_name=_("ACI Endpoint Security Group"),
     )
+    aci_external_epg = models.ForeignKey(
+        to="netbox_cisco_aci.ACIExternalEPG",
+        on_delete=models.CASCADE,
+        related_name="contract_relations",
+        blank=True,
+        null=True,
+        verbose_name=_("ACI External EPG"),
+    )
     role = models.CharField(
         verbose_name=_("Role"),
         max_length=16,
@@ -51,6 +59,7 @@ class ACIContractRelation(ACIBaseModel):
         "aci_contract",
         "aci_endpoint_group",
         "aci_endpoint_security_group",
+        "aci_external_epg",
         "role",
         "description",
     )
@@ -70,10 +79,19 @@ class ACIContractRelation(ACIBaseModel):
                 condition=Q(aci_endpoint_security_group__isnull=False),
                 name="netbox_cisco_aci_acicontractrelation_esg_unique",
             ),
+            models.UniqueConstraint(
+                fields=("aci_contract", "aci_external_epg", "role"),
+                condition=Q(aci_external_epg__isnull=False),
+                name="netbox_cisco_aci_acicontractrelation_extepg_unique",
+            ),
         )
 
     def __str__(self) -> str:
-        target = self.aci_endpoint_group or self.aci_endpoint_security_group
+        target = (
+            self.aci_endpoint_group
+            or self.aci_endpoint_security_group
+            or self.aci_external_epg
+        )
         target_name = target.name if target is not None else "<unattached>"
         return f"{self.aci_contract.name} {self.role} {target_name}"
 
@@ -82,22 +100,26 @@ class ACIContractRelation(ACIBaseModel):
 
     @property
     def target(self):
-        return self.aci_endpoint_group or self.aci_endpoint_security_group
+        return (
+            self.aci_endpoint_group
+            or self.aci_endpoint_security_group
+            or self.aci_external_epg
+        )
 
     def clean(self) -> None:
         super().clean()
         errors: dict[str, str] = {}
 
-        # XOR: exactly one of EPG / ESG must be set.
+        # XOR: exactly one of EPG / ESG / External EPG must be set.
         has_epg = self.aci_endpoint_group_id is not None
         has_esg = self.aci_endpoint_security_group_id is not None
-        if has_epg == has_esg:
+        has_extepg = self.aci_external_epg_id is not None
+        set_count = sum((has_epg, has_esg, has_extepg))
+        if set_count != 1:
             errors["aci_endpoint_group"] = _(
-                "Exactly one of EPG or ESG must be set on a contract relation."
+                "Exactly one of EPG, ESG, or External EPG must be set on a contract relation."
             )
 
-        # Tenant compatibility — Contract must share tenant with the EPG/ESG,
-        # or live in the ``common`` tenant.
         if errors:
             raise ValidationError(errors)
 
@@ -106,8 +128,14 @@ class ACIContractRelation(ACIBaseModel):
         target_tenant_id = None
         if has_epg:
             target_tenant_id = getattr(self.aci_endpoint_group, "aci_tenant_id", None)
+        elif has_esg:
+            target_tenant_id = getattr(
+                self.aci_endpoint_security_group, "aci_tenant_id", None
+            )
         else:
-            target_tenant_id = getattr(self.aci_endpoint_security_group, "aci_tenant_id", None)
+            ext = self.aci_external_epg
+            l3out = getattr(ext, "aci_l3out", None)
+            target_tenant_id = getattr(l3out, "aci_tenant_id", None) if l3out else None
 
         if (
             contract_tenant is not None
@@ -119,7 +147,7 @@ class ACIContractRelation(ACIBaseModel):
                 {
                     "aci_contract": _(
                         "Contract must belong to the same tenant as the "
-                        "EPG/ESG, or to the `common` tenant."
+                        "EPG/ESG/External EPG, or to the `common` tenant."
                     )
                 }
             )

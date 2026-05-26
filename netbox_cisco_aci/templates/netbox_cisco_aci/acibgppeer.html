@@ -1,0 +1,35 @@
+{% extends 'generic/object.html' %}
+{% load helpers %}
+{% load i18n %}
+
+{% block content %}
+<div class="row">
+  <div class="col col-md-6">
+    <div class="card">
+      <h2 class="card-header">{% trans "BGP Peer" %}</h2>
+      <table class="table table-hover attr-table">
+        <tr><th scope="row">{% trans "Name" %}</th><td>{{ object.name }}</td></tr>
+        <tr><th scope="row">{% trans "Alias" %}</th><td>{{ object.name_alias|placeholder }}</td></tr>
+        <tr><th scope="row">{% trans "Logical Interface Profile" %}</th>
+          <td>{% if object.aci_logical_interface_profile %}<a href="{{ object.aci_logical_interface_profile.get_absolute_url }}">{{ object.aci_logical_interface_profile }}</a>{% else %}{{ ""|placeholder }}{% endif %}</td></tr>
+        <tr><th scope="row">{% trans "Logical Node Profile" %}</th>
+          <td>{% if object.aci_logical_node_profile %}<a href="{{ object.aci_logical_node_profile.get_absolute_url }}">{{ object.aci_logical_node_profile }}</a>{% else %}{{ ""|placeholder }}{% endif %}</td></tr>
+        <tr><th scope="row">{% trans "Peer address" %}</th><td>{{ object.peer_address }}</td></tr>
+        <tr><th scope="row">{% trans "Remote ASN" %}</th><td>{{ object.remote_asn }}</td></tr>
+        <tr><th scope="row">{% trans "Local ASN" %}</th><td>{{ object.local_asn|placeholder }}</td></tr>
+        <tr><th scope="row">{% trans "eBGP multihop TTL" %}</th><td>{{ object.ebgp_multihop_ttl|placeholder }}</td></tr>
+        <tr><th scope="row">{% trans "BGP controls" %}</th><td>{{ object.bgp_controls|placeholder }}</td></tr>
+        <tr><th scope="row">{% trans "Peer controls" %}</th><td>{{ object.peer_controls|placeholder }}</td></tr>
+        <tr><th scope="row">{% trans "Address-family controls" %}</th><td>{{ object.address_family_controls|placeholder }}</td></tr>
+        <tr><th scope="row">{% trans "Private-AS controls" %}</th><td>{{ object.private_asn_controls|placeholder }}</td></tr>
+        <tr><th scope="row">{% trans "Description" %}</th><td>{{ object.description|placeholder }}</td></tr>
+      </table>
+    </div>
+    {% include 'inc/panels/tags.html' %}
+    {% include 'inc/panels/custom_fields.html' %}
+  </div>
+  <div class="col col-md-6">
+    {% include 'inc/panels/comments.html' %}
+  </div>
+</div>
+{% endblock %}

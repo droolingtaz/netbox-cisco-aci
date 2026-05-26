@@ -12,6 +12,7 @@ from ..choices import (
     SubjectFilterActionChoices,
     SubjectFilterDirectionChoices,
 )
+from ..models.l3out import ACIExternalEPG
 from ..models.contracts import (
     ACIContract,
     ACIContractRelation,
@@ -125,6 +126,11 @@ class ACIContractRelationFilterSet(_NameAliasDescriptionSearchMixin, NetBoxModel
         queryset=ACIEndpointSecurityGroup.objects.all(),
         field_name="aci_endpoint_security_group",
         label="ESG (ID)",
+    )
+    aci_external_epg_id = django_filters.ModelMultipleChoiceFilter(
+        queryset=ACIExternalEPG.objects.all(),
+        field_name="aci_external_epg",
+        label="External EPG (ID)",
     )
     role = django_filters.MultipleChoiceFilter(choices=ContractRelationRoleChoices)
 

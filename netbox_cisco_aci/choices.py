@@ -477,6 +477,38 @@ class RoutingProtocolChoices(ChoiceSet):
     ]
 
 
+class OSPFNetworkTypeChoices(ChoiceSet):
+    """OSPF interface network type (``ospfIfPol.nwT``)."""
+
+    key = "ACIOSPFInterfacePolicy.network_type"
+
+    UNSPECIFIED = "unspecified"
+    POINT_TO_POINT = "pt-to-pt"
+    BROADCAST = "bcast"
+
+    CHOICES = [
+        (UNSPECIFIED, _("Unspecified")),
+        (POINT_TO_POINT, _("Point-to-point")),
+        (BROADCAST, _("Broadcast")),
+    ]
+
+
+class OSPFAreaTypeChoices(ChoiceSet):
+    """OSPF area type used by an L3Out OSPF interface attachment."""
+
+    key = "ACIOSPFInterfaceAttachment.ospf_area_type"
+
+    REGULAR = "regular"
+    STUB = "stub"
+    NSSA = "nssa"
+
+    CHOICES = [
+        (REGULAR, _("Regular")),
+        (STUB, _("Stub")),
+        (NSSA, _("NSSA")),
+    ]
+
+
 # ---------------------------------------------------------------------------
 # uSeg EPG attributes
 # ---------------------------------------------------------------------------

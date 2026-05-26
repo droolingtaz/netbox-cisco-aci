@@ -21,6 +21,7 @@ from ..choices import (
     SubjectFilterDirectionChoices,
     SubjectFilterPriorityChoices,
 )
+from ..models.l3out import ACIExternalEPG
 from ..models.contracts import (
     ACIContract,
     ACIContractRelation,
@@ -397,6 +398,9 @@ class ACIContractRelationForm(NetBoxModelForm):
     aci_endpoint_security_group = DynamicModelChoiceField(
         queryset=ACIEndpointSecurityGroup.objects.all(), required=False, label=_("ESG")
     )
+    aci_external_epg = DynamicModelChoiceField(
+        queryset=ACIExternalEPG.objects.all(), required=False, label=_("External EPG")
+    )
 
     class Meta:
         model = ACIContractRelation
@@ -404,6 +408,7 @@ class ACIContractRelationForm(NetBoxModelForm):
             "aci_contract",
             "aci_endpoint_group",
             "aci_endpoint_security_group",
+            "aci_external_epg",
             "role",
             "name",
             "name_alias",
@@ -430,6 +435,9 @@ class ACIContractRelationFilterForm(NetBoxModelFilterSetForm):
     aci_endpoint_security_group_id = DynamicModelMultipleChoiceField(
         queryset=ACIEndpointSecurityGroup.objects.all(), required=False, label=_("ESG")
     )
+    aci_external_epg_id = DynamicModelMultipleChoiceField(
+        queryset=ACIExternalEPG.objects.all(), required=False, label=_("External EPG")
+    )
     role = forms.MultipleChoiceField(choices=ContractRelationRoleChoices, required=False)
 
 
@@ -441,6 +449,9 @@ class ACIContractRelationImportForm(NetBoxModelImportForm):
     aci_endpoint_security_group = forms.ModelChoiceField(
         queryset=ACIEndpointSecurityGroup.objects.all(), to_field_name="name", required=False
     )
+    aci_external_epg = forms.ModelChoiceField(
+        queryset=ACIExternalEPG.objects.all(), to_field_name="name", required=False
+    )
     role = forms.ChoiceField(choices=ContractRelationRoleChoices)
 
     class Meta:
@@ -449,6 +460,7 @@ class ACIContractRelationImportForm(NetBoxModelImportForm):
             "aci_contract",
             "aci_endpoint_group",
             "aci_endpoint_security_group",
+            "aci_external_epg",
             "role",
             "name",
             "name_alias",

@@ -50,6 +50,7 @@ class _AutoNameMixin:
                     "binding_a",
                     "binding_b",
                     "encap_vlan",
+                    "aci_logical_interface_profile",
                     "name",
                 ):
                     if hasattr(self.instance, field):

@@ -19,6 +19,7 @@ from .views import access_profiles as apr
 from .views import bindings as bnd
 from .views import contracts as ctr
 from .views import fabric as fab
+from .views import l3out as l3o
 from .views import tenant as tn
 
 app_name = "netbox_cisco_aci"
@@ -200,4 +201,59 @@ urlpatterns += _crud(
     bnd,
     "ACIInterfaceFabricMembership",
     "aciinterfacefabricmembership",
+)
+
+# Phase 7 — L3Outs
+urlpatterns += _crud("l3outs", "l3out", l3o, "ACIL3Out", "acil3out")
+urlpatterns += _crud(
+    "logical-node-profiles",
+    "lnp",
+    l3o,
+    "ACILogicalNodeProfile",
+    "acilogicalnodeprofile",
+)
+urlpatterns += _crud(
+    "logical-nodes", "ln", l3o, "ACILogicalNode", "acilogicalnode"
+)
+urlpatterns += _crud(
+    "logical-interface-profiles",
+    "lip",
+    l3o,
+    "ACILogicalInterfaceProfile",
+    "acilogicalinterfaceprofile",
+)
+urlpatterns += _crud(
+    "l3out-interfaces", "l3if", l3o, "ACIL3OutInterface", "acil3outinterface"
+)
+urlpatterns += _crud("bgp-peers", "bgp", l3o, "ACIBGPPeer", "acibgppeer")
+urlpatterns += _crud(
+    "ospf-interface-policies",
+    "ospf-pol",
+    l3o,
+    "ACIOSPFInterfacePolicy",
+    "aciospfinterfacepolicy",
+)
+urlpatterns += _crud(
+    "ospf-interface-attachments",
+    "ospf-att",
+    l3o,
+    "ACIOSPFInterfaceAttachment",
+    "aciospfinterfaceattachment",
+)
+urlpatterns += _crud(
+    "eigrp-interface-policies",
+    "eigrp-pol",
+    l3o,
+    "ACIEIGRPInterfacePolicy",
+    "acieigrpinterfacepolicy",
+)
+urlpatterns += _crud(
+    "external-epgs", "ext-epg", l3o, "ACIExternalEPG", "aciexternalepg"
+)
+urlpatterns += _crud(
+    "external-epg-subnets",
+    "ext-epg-sub",
+    l3o,
+    "ACIExternalEPGSubnet",
+    "aciexternalepgsubnet",
 )

@@ -184,6 +184,7 @@ class ACIContractRelationTable(NetBoxTable):
     aci_contract = tables.Column(linkify=True, verbose_name="Contract")
     aci_endpoint_group = tables.Column(linkify=True, verbose_name="EPG")
     aci_endpoint_security_group = tables.Column(linkify=True, verbose_name="ESG")
+    aci_external_epg = tables.Column(linkify=True, verbose_name="External EPG")
     role = ChoiceFieldColumn()
     tags = columns.TagColumn(url_name="plugins:netbox_cisco_aci:acicontractrelation_list")
 
@@ -195,6 +196,7 @@ class ACIContractRelationTable(NetBoxTable):
             "aci_contract",
             "aci_endpoint_group",
             "aci_endpoint_security_group",
+            "aci_external_epg",
             "role",
             "name",
             "description",
@@ -205,4 +207,5 @@ class ACIContractRelationTable(NetBoxTable):
             "role",
             "aci_endpoint_group",
             "aci_endpoint_security_group",
+            "aci_external_epg",
         )

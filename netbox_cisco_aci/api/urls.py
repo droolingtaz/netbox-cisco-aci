@@ -46,6 +46,19 @@ from .views.contracts import (
     ACISubjectViewSet,
 )
 from .views.fabric import ACIFabricViewSet, ACINodeViewSet, ACIPodViewSet
+from .views.l3out import (
+    ACIBGPPeerViewSet,
+    ACIEIGRPInterfacePolicyViewSet,
+    ACIExternalEPGSubnetViewSet,
+    ACIExternalEPGViewSet,
+    ACIL3OutInterfaceViewSet,
+    ACIL3OutViewSet,
+    ACILogicalInterfaceProfileViewSet,
+    ACILogicalNodeProfileViewSet,
+    ACILogicalNodeViewSet,
+    ACIOSPFInterfaceAttachmentViewSet,
+    ACIOSPFInterfacePolicyViewSet,
+)
 from .views.tenant import (
     ACIAppProfileViewSet,
     ACIBridgeDomainSubnetViewSet,
@@ -113,5 +126,18 @@ router.register("static-port-bindings", ACIStaticPortBindingViewSet)
 router.register("vpc-binding-pairs", ACIVPCBindingPairViewSet)
 router.register("domain-bindings", ACIDomainBindingViewSet)
 router.register("interface-fabric-memberships", ACIInterfaceFabricMembershipViewSet)
+
+# Phase 7 — L3Outs
+router.register("l3outs", ACIL3OutViewSet)
+router.register("logical-node-profiles", ACILogicalNodeProfileViewSet)
+router.register("logical-nodes", ACILogicalNodeViewSet)
+router.register("logical-interface-profiles", ACILogicalInterfaceProfileViewSet)
+router.register("l3out-interfaces", ACIL3OutInterfaceViewSet)
+router.register("bgp-peers", ACIBGPPeerViewSet)
+router.register("ospf-interface-policies", ACIOSPFInterfacePolicyViewSet)
+router.register("ospf-interface-attachments", ACIOSPFInterfaceAttachmentViewSet)
+router.register("eigrp-interface-policies", ACIEIGRPInterfacePolicyViewSet)
+router.register("external-epgs", ACIExternalEPGViewSet)
+router.register("external-epg-subnets", ACIExternalEPGSubnetViewSet)
 
 urlpatterns = router.urls

@@ -4,6 +4,7 @@ from netbox.plugins import PluginTemplateExtension
 
 from ..models.bindings import ACIInterfaceFabricMembership, ACIStaticPortBinding
 from ..models.contracts import ACIContractRelation
+from ..models.l3out import ACIBGPPeer, ACIL3OutInterface
 
 
 class ACIInterfaceContextPanel(PluginTemplateExtension):
@@ -30,7 +31,27 @@ class ACIInterfaceContextPanel(PluginTemplateExtension):
             .first()
         )
 
-        if not bindings and membership is None:
+        l3out_interfaces = list(
+            ACIL3OutInterface.objects.filter(dcim_interface=interface)
+            .select_related(
+                "aci_logical_interface_profile",
+                "aci_logical_interface_profile__aci_logical_node_profile",
+                "aci_logical_interface_profile__aci_logical_node_profile__aci_l3out",
+            )[:25]
+        )
+        bgp_peers = []
+        if l3out_interfaces:
+            lip_ids = [i.aci_logical_interface_profile_id for i in l3out_interfaces]
+            bgp_peers = list(
+                ACIBGPPeer.objects.filter(
+                    aci_logical_interface_profile_id__in=lip_ids
+                ).select_related(
+                    "aci_logical_interface_profile",
+                    "aci_logical_node_profile",
+                )[:25]
+            )
+
+        if not bindings and membership is None and not l3out_interfaces:
             return ""
 
         # Dedup BDs/Subnets/VRFs by id for display.
@@ -62,5 +83,7 @@ class ACIInterfaceContextPanel(PluginTemplateExtension):
                 "subnets": subnets,
                 "provided_contracts": provided_contracts,
                 "consumed_contracts": consumed_contracts,
+                "l3out_interfaces": l3out_interfaces,
+                "bgp_peers": bgp_peers,
             },
         )

@@ -11,6 +11,7 @@ from ...models.contracts import (
     ACISubject,
     ACISubjectFilter,
 )
+from .l3out import ACIExternalEPGSerializer
 from .tenant import (
     ACIEndpointGroupSerializer,
     ACIEndpointSecurityGroupSerializer,
@@ -235,6 +236,9 @@ class ACIContractRelationSerializer(NetBoxModelSerializer):
     aci_endpoint_security_group = ACIEndpointSecurityGroupSerializer(
         nested=True, required=False, allow_null=True
     )
+    aci_external_epg = ACIExternalEPGSerializer(
+        nested=True, required=False, allow_null=True
+    )
 
     class Meta:
         model = ACIContractRelation
@@ -247,6 +251,7 @@ class ACIContractRelationSerializer(NetBoxModelSerializer):
             "aci_contract",
             "aci_endpoint_group",
             "aci_endpoint_security_group",
+            "aci_external_epg",
             "role",
             "description",
             "tags",

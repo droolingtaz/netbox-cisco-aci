@@ -65,4 +65,34 @@
       </p>
     </div>
   {% endif %}
+
+  {% if l3out_interfaces %}
+    <div class="card-body">
+      <h5>{% trans "L3Out Interfaces" %}</h5>
+      <ul>
+        {% for i in l3out_interfaces %}
+          <li>
+            <a href="{{ i.get_absolute_url }}">{{ i.name }}</a>
+            {% trans "on" %}
+            <a href="{{ i.aci_logical_interface_profile.get_absolute_url }}">{{ i.aci_logical_interface_profile.name }}</a>
+            {% if i.ip_address %}— {{ i.ip_address }}{% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  {% if bgp_peers %}
+    <div class="card-body">
+      <h5>{% trans "BGP Peers" %}</h5>
+      <ul>
+        {% for p in bgp_peers %}
+          <li>
+            <a href="{{ p.get_absolute_url }}">{{ p.peer_address }}</a>
+            {% trans "AS" %} {{ p.remote_asn }}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
 </div>

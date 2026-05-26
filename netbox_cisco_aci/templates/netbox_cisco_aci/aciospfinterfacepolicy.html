@@ -1,0 +1,33 @@
+{% extends 'generic/object.html' %}
+{% load helpers %}
+{% load i18n %}
+
+{% block content %}
+<div class="row">
+  <div class="col col-md-6">
+    <div class="card">
+      <h2 class="card-header">{% trans "OSPF Interface Policy" %}</h2>
+      <table class="table table-hover attr-table">
+        <tr><th scope="row">{% trans "Name" %}</th><td>{{ object.name }}</td></tr>
+        <tr><th scope="row">{% trans "Alias" %}</th><td>{{ object.name_alias|placeholder }}</td></tr>
+        <tr><th scope="row">{% trans "Tenant" %}</th>
+          <td><a href="{{ object.aci_tenant.get_absolute_url }}">{{ object.aci_tenant }}</a></td></tr>
+        <tr><th scope="row">{% trans "Network type" %}</th><td>{{ object.get_network_type_display }}</td></tr>
+        <tr><th scope="row">{% trans "Priority" %}</th><td>{{ object.priority }}</td></tr>
+        <tr><th scope="row">{% trans "Cost" %}</th><td>{{ object.cost|placeholder }}</td></tr>
+        <tr><th scope="row">{% trans "Hello interval" %}</th><td>{{ object.hello_interval }}</td></tr>
+        <tr><th scope="row">{% trans "Dead interval" %}</th><td>{{ object.dead_interval }}</td></tr>
+        <tr><th scope="row">{% trans "Retransmit interval" %}</th><td>{{ object.retransmit_interval }}</td></tr>
+        <tr><th scope="row">{% trans "Transmit delay" %}</th><td>{{ object.transmit_delay }}</td></tr>
+        <tr><th scope="row">{% trans "Controls" %}</th><td>{{ object.controls|placeholder }}</td></tr>
+        <tr><th scope="row">{% trans "Description" %}</th><td>{{ object.description|placeholder }}</td></tr>
+      </table>
+    </div>
+    {% include 'inc/panels/tags.html' %}
+    {% include 'inc/panels/custom_fields.html' %}
+  </div>
+  <div class="col col-md-6">
+    {% include 'inc/panels/comments.html' %}
+  </div>
+</div>
+{% endblock %}
