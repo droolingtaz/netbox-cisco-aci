@@ -1,0 +1,32 @@
+{% extends 'generic/object.html' %}
+{% load helpers %}
+{% load i18n %}
+
+{% block content %}
+<div class="row">
+  <div class="col col-md-6">
+    <div class="card">
+      <h2 class="card-header">{% trans "L3Out" %}</h2>
+      <table class="table table-hover attr-table">
+        <tr><th scope="row">{% trans "Name" %}</th><td>{{ object.name }}</td></tr>
+        <tr><th scope="row">{% trans "Alias" %}</th><td>{{ object.name_alias|placeholder }}</td></tr>
+        <tr><th scope="row">{% trans "Tenant" %}</th>
+          <td><a href="{{ object.aci_tenant.get_absolute_url }}">{{ object.aci_tenant }}</a></td></tr>
+        <tr><th scope="row">{% trans "VRF" %}</th>
+          <td><a href="{{ object.aci_vrf.get_absolute_url }}">{{ object.aci_vrf }}</a></td></tr>
+        <tr><th scope="row">{% trans "BGP" %}</th><td>{{ object.protocol_bgp|yesno }}</td></tr>
+        <tr><th scope="row">{% trans "OSPF" %}</th><td>{{ object.protocol_ospf|yesno }}</td></tr>
+        <tr><th scope="row">{% trans "EIGRP" %}</th><td>{{ object.protocol_eigrp|yesno }}</td></tr>
+        <tr><th scope="row">{% trans "Static" %}</th><td>{{ object.protocol_static|yesno }}</td></tr>
+        <tr><th scope="row">{% trans "Target DSCP" %}</th><td>{{ object.target_dscp|placeholder }}</td></tr>
+        <tr><th scope="row">{% trans "Description" %}</th><td>{{ object.description|placeholder }}</td></tr>
+      </table>
+    </div>
+    {% include 'inc/panels/tags.html' %}
+    {% include 'inc/panels/custom_fields.html' %}
+  </div>
+  <div class="col col-md-6">
+    {% include 'inc/panels/comments.html' %}
+  </div>
+</div>
+{% endblock %}

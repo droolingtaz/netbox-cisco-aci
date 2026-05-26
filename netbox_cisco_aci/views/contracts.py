@@ -150,7 +150,12 @@ _relation = _five_views(
     ACIContractRelationForm,
     ACIContractRelationImportForm,
     ACIContractRelationBulkEditForm,
-    select=("aci_contract", "aci_endpoint_group", "aci_endpoint_security_group"),
+    select=(
+        "aci_contract",
+        "aci_endpoint_group",
+        "aci_endpoint_security_group",
+        "aci_external_epg",
+    ),
 )
 ACIContractRelationView = _relation["view"]
 ACIContractRelationListView = _relation["list"]

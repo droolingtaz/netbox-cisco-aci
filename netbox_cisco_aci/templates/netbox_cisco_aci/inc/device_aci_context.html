@@ -63,4 +63,20 @@
       </tbody>
     </table>
   {% endif %}
+
+  {% if logical_nodes %}
+    <div class="card-body">
+      <h5>{% trans "L3Out Logical Nodes" %}</h5>
+      <ul>
+        {% for ln in logical_nodes %}
+          <li>
+            <a href="{{ ln.get_absolute_url }}">{{ ln.name }}</a>
+            {% trans "on" %}
+            <a href="{{ ln.aci_logical_node_profile.aci_l3out.get_absolute_url }}">{{ ln.aci_logical_node_profile.aci_l3out.name }}</a>
+            {% if ln.router_id %}({% trans "router ID" %} {{ ln.router_id }}){% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
 </div>

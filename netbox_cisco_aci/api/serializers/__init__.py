@@ -42,6 +42,19 @@ from .fabric import (  # noqa: F401
     ACINodeSerializer,
     ACIPodSerializer,
 )
+from .l3out import (  # noqa: F401
+    ACIBGPPeerSerializer,
+    ACIEIGRPInterfacePolicySerializer,
+    ACIExternalEPGSerializer,
+    ACIExternalEPGSubnetSerializer,
+    ACIL3OutInterfaceSerializer,
+    ACIL3OutSerializer,
+    ACILogicalInterfaceProfileSerializer,
+    ACILogicalNodeProfileSerializer,
+    ACILogicalNodeSerializer,
+    ACIOSPFInterfaceAttachmentSerializer,
+    ACIOSPFInterfacePolicySerializer,
+)
 from .tenant import (  # noqa: F401
     ACIAppProfileSerializer,
     ACIBridgeDomainSerializer,

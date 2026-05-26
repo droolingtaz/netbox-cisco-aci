@@ -65,6 +65,20 @@ binding_items = (
     _item("aciinterfacefabricmembership", "Interface Fabric Memberships"),
 )
 
+l3out_items = (
+    _item("acil3out", "L3Outs"),
+    _item("acilogicalnodeprofile", "Logical Node Profiles"),
+    _item("acilogicalnode", "Logical Nodes"),
+    _item("acilogicalinterfaceprofile", "Logical Interface Profiles"),
+    _item("acil3outinterface", "L3Out Interfaces"),
+    _item("acibgppeer", "BGP Peers"),
+    _item("aciospfinterfacepolicy", "OSPF Interface Policies"),
+    _item("aciospfinterfaceattachment", "OSPF Interface Attachments"),
+    _item("acieigrpinterfacepolicy", "EIGRP Interface Policies"),
+    _item("aciexternalepg", "External EPGs"),
+    _item("aciexternalepgsubnet", "External EPG Subnets"),
+)
+
 tenancy_items = (
     _item("acitenant", "Tenants"),
     _item("acivrf", "VRFs"),
@@ -86,7 +100,7 @@ menu = PluginMenu(
         ("Access Profiles", access_profile_items),
         ("Contracts", contract_items),
         ("Static Port Bindings", binding_items),
-        # Subsequent phases extend this tuple — L3Outs.
+        ("L3Outs", l3out_items),
     ),
     icon_class="mdi mdi-server-network",
 )

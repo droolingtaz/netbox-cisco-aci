@@ -1,0 +1,28 @@
+{% extends 'generic/object.html' %}
+{% load helpers %}
+{% load i18n %}
+
+{% block content %}
+<div class="row">
+  <div class="col col-md-6">
+    <div class="card">
+      <h2 class="card-header">{% trans "OSPF Interface Attachment" %}</h2>
+      <table class="table table-hover attr-table">
+        <tr><th scope="row">{% trans "Logical Interface Profile" %}</th>
+          <td><a href="{{ object.aci_logical_interface_profile.get_absolute_url }}">{{ object.aci_logical_interface_profile }}</a></td></tr>
+        <tr><th scope="row">{% trans "OSPF Interface Policy" %}</th>
+          <td><a href="{{ object.aci_ospf_interface_policy.get_absolute_url }}">{{ object.aci_ospf_interface_policy }}</a></td></tr>
+        <tr><th scope="row">{% trans "Area ID" %}</th><td>{{ object.ospf_area_id }}</td></tr>
+        <tr><th scope="row">{% trans "Area type" %}</th><td>{{ object.get_ospf_area_type_display }}</td></tr>
+        <tr><th scope="row">{% trans "Area cost" %}</th><td>{{ object.ospf_area_cost }}</td></tr>
+        <tr><th scope="row">{% trans "Description" %}</th><td>{{ object.description|placeholder }}</td></tr>
+      </table>
+    </div>
+    {% include 'inc/panels/tags.html' %}
+    {% include 'inc/panels/custom_fields.html' %}
+  </div>
+  <div class="col col-md-6">
+    {% include 'inc/panels/comments.html' %}
+  </div>
+</div>
+{% endblock %}

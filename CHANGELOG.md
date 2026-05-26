@@ -13,6 +13,33 @@ and this project adheres to [Semantic Versioning 2.0.0](https://semver.org/).
 
 ### Added
 
+- **Phase 7 — L3Outs**:
+  - `ACIL3Out` with per-protocol enablement (BGP / OSPF / EIGRP / Static),
+    `ACILogicalNodeProfile` + `ACILogicalNode` (border-leaf pinning with
+    router IDs and loopbacks), `ACILogicalInterfaceProfile` (routed /
+    sub-interface / SVI / floating-SVI variants with encap and MTU),
+    and `ACIL3OutInterface` binding logical interfaces to physical
+    `dcim.Interface` rows with primary + secondary IP addresses.
+  - `ACIBGPPeer` (at either LIP or LNP scope, with full BGP/peer/
+    address-family/private-ASN control bitmaps and MD5 auth).
+  - `ACIOSPFInterfacePolicy` + `ACIOSPFInterfaceAttachment` (reusable
+    per-tenant OSPF policies attached to LIPs with area ID/type/cost).
+  - `ACIEIGRPInterfacePolicy` (per-tenant EIGRP timers and controls).
+  - `ACIExternalEPG` and `ACIExternalEPGSubnet` (route-leak/security
+    scope controls per prefix).
+  - `ACIContractRelation` extended with an XOR slot for External EPGs,
+    so contracts can be applied to L3Out-facing endpoints.
+  - Device and Interface "Cisco ACI Context" panels now also surface
+    L3Out attachments.
+
+### Changed
+
+- `ACIContractRelation` gains an `aci_external_epg` FK (XOR slot alongside
+  `aci_endpoint_group` and `aci_endpoint_security_group`), enabling contracts
+  to be applied to External EPG endpoints on L3Outs.
+
+### Added
+
 - **Phase 6 — Static Port Bindings and Device/Interface visibility**:
   - `ACIStaticPortBinding` — binds an `ACIEndpointGroup` to a
     `dcim.Interface` with explicit encap VLAN, binding type

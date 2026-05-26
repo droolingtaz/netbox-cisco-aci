@@ -36,6 +36,19 @@ from .models.contracts import (
     ACISubjectFilter,
 )
 from .models.fabric import ACIFabric, ACINode, ACIPod
+from .models.l3out import (
+    ACIBGPPeer,
+    ACIEIGRPInterfacePolicy,
+    ACIExternalEPG,
+    ACIExternalEPGSubnet,
+    ACIL3Out,
+    ACIL3OutInterface,
+    ACILogicalInterfaceProfile,
+    ACILogicalNode,
+    ACILogicalNodeProfile,
+    ACIOSPFInterfaceAttachment,
+    ACIOSPFInterfacePolicy,
+)
 from .models.tenant import (
     ACIVRF,
     ACIAppProfile,
@@ -287,4 +300,73 @@ class ACIDomainBindingIndex(SearchIndex):
 @register_search
 class ACIInterfaceFabricMembershipIndex(SearchIndex):
     model = ACIInterfaceFabricMembership
+    fields = (("name", 100), ("name_alias", 200), ("description", 500))
+
+
+# Phase 7 — L3Outs
+
+
+@register_search
+class ACIL3OutIndex(SearchIndex):
+    model = ACIL3Out
+    fields = (("name", 100), ("name_alias", 200), ("description", 500))
+
+
+@register_search
+class ACILogicalNodeProfileIndex(SearchIndex):
+    model = ACILogicalNodeProfile
+    fields = (("name", 100), ("name_alias", 200), ("description", 500))
+
+
+@register_search
+class ACILogicalNodeIndex(SearchIndex):
+    model = ACILogicalNode
+    fields = (("name", 100), ("name_alias", 200), ("description", 500))
+
+
+@register_search
+class ACILogicalInterfaceProfileIndex(SearchIndex):
+    model = ACILogicalInterfaceProfile
+    fields = (("name", 100), ("name_alias", 200), ("description", 500))
+
+
+@register_search
+class ACIL3OutInterfaceIndex(SearchIndex):
+    model = ACIL3OutInterface
+    fields = (("name", 100), ("name_alias", 200), ("description", 500))
+
+
+@register_search
+class ACIBGPPeerIndex(SearchIndex):
+    model = ACIBGPPeer
+    fields = (("name", 100), ("name_alias", 200), ("description", 500))
+
+
+@register_search
+class ACIOSPFInterfacePolicyIndex(SearchIndex):
+    model = ACIOSPFInterfacePolicy
+    fields = (("name", 100), ("name_alias", 200), ("description", 500))
+
+
+@register_search
+class ACIOSPFInterfaceAttachmentIndex(SearchIndex):
+    model = ACIOSPFInterfaceAttachment
+    fields = (("name", 100), ("name_alias", 200), ("description", 500))
+
+
+@register_search
+class ACIEIGRPInterfacePolicyIndex(SearchIndex):
+    model = ACIEIGRPInterfacePolicy
+    fields = (("name", 100), ("name_alias", 200), ("description", 500))
+
+
+@register_search
+class ACIExternalEPGIndex(SearchIndex):
+    model = ACIExternalEPG
+    fields = (("name", 100), ("name_alias", 200), ("description", 500))
+
+
+@register_search
+class ACIExternalEPGSubnetIndex(SearchIndex):
+    model = ACIExternalEPGSubnet
     fields = (("name", 100), ("name_alias", 200), ("description", 500))

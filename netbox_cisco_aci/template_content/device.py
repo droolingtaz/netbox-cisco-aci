@@ -5,6 +5,7 @@ from netbox.plugins import PluginTemplateExtension
 
 from ..models.bindings import ACIStaticPortBinding
 from ..models.fabric import ACINode
+from ..models.l3out import ACILogicalNode
 
 
 class ACIDeviceContextPanel(PluginTemplateExtension):
@@ -31,6 +32,17 @@ class ACIDeviceContextPanel(PluginTemplateExtension):
             return ""
 
         aci_node = self._resolve_node(device)
+        logical_nodes = []
+        if aci_node is not None:
+            logical_nodes = list(
+                ACILogicalNode.objects.filter(aci_node=aci_node)
+                .select_related(
+                    "aci_logical_node_profile",
+                    "aci_logical_node_profile__aci_l3out",
+                    "aci_logical_node_profile__aci_l3out__aci_tenant",
+                )
+                .order_by("aci_logical_node_profile__aci_l3out__name", "name")[:50]
+            )
         bindings_qs = (
             ACIStaticPortBinding.objects.filter(dcim_interface__device_id=device.pk)
             .select_related(
@@ -42,7 +54,7 @@ class ACIDeviceContextPanel(PluginTemplateExtension):
         )
         bindings = list(bindings_qs[:50])
 
-        if aci_node is None and not bindings:
+        if aci_node is None and not bindings and not logical_nodes:
             return ""
 
         epg_ids = {b.aci_endpoint_group_id for b in bindings}
@@ -69,5 +81,6 @@ class ACIDeviceContextPanel(PluginTemplateExtension):
                 "bd_count": len(bd_ids),
                 "vrf_count": len(vrf_ids),
                 "binding_count": len(bindings),
+                "logical_nodes": logical_nodes,
             },
         )
