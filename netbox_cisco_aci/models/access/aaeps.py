@@ -180,3 +180,53 @@ class ACIAAEPEPGMapping(ACIFabricBaseModel):
                 raise ValidationError(
                     {"aci_endpoint_group": _("The EPG must belong to the same Fabric as the AAEP.")}
                 )
+
+        if self.aci_aaep_id and self.encap_vlan is not None:
+            # APIC will refuse to deploy an AAEP→EPG mapping whose encap
+            # VLAN doesn't fall in the encap range of *any* VLAN pool
+            # reachable through the AAEP's domain associations. We mirror
+            # that constraint here so the user sees the problem at
+            # configuration time, not when the leaves reject the policy.
+            #
+            # We only run the check when:
+            #   * the AAEP has at least one domain attached, AND
+            #   * at least one of those domains has a VLAN pool bound
+            # otherwise the user is still building up policy and the
+            # encap is allowed to sit unverified — same forgiving
+            # behaviour APIC exhibits during incremental config.
+            #
+            # `ACIAAEPDomainAssociation` is the through model, so we
+            # join on it explicitly to avoid the implicit M2M `through_fields`
+            # lookup gymnastics.
+            # Local import: `models/access/__init__.py` imports `aaeps`
+            # before `vlan_pools`, so a top-level import here would force
+            # vlan_pools to be evaluated while aaeps is still loading.
+            # The local import sidesteps that and only fires when clean()
+            # actually runs (well after the package is fully initialised).
+            from netbox_cisco_aci.models.access.vlan_pools import (
+                ACIVLANPoolBlock,
+            )
+
+            pool_ids = list(
+                ACIAAEPDomainAssociation.objects.filter(aci_aaep_id=self.aci_aaep_id)
+                .exclude(aci_domain__aci_vlan_pool__isnull=True)
+                .values_list("aci_domain__aci_vlan_pool_id", flat=True)
+                .distinct()
+            )
+            if pool_ids:
+                covered = ACIVLANPoolBlock.objects.filter(
+                    aci_vlan_pool_id__in=pool_ids,
+                    from_vlan__lte=self.encap_vlan,
+                    to_vlan__gte=self.encap_vlan,
+                ).exists()
+                if not covered:
+                    raise ValidationError(
+                        {
+                            "encap_vlan": _(
+                                "Encap VLAN %(vlan)d is not covered by any VLAN pool block "
+                                "reachable through this AAEP's domains. Either expand a pool "
+                                "or attach a domain whose pool includes this VLAN."
+                            )
+                            % {"vlan": self.encap_vlan},
+                        }
+                    )

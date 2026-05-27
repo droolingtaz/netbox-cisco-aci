@@ -265,3 +265,137 @@ class ACIAAEPEPGMappingExtraTests(_AccessFixture):
             encap_vlan=400,
         )
         self.assertIn(str(m.pk), m.get_absolute_url())
+
+
+class ACIAAEPEPGMappingEncapPoolValidationTests(_AccessFixture):
+    """Verify the encap VLAN must fall in a pool reachable through the AAEP.
+
+    Mirrors APIC's behaviour: the leaves refuse to deploy an EPG mapping
+    whose encap doesn't fall in the encap range of *any* VLAN pool
+    bound to a domain attached to the AAEP. The plugin's clean() catches
+    that at config time so the user doesn't ship an unreachable mapping.
+
+    The check is intentionally permissive while the AAEP is still
+    being built (no domains yet, or domains without pools), to mirror
+    APIC's incremental-config tolerance.
+    """
+
+    def _associate_domain_with_pool_block(self, lo, hi):
+        ACIVLANPoolBlock.objects.create(
+            aci_vlan_pool=self.pool, name="blk-1", from_vlan=lo, to_vlan=hi
+        )
+        ACIAAEPDomainAssociation.objects.create(aci_aaep=self.aaep, aci_domain=self.domain)
+
+    def test_skipped_when_aaep_has_no_domains(self):
+        # AAEP has zero domain attachments; encap is permitted.
+        m = ACIAAEPEPGMapping(
+            aci_aaep=self.aaep,
+            aci_endpoint_group=self.epg,
+            name="m-no-domains",
+            encap_vlan=200,
+        )
+        m.full_clean()  # no-raise = passes
+
+    def test_skipped_when_attached_domain_has_no_pool(self):
+        # Strip the pool off the seeded domain so the AAEP has a domain
+        # but no reachable pool. Encap is still permitted.
+        self.domain.aci_vlan_pool = None
+        self.domain.save()
+        ACIAAEPDomainAssociation.objects.create(aci_aaep=self.aaep, aci_domain=self.domain)
+        m = ACIAAEPEPGMapping(
+            aci_aaep=self.aaep,
+            aci_endpoint_group=self.epg,
+            name="m-pool-less",
+            encap_vlan=200,
+        )
+        m.full_clean()
+
+    def test_encap_inside_pool_block_allowed(self):
+        self._associate_domain_with_pool_block(100, 200)
+        m = ACIAAEPEPGMapping(
+            aci_aaep=self.aaep,
+            aci_endpoint_group=self.epg,
+            name="m-in-range",
+            encap_vlan=150,
+        )
+        m.full_clean()
+
+    def test_encap_at_pool_block_lower_bound_allowed(self):
+        self._associate_domain_with_pool_block(100, 200)
+        m = ACIAAEPEPGMapping(
+            aci_aaep=self.aaep,
+            aci_endpoint_group=self.epg,
+            name="m-low",
+            encap_vlan=100,
+        )
+        m.full_clean()
+
+    def test_encap_at_pool_block_upper_bound_allowed(self):
+        self._associate_domain_with_pool_block(100, 200)
+        m = ACIAAEPEPGMapping(
+            aci_aaep=self.aaep,
+            aci_endpoint_group=self.epg,
+            name="m-high",
+            encap_vlan=200,
+        )
+        m.full_clean()
+
+    def test_encap_outside_all_pool_blocks_rejected(self):
+        self._associate_domain_with_pool_block(100, 200)
+        m = ACIAAEPEPGMapping(
+            aci_aaep=self.aaep,
+            aci_endpoint_group=self.epg,
+            name="m-out-of-range",
+            encap_vlan=500,
+        )
+        with self.assertRaisesRegex(ValidationError, "VLAN pool block"):
+            m.full_clean()
+
+    def test_encap_covered_by_one_of_several_pool_blocks(self):
+        # Multiple non-contiguous blocks under the same pool. Picking an
+        # encap inside the second block must be allowed.
+        ACIVLANPoolBlock.objects.create(
+            aci_vlan_pool=self.pool, name="blk-low", from_vlan=100, to_vlan=199
+        )
+        ACIVLANPoolBlock.objects.create(
+            aci_vlan_pool=self.pool, name="blk-high", from_vlan=300, to_vlan=399
+        )
+        ACIAAEPDomainAssociation.objects.create(aci_aaep=self.aaep, aci_domain=self.domain)
+        m = ACIAAEPEPGMapping(
+            aci_aaep=self.aaep,
+            aci_endpoint_group=self.epg,
+            name="m-second-block",
+            encap_vlan=350,
+        )
+        m.full_clean()
+
+    def test_encap_covered_by_pool_on_other_attached_domain(self):
+        # AAEP has two domains; only the second one's pool covers the encap.
+        # The mapping should still be allowed.
+        ACIVLANPoolBlock.objects.create(
+            aci_vlan_pool=self.pool, name="blk-narrow", from_vlan=100, to_vlan=110
+        )
+        ACIAAEPDomainAssociation.objects.create(aci_aaep=self.aaep, aci_domain=self.domain)
+        # second pool / domain whose range covers the encap
+        wide_pool = ACIVLANPool.objects.create(
+            aci_fabric=self.fab,
+            name="pool-wide",
+            allocation_mode=VLANPoolAllocationChoices.STATIC,
+        )
+        ACIVLANPoolBlock.objects.create(
+            aci_vlan_pool=wide_pool, name="blk-wide", from_vlan=400, to_vlan=500
+        )
+        wide_dom = ACIDomain.objects.create(
+            aci_fabric=self.fab,
+            name="phys-wide",
+            domain_type=DomainTypeChoices.PHYSICAL,
+            aci_vlan_pool=wide_pool,
+        )
+        ACIAAEPDomainAssociation.objects.create(aci_aaep=self.aaep, aci_domain=wide_dom)
+        m = ACIAAEPEPGMapping(
+            aci_aaep=self.aaep,
+            aci_endpoint_group=self.epg,
+            name="m-wide-domain",
+            encap_vlan=450,
+        )
+        m.full_clean()
