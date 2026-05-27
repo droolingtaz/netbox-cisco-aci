@@ -28,7 +28,7 @@
             <td><a href="{{ b.get_absolute_url }}">
               {% if b.from_vlan == b.to_vlan %}VLAN {{ b.from_vlan }}{% else %}VLAN {{ b.from_vlan }}-{{ b.to_vlan }}{% endif %}
             </a></td>
-            <td>{{ b.allocation_mode_override|default:"\u2014" }}</td>
+            <td>{{ b.allocation_mode_override|placeholder }}</td>
           </tr>
         {% empty %}
           <tr><td colspan="2" class="text-muted">{% trans "No blocks defined." %}</td></tr>
