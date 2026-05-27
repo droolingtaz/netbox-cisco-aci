@@ -1,8 +1,8 @@
 """Top-level URL routes for the plugin's UI views.
 
-Each model gets a standard seven-route block (list, add, view, edit,
-delete, bulk-import, bulk-edit, bulk-delete) following NetBox plugin
-conventions.
+Each model gets a standard ten-route block (list, add, view, edit,
+delete, bulk-import, bulk-edit, bulk-delete, changelog, journal)
+following NetBox plugin conventions.
 
 NetBox includes this module at ``plugins/aci/`` with the instance
 namespace ``netbox_cisco_aci`` (derived from ``app.label``) — see
@@ -10,7 +10,9 @@ netbox/plugins/urls.py. The ``app_name`` below is the *application*
 namespace; reverse() lookups against ``plugins:netbox_cisco_aci:...`` use it.
 """
 
+from django.apps import apps
 from django.urls import path
+from netbox.views.generic import ObjectChangeLogView, ObjectJournalView
 
 from .views import access as acc
 from .views import access_groups as acg
@@ -26,12 +28,23 @@ app_name = "netbox_cisco_aci"
 
 
 def _crud(prefix, slug, mod, view_cls_name, label):
-    """Build the standard 8-URL CRUD block for a model.
+    """Build the standard CRUD + changelog + journal URL block for a model.
 
     ``view_cls_name`` is the class-name *prefix* — e.g. for ``ACIFabric``
     we expect ``ACIFabricView``, ``ACIFabricListView``, etc., to exist
-    on ``mod``.
+    on ``mod``. We also resolve the model class itself via
+    ``apps.get_model`` so the ``changelog`` and ``journal`` routes can
+    pass it as a ``kwargs={'model': <Model>}`` argument to NetBox's
+    generic feature views.
+
+    These two routes are not optional — NetBox's object detail and
+    list-row templates reverse ``<label>_changelog`` and
+    ``<label>_journal`` unconditionally, so a plugin that ships only the
+    bare CRUD verbs will throw ``NoReverseMatch`` and 500 the first time
+    a user visits a list or detail page.
     """
+
+    model = apps.get_model("netbox_cisco_aci", view_cls_name)
 
     return [
         path(
@@ -73,6 +86,18 @@ def _crud(prefix, slug, mod, view_cls_name, label):
             f"{prefix}/<int:pk>/delete/",
             getattr(mod, f"{view_cls_name}DeleteView").as_view(),
             name=f"{label}_delete",
+        ),
+        path(
+            f"{prefix}/<int:pk>/changelog/",
+            ObjectChangeLogView.as_view(),
+            name=f"{label}_changelog",
+            kwargs={"model": model},
+        ),
+        path(
+            f"{prefix}/<int:pk>/journal/",
+            ObjectJournalView.as_view(),
+            name=f"{label}_journal",
+            kwargs={"model": model},
         ),
     ]
 

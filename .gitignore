@@ -17,3 +17,4 @@ venv/
 .idea/
 .vscode/
 site/
+coverage.xml
