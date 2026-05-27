@@ -15,6 +15,38 @@ _No unreleased changes yet — next release will start here._
 
 ---
 
+## [0.1.2] — 2026-05-27
+
+Patch release fixing the **Add USeg Attribute** form. All v0.1.x users
+who use uSeg EPGs should upgrade.
+
+> **Compatibility:** NetBox v4.5, NetBox v4.6 · Python 3.12.
+
+### Fixed
+
+- **"Select a valid choice" on the Add USeg Attribute form (PR #15).**
+  `ACIUSegAttributeForm.aci_endpoint_group` restricted the form's
+  validation queryset to `ACIEndpointGroup.objects.filter(is_useg=True)`,
+  but NetBox's `DynamicModelChoiceField` typeahead fetches candidates
+  from the REST API, which had no `is_useg` default. Users saw every
+  EPG in the dropdown, picked one that wasn't uSeg, and the form
+  rejected the choice on submit. Fixed by adding
+  `query_params={"is_useg": True}` to the three affected fields
+  (`ACIUSegAttributeForm`, `ACIUSegAttributeBulkEditForm`,
+  `ACIUSegAttributeFilterForm`).
+
+### Added
+
+- **`tests/test_form_dropdown_filters.py`** — regression guard. A pure
+  static scan that walks every `forms/*.py` and asserts every
+  `DynamicModelChoiceField` / `DynamicModelMultipleChoiceField` with a
+  filtered queryset (`.filter(…)`) also passes `query_params={…}`. The
+  check runs in ~15 ms with no DB setup, and the failure message
+  points the next maintainer at the offending field. Designed to
+  catch the same class of bug across all future forms.
+
+---
+
 ## [0.1.1] — 2026-05-27
 
 Patch release fixing a production-blocking 500 on every list / detail
@@ -195,6 +227,7 @@ Cloud / Kubernetes-friendly footprint.
   name. Python package, Django app label, URL base, and constraint
   names all use the matching `netbox_cisco_aci` / `cisco-aci` prefixes.
 
-[Unreleased]: https://github.com/droolingtaz/netbox-cisco-aci/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/droolingtaz/netbox-cisco-aci/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/droolingtaz/netbox-cisco-aci/releases/tag/v0.1.2
 [0.1.1]: https://github.com/droolingtaz/netbox-cisco-aci/releases/tag/v0.1.1
 [0.1.0]: https://github.com/droolingtaz/netbox-cisco-aci/releases/tag/v0.1.0
