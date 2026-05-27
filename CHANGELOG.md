@@ -15,6 +15,41 @@ _No unreleased changes yet — next release will start here._
 
 ---
 
+## [0.1.1] — 2026-05-27
+
+Patch release fixing a production-blocking 500 on every list / detail
+page in v0.1.0. All v0.1.0 users should upgrade.
+
+> **Compatibility:** NetBox v4.5, NetBox v4.6 · Python 3.12.
+
+### Fixed
+
+- **`NoReverseMatch` 500 on every UI page.** NetBox 4.x's object detail
+  and list-row templates reverse `<label>_changelog` and
+  `<label>_journal` unconditionally for every model, but the plugin's
+  `_crud()` URL factory only registered the eight basic CRUD verbs.
+  The first time a logged-in user opened any list or detail page,
+  NetBox tried to render the per-row dropdown, hit
+  `django.urls.exceptions.NoReverseMatch`, and produced a red 500. The
+  factory now registers the two missing routes (`changelog`, `journal`)
+  for every model, backed by NetBox's stock `ObjectChangeLogView` and
+  `ObjectJournalView` (PR #13). The bug existed for every model in
+  v0.1.0 — not just `ACIFabric`.
+
+### Added
+
+- **`tests/test_urls.py`** — regression guard. Enumerates every
+  UI-bearing model in the plugin and asserts every route in the
+  ten-route block (list / add / import / bulk-edit / bulk-delete /
+  detail / edit / delete / changelog / journal) reverses cleanly. The
+  test class explicitly checks `changelog` and `journal` so a future
+  regression of this exact bug fails the build with an obvious error.
+  CI did not catch the original failure because NetBox's
+  `ViewTestCases` and `APIViewTestCases` only reverse the explicit
+  verbs they cover — they never touch `*_changelog` or `*_journal`.
+
+---
+
 ## [0.1.0] — 2026-05-26
 
 First public release.
@@ -160,5 +195,6 @@ Cloud / Kubernetes-friendly footprint.
   name. Python package, Django app label, URL base, and constraint
   names all use the matching `netbox_cisco_aci` / `cisco-aci` prefixes.
 
-[Unreleased]: https://github.com/droolingtaz/netbox-cisco-aci/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/droolingtaz/netbox-cisco-aci/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/droolingtaz/netbox-cisco-aci/releases/tag/v0.1.1
 [0.1.0]: https://github.com/droolingtaz/netbox-cisco-aci/releases/tag/v0.1.0
