@@ -485,7 +485,14 @@ class ACIEndpointGroupImportForm(NetBoxModelImportForm):
 
 class ACIUSegAttributeForm(NetBoxModelForm):
     aci_endpoint_group = DynamicModelChoiceField(
-        queryset=ACIEndpointGroup.objects.filter(is_useg=True), label=_("Endpoint Group")
+        queryset=ACIEndpointGroup.objects.filter(is_useg=True),
+        label=_("Endpoint Group"),
+        # The form's `queryset=` filters the *server-side* form validation,
+        # but the dropdown's typeahead hits the REST API, which has no
+        # `is_useg` default. Passing query_params forwards the filter to
+        # the API so the dropdown only shows uSeg-capable EPGs and the
+        # user can never pick an invalid choice.
+        query_params={"is_useg": True},
     )
 
     class Meta:
@@ -505,7 +512,9 @@ class ACIUSegAttributeForm(NetBoxModelForm):
 class ACIUSegAttributeBulkEditForm(NetBoxModelBulkEditForm):
     model = ACIUSegAttribute
     aci_endpoint_group = DynamicModelChoiceField(
-        queryset=ACIEndpointGroup.objects.filter(is_useg=True), required=False
+        queryset=ACIEndpointGroup.objects.filter(is_useg=True),
+        required=False,
+        query_params={"is_useg": True},
     )
     attribute_type = forms.ChoiceField(choices=USegAttributeTypeChoices, required=False)
     match_operator = forms.ChoiceField(choices=USegAttributeMatchOperatorChoices, required=False)
@@ -519,6 +528,11 @@ class ACIUSegAttributeFilterForm(NetBoxModelFilterSetForm):
         queryset=ACIEndpointGroup.objects.filter(is_useg=True),
         required=False,
         label=_("Endpoint Group"),
+        # See ACIUSegAttributeForm: the dropdown's typeahead hits the
+        # REST API, which doesn't filter by is_useg by default. Without
+        # this query_params the filter form would offer non-uSeg EPGs
+        # that the underlying queryset would then silently drop.
+        query_params={"is_useg": True},
     )
     attribute_type = forms.MultipleChoiceField(choices=USegAttributeTypeChoices, required=False)
 
