@@ -101,11 +101,11 @@ ignore = ["E501"]   # ruff format handles line length
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "netbox.settings"
 python_files = ["test_*.py"]
-# Coverage gate re-enabled at v0.1.0. The model surface is now stable
-# and the suite sits well above 65% (typically ~95%); the gate exists
-# to fail the build if a future PR drops coverage materially. Bump to
-# 70 (then 75) once we add the L3Out sync layer per the NBL guidance.
-addopts = "--strict-markers --cov=netbox_cisco_aci --cov-report=term-missing --cov-report=xml --cov-fail-under=65"
+# Coverage gate raised to 95% after the coverage-to-99 pass (chore/coverage-to-99).
+# The suite covers all filterset search() paths, model clean() negative paths,
+# validators, and template-extension empty-state branches. Gate at 95 ensures
+# future PRs cannot silently drop coverage below the current baseline.
+addopts = "--strict-markers --cov=netbox_cisco_aci --cov-report=term-missing --cov-report=xml --cov-fail-under=95"
 
 [tool.coverage.run]
 source = ["netbox_cisco_aci"]

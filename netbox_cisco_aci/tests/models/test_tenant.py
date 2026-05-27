@@ -169,3 +169,129 @@ class ACIEndpointSecurityGroupTests(_TenancyFixture):
             ACIEndpointSecurityGroup.objects.create(
                 aci_tenant=self.tenant, aci_vrf=self.vrf, name="esg-a"
             )
+
+
+# ---------------------------------------------------------------------------
+# Extra coverage (Bucket B) — missed lines in tenant models
+# ---------------------------------------------------------------------------
+
+
+class ACITenantExtraTests(_TenancyFixture):
+    """Cover get_absolute_url (L42 in tenants.py)."""
+
+    def test_get_absolute_url(self):
+        self.assertIn(str(self.tenant.pk), self.tenant.get_absolute_url())
+
+    def test_str(self):
+        self.assertIn("DC1", str(self.tenant))
+        self.assertIn("acme", str(self.tenant))
+
+
+class ACIVRFExtraTests(_TenancyFixture):
+    """Cover aci_fabric property (L83, 90 in vrfs.py)."""
+
+    def test_aci_fabric_property(self):
+        self.assertEqual(self.vrf.aci_fabric, self.fabric)
+
+    def test_get_absolute_url(self):
+        self.assertIn(str(self.vrf.pk), self.vrf.get_absolute_url())
+
+
+class ACIAppProfileExtraTests(_TenancyFixture):
+    """Cover aci_fabric property (L36, 40 in app_profiles.py)."""
+
+    def test_aci_fabric_property(self):
+        self.assertEqual(self.ap.aci_fabric, self.fabric)
+
+    def test_get_absolute_url(self):
+        self.assertIn(str(self.ap.pk), self.ap.get_absolute_url())
+
+
+class ACIBridgeDomainExtraTests(_TenancyFixture):
+    """Cover missed lines L106, 113, 196, 199, 203, 207 in bridge_domains.py."""
+
+    def test_bd_cross_tenant_vrf_error_mentions_vrf(self):
+        other_tenant = ACITenant.objects.create(aci_fabric=self.fabric, name="tenant-extra")
+        other_vrf = ACIVRF.objects.create(aci_tenant=other_tenant, name="vrf-extra")
+        bd = ACIBridgeDomain(aci_tenant=self.tenant, aci_vrf=other_vrf, name="bd-extra-vrf")
+        with self.assertRaisesRegex(ValidationError, "VRF"):
+            bd.full_clean()
+
+    def test_aci_fabric_property(self):
+        self.assertEqual(self.bd.aci_fabric, self.fabric)
+
+
+class ACIEndpointGroupExtraTests(_TenancyFixture):
+    """Cover missed lines L98, 118, 167, 170, 185, 189 in endpoint_groups.py."""
+
+    def test_ap_tenant_mismatch_error_mentions_application_profile(self):
+        other_tenant = ACITenant.objects.create(aci_fabric=self.fabric, name="t-extra-epg")
+        other_ap = ACIAppProfile.objects.create(aci_tenant=other_tenant, name="ap-extra-epg")
+        epg = ACIEndpointGroup(
+            aci_tenant=self.tenant,
+            aci_app_profile=other_ap,
+            aci_bridge_domain=self.bd,
+            name="epg-ap-mismatch",
+        )
+        with self.assertRaisesRegex(ValidationError, "Application Profile"):
+            epg.full_clean()
+
+    def test_bd_cross_tenant_not_common_rejected(self):
+        other_tenant = ACITenant.objects.create(aci_fabric=self.fabric, name="t-extra-bd")
+        other_vrf = ACIVRF.objects.create(aci_tenant=other_tenant, name="vrf-extra-bd")
+        other_bd = ACIBridgeDomain.objects.create(
+            aci_tenant=other_tenant, aci_vrf=other_vrf, name="bd-extra"
+        )
+        epg = ACIEndpointGroup(
+            aci_tenant=self.tenant,
+            aci_app_profile=self.ap,
+            aci_bridge_domain=other_bd,
+            name="epg-bd-mismatch",
+        )
+        with self.assertRaisesRegex(ValidationError, "BD"):
+            epg.full_clean()
+
+    def test_useg_attribute_on_non_useg_epg_raises(self):
+        regular_epg = ACIEndpointGroup.objects.create(
+            aci_tenant=self.tenant,
+            aci_app_profile=self.ap,
+            aci_bridge_domain=self.bd,
+            name="epg-regular-extra",
+        )
+        attr = ACIUSegAttribute(
+            aci_endpoint_group=regular_epg,
+            name="ip-rule-extra",
+            attribute_type="ip",
+            match_value="10.0.0.0/24",
+        )
+        with self.assertRaisesRegex(ValidationError, "is_useg"):
+            attr.full_clean()
+
+
+class ACIEndpointSecurityGroupExtraTests(_TenancyFixture):
+    """Cover missed lines L83, 86, 90, 98-100 in endpoint_security_groups.py."""
+
+    def test_vrf_cross_tenant_rejected(self):
+        other_tenant = ACITenant.objects.create(aci_fabric=self.fabric, name="t-esg-extra")
+        other_vrf = ACIVRF.objects.create(aci_tenant=other_tenant, name="vrf-esg-extra")
+        esg = ACIEndpointSecurityGroup(
+            aci_tenant=self.tenant, aci_vrf=other_vrf, name="esg-vrf-mismatch"
+        )
+        with self.assertRaisesRegex(ValidationError, "VRF"):
+            esg.full_clean()
+
+    def test_ap_cross_tenant_rejected(self):
+        other_tenant = ACITenant.objects.create(aci_fabric=self.fabric, name="t-esg-ap-extra")
+        other_ap = ACIAppProfile.objects.create(aci_tenant=other_tenant, name="ap-esg-extra")
+        esg = ACIEndpointSecurityGroup(
+            aci_tenant=self.tenant,
+            aci_vrf=self.vrf,
+            aci_app_profile=other_ap,
+            name="esg-ap-mismatch",
+        )
+        with self.assertRaisesRegex(ValidationError, "Application Profile"):
+            esg.full_clean()
+
+    def test_valid_esg_passes_clean(self):
+        esg = ACIEndpointSecurityGroup(aci_tenant=self.tenant, aci_vrf=self.vrf, name="esg-valid")
+        esg.full_clean()

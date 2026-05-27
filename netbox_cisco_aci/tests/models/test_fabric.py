@@ -99,3 +99,46 @@ class ACINodeTests(TestCase):
             aci_pod=self.pod, name="leaf-201", node_id=201, role=NodeRoleChoices.ROLE_LEAF
         )
         self.assertEqual(node.aci_fabric, self.fabric)
+
+
+# ---------------------------------------------------------------------------
+# Extra coverage (Bucket B) — missed lines in fabric models
+# ---------------------------------------------------------------------------
+
+
+class ACINodeExtraTests(TestCase):
+    """Cover missed lines L116, 126, 129 in nodes.py."""
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.fabric = ACIFabric.objects.create(name="ACI-Extra-DC")
+        cls.pod = ACIPod.objects.create(aci_fabric=cls.fabric, name="pod-extra", pod_id=5)
+
+    def test_gfk_only_one_column_set_raises_with_message(self):
+        node = ACINode(
+            aci_pod=self.pod,
+            name="bad-node-gfk",
+            node_id=901,
+            node_object_id=1,
+        )
+        with self.assertRaisesRegex(ValidationError, "node_object_type"):
+            node.full_clean()
+
+    def test_get_role_color(self):
+        node = ACINode.objects.create(
+            aci_pod=self.pod, name="spine-extra", node_id=902, role=NodeRoleChoices.ROLE_SPINE
+        )
+        color = node.get_role_color()
+        self.assertIsInstance(color, str)
+        self.assertTrue(len(color) > 0)
+
+    def test_get_node_type_color(self):
+        node = ACINode.objects.create(
+            aci_pod=self.pod,
+            name="phys-extra",
+            node_id=903,
+            node_type=NodeTypeChoices.TYPE_PHYSICAL,
+        )
+        color = node.get_node_type_color()
+        self.assertIsInstance(color, str)
+        self.assertTrue(len(color) > 0)

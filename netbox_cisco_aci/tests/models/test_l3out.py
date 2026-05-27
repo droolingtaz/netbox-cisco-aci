@@ -505,3 +505,255 @@ class ACIL3OutStaticRouteNextHopModelTests(_L3OutFixture):
             nexthop_type=StaticRouteNextHopTypeChoices.PREFIX,
         )
         self.assertEqual(nh2.nexthop_address, "10.0.0.2")
+
+
+# ---------------------------------------------------------------------------
+# Extra coverage (Bucket B) — missed lines in L3Out models
+# ---------------------------------------------------------------------------
+
+
+class ACIOSPFInterfaceAttachmentExtraTests(_L3OutFixture):
+    """Cover missed lines L94, 103, 107, 114, 167, 185-187 in ospf.py."""
+
+    def test_invalid_ospf_area_id_non_dotted_non_int_raises(self):
+        from netbox_cisco_aci.models.l3out.ospf import _validate_ospf_area_id
+
+        with self.assertRaisesRegex(ValidationError, "Invalid OSPF area ID"):
+            _validate_ospf_area_id("not-valid")
+
+    def test_invalid_ospf_area_id_out_of_range_raises(self):
+        from netbox_cisco_aci.models.l3out.ospf import _validate_ospf_area_id
+
+        with self.assertRaisesRegex(ValidationError, "out of range"):
+            _validate_ospf_area_id("9999999999")
+
+    def test_invalid_ospf_area_dotted_out_of_octet_range(self):
+        from netbox_cisco_aci.models.l3out.ospf import _validate_ospf_area_id
+
+        with self.assertRaisesRegex(ValidationError, "Invalid OSPF area ID"):
+            _validate_ospf_area_id("256.0.0.0")
+
+    def test_empty_ospf_area_id_raises(self):
+        from netbox_cisco_aci.models.l3out.ospf import _validate_ospf_area_id
+
+        with self.assertRaisesRegex(ValidationError, "required"):
+            _validate_ospf_area_id("")
+
+    def test_cross_tenant_ospf_attachment_rejected(self):
+        policy = ACIOSPFInterfacePolicy.objects.create(
+            aci_tenant=self.tenant_other, name="ospf-other-tnt"
+        )
+        ACILogicalNode.objects.create(
+            aci_logical_node_profile=self.lnp,
+            aci_node=self.aci_node,
+            name="ln-ospf-cross",
+            router_id="10.5.0.1",
+        )
+        lip2 = ACILogicalInterfaceProfile.objects.create(
+            aci_logical_node_profile=self.lnp, name="lip-ospf-cross"
+        )
+        attachment = ACIOSPFInterfaceAttachment(
+            aci_logical_interface_profile=lip2,
+            aci_ospf_interface_policy=policy,
+            ospf_area_id="0.0.0.0",
+        )
+        with self.assertRaisesRegex(ValidationError, "tenant"):
+            attachment.full_clean()
+
+    def test_valid_ospf_area_id_decimal(self):
+        from netbox_cisco_aci.models.l3out.ospf import _validate_ospf_area_id
+
+        _validate_ospf_area_id("0")
+        _validate_ospf_area_id("4294967295")
+
+    def test_valid_ospf_area_id_dotted_quad(self):
+        from netbox_cisco_aci.models.l3out.ospf import _validate_ospf_area_id
+
+        _validate_ospf_area_id("0.0.0.0")
+        _validate_ospf_area_id("255.255.255.255")
+
+
+class ACIL3OutExtraTests(_L3OutFixture):
+    """Cover aci_fabric property (L72 in l3out.py)."""
+
+    def test_aci_fabric_property(self):
+        self.assertEqual(self.l3out.aci_fabric, self.fab)
+
+
+class ACILogicalNodeProfileExtraTests(_L3OutFixture):
+    """Cover get_absolute_url and aci_tenant property (L42, 46 in logical_node_profile.py)."""
+
+    def test_get_absolute_url(self):
+        self.assertIn(str(self.lnp.pk), self.lnp.get_absolute_url())
+
+    def test_aci_tenant_property(self):
+        self.assertEqual(self.lnp.aci_tenant, self.tenant)
+
+
+class ACILogicalInterfaceProfileExtraTests(_L3OutFixture):
+    """Cover get_absolute_url and encap_vlan-with-routed validation (L65, 79)."""
+
+    def test_get_absolute_url(self):
+        self.assertIn(str(self.lip.pk), self.lip.get_absolute_url())
+
+    def test_routed_type_with_encap_vlan_rejected(self):
+        from netbox_cisco_aci.choices import L3OutInterfaceTypeChoices
+
+        lip_bad = ACILogicalInterfaceProfile(
+            aci_logical_node_profile=self.lnp,
+            name="lip-routed-encap",
+            interface_type=L3OutInterfaceTypeChoices.ROUTED,
+            encap_vlan=100,
+        )
+        with self.assertRaisesRegex(ValidationError, "blank"):
+            lip_bad.full_clean()
+
+
+class ACILogicalNodeExtraTests(_L3OutFixture):
+    """Cover missed lines L65, 74, 101 in logical_node.py."""
+
+    def test_str_format(self):
+        ln = ACILogicalNode.objects.create(
+            aci_logical_node_profile=self.lnp,
+            aci_node=self.aci_node,
+            name="ln-str-test",
+            router_id="10.99.0.1",
+        )
+        self.assertIn("leaf-101", str(ln))
+        self.assertIn("10.99.0.1", str(ln))
+
+    def test_loopback_with_use_router_id_raises(self):
+        ln = ACILogicalNode(
+            aci_logical_node_profile=self.lnp,
+            aci_node=self.aci_node,
+            name="ln-loop-conflict",
+            router_id="10.88.0.1",
+            use_router_id_as_loopback=True,
+            loopback_address="10.88.0.2",
+        )
+        with self.assertRaisesRegex(ValidationError, "loopback"):
+            ln.full_clean()
+
+    def test_cross_fabric_node_rejected(self):
+        other_pod = ACIPod.objects.create(
+            aci_fabric=ACIFabric.objects.create(name="DC-LogNode-Other"),
+            pod_id=1,
+            name="pod-other",
+        )
+        other_node = ACINode.objects.create(
+            aci_pod=other_pod, node_id=501, name="leaf-other-fabric"
+        )
+        ln = ACILogicalNode(
+            aci_logical_node_profile=self.lnp,
+            aci_node=other_node,
+            name="ln-cross-fab",
+            router_id="10.77.0.1",
+        )
+        with self.assertRaisesRegex(ValidationError, "fabric"):
+            ln.full_clean()
+
+
+class ACIExternalEPGExtraTests(_L3OutFixture):
+    """Cover get_absolute_url (L62 in external_epg.py)."""
+
+    def test_get_absolute_url(self):
+        extepg = ACIExternalEPG.objects.create(aci_l3out=self.l3out, name="extepg-url")
+        self.assertIn(str(extepg.pk), extepg.get_absolute_url())
+
+
+class ACIExternalEPGSubnetExtraTests(_L3OutFixture):
+    """Cover get_absolute_url (L110) and scope_controls validation (L124) in external_epg.py."""
+
+    def test_get_absolute_url(self):
+        extepg = ACIExternalEPG.objects.create(aci_l3out=self.l3out, name="extepg-sub-url")
+        subnet = ACIExternalEPGSubnet.objects.create(aci_external_epg=extepg, prefix="0.0.0.0/0")
+        self.assertIn(str(subnet.pk), subnet.get_absolute_url())
+
+    def test_scope_controls_non_list_rejected(self):
+        extepg = ACIExternalEPG.objects.create(aci_l3out=self.l3out, name="extepg-scope")
+        subnet = ACIExternalEPGSubnet(
+            aci_external_epg=extepg,
+            prefix="10.0.0.0/8",
+            scope_controls="not-a-list",
+        )
+        with self.assertRaisesRegex(ValidationError, "JSON list"):
+            subnet.full_clean()
+
+
+class ACIL3OutStaticRouteExtraTests(_L3OutFixture):
+    """Cover route_controls non-list validation (L99 in static_route.py)."""
+
+    def setUp(self):
+        self.ln = ACILogicalNode.objects.create(
+            aci_logical_node_profile=self.lnp,
+            aci_node=self.aci_node,
+            name="ln-route-extra",
+            router_id="10.111.0.1",
+        )
+
+    def test_route_controls_non_list_rejected(self):
+        from netbox_cisco_aci.models.l3out import ACIL3OutStaticRoute
+
+        route = ACIL3OutStaticRoute(
+            aci_logical_node=self.ln,
+            prefix="192.168.99.0/24",
+            route_controls="not-a-list",
+        )
+        with self.assertRaisesRegex(ValidationError, "JSON list"):
+            route.full_clean()
+
+
+class ACIBGPPeerExtraTests(_L3OutFixture):
+    """Cover get_absolute_url (L118 in bgp_peer.py)."""
+
+    def test_get_absolute_url(self):
+        peer = ACIBGPPeer.objects.create(
+            aci_logical_interface_profile=self.lip,
+            peer_address="10.200.0.1",
+            remote_asn=65000,
+        )
+        self.assertIn(str(peer.pk), peer.get_absolute_url())
+
+
+class ACIL3OutInterfaceExtraTests(_L3OutFixture):
+    """Cover missed lines L61, 64, 89, 94 in l3out_interface.py."""
+
+    def setUp(self):
+        from dcim.models import Interface
+
+        from netbox_cisco_aci.tests.base import make_dcim_device
+
+        self.device = make_dcim_device("dev-l3if-extra")
+        self.iface = Interface.objects.create(device=self.device, name="eth1/99", type="10gbase-t")
+
+    def test_secondary_ip_non_list_rejected(self):
+        from netbox_cisco_aci.models.l3out import ACIL3OutInterface
+
+        i = ACIL3OutInterface(
+            aci_logical_interface_profile=self.lip,
+            dcim_interface=self.iface,
+            ip_address="192.0.2.1/30",
+            secondary_ip_addresses="not-a-list",
+        )
+        with self.assertRaisesRegex(ValidationError, "JSON list"):
+            i.full_clean()
+
+    def test_secondary_ip_non_string_entry_rejected(self):
+        from netbox_cisco_aci.models.l3out import ACIL3OutInterface
+
+        i = ACIL3OutInterface(
+            aci_logical_interface_profile=self.lip,
+            dcim_interface=self.iface,
+            ip_address="192.0.2.1/30",
+            secondary_ip_addresses=[12345],
+        )
+        with self.assertRaisesRegex(ValidationError, "string"):
+            i.full_clean()
+
+
+class ACIEIGRPInterfacePolicyExtraTests(_L3OutFixture):
+    """Cover get_absolute_url (L70 in eigrp.py)."""
+
+    def test_get_absolute_url(self):
+        p = ACIEIGRPInterfacePolicy.objects.create(aci_tenant=self.tenant, name="eigrp-url")
+        self.assertIn(str(p.pk), p.get_absolute_url())
