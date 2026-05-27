@@ -325,3 +325,131 @@ class ACIInterfaceFabricMembershipTests(_BindingFixture):
         node_orphan = ACINode.objects.create(aci_pod=self.pod, node_id=999, name="orphan")
         m = ACIInterfaceFabricMembership(dcim_interface=self.iface_a, aci_node=node_orphan)
         m.clean()
+
+
+# ---------------------------------------------------------------------------
+# Extra coverage (Bucket B) — missed lines in binding models
+# ---------------------------------------------------------------------------
+
+
+class ACIVPCBindingPairExtraTests(_BindingFixture):
+    """Cover missed lines L55, 66, 109-112 in vpc.py."""
+
+    def _make_vpc_binding(self, iface, encap=100, epg=None):
+        return ACIStaticPortBinding.objects.create(
+            aci_endpoint_group=epg or self.epg,
+            dcim_interface=iface,
+            encap_vlan=encap,
+            binding_type=StaticPortBindingTypeChoices.VPC,
+        )
+
+    def test_distinct_bindings_error_message(self):
+        a = self._make_vpc_binding(self.iface_a)
+        pair = ACIVPCBindingPair(binding_a=a, binding_b=a)
+        with self.assertRaisesRegex(ValidationError, "distinct"):
+            pair.clean()
+
+    def test_vpc_type_required_error_message(self):
+        a = self._make_vpc_binding(self.iface_a)
+        b = ACIStaticPortBinding.objects.create(
+            aci_endpoint_group=self.epg,
+            dcim_interface=self.iface_b,
+            encap_vlan=100,
+            binding_type=StaticPortBindingTypeChoices.REGULAR,
+        )
+        pair = ACIVPCBindingPair(binding_a=a, binding_b=b)
+        with self.assertRaisesRegex(ValidationError, "vpc"):
+            pair.clean()
+
+    def test_same_epg_required_error_message(self):
+        a = self._make_vpc_binding(self.iface_a, epg=self.epg)
+        b = self._make_vpc_binding(self.iface_b, epg=self.epg_useg)
+        pair = ACIVPCBindingPair(binding_a=a, binding_b=b)
+        with self.assertRaisesRegex(ValidationError, "EPG"):
+            pair.clean()
+
+    def test_same_encap_required_error_message(self):
+        a = self._make_vpc_binding(self.iface_a, encap=100)
+        b = self._make_vpc_binding(self.iface_b, encap=200)
+        pair = ACIVPCBindingPair(binding_a=a, binding_b=b)
+        with self.assertRaisesRegex(ValidationError, "VLAN"):
+            pair.clean()
+
+    def test_cross_fabric_vpc_pair_rejected(self):
+        """vPC peers on nodes in different fabrics must be rejected."""
+        from netbox_cisco_aci.models.bindings import ACIInterfaceFabricMembership
+
+        pod_b = ACIPod.objects.create(aci_fabric=self.fab2, pod_id=1, name="pod-dc2")
+        node_dc2 = ACINode.objects.create(aci_pod=pod_b, node_id=301, name="leaf-dc2")
+        device_c = make_dcim_device("leaf-dc2-dev")
+        iface_c = Interface.objects.create(device=device_c, name="eth1/1", type="10gbase-t")
+        ACIInterfaceFabricMembership.objects.create(
+            dcim_interface=self.iface_a, aci_node=self.node_a
+        )
+        ACIInterfaceFabricMembership.objects.create(dcim_interface=iface_c, aci_node=node_dc2)
+        a = self._make_vpc_binding(self.iface_a)
+        b_dc2 = ACIStaticPortBinding.objects.create(
+            aci_endpoint_group=self.epg,
+            dcim_interface=iface_c,
+            encap_vlan=100,
+            binding_type=StaticPortBindingTypeChoices.VPC,
+        )
+        pair = ACIVPCBindingPair(binding_a=a, binding_b=b_dc2)
+        with self.assertRaisesRegex(ValidationError, "fabric"):
+            pair.clean()
+
+
+class ACIStaticPortBindingExtraTests(_BindingFixture):
+    """Cover get_absolute_url (L91 in static_port_bindings.py)."""
+
+    def test_get_absolute_url(self):
+        b = ACIStaticPortBinding.objects.create(
+            aci_endpoint_group=self.epg, dcim_interface=self.iface_a, encap_vlan=999
+        )
+        self.assertIn(str(b.pk), b.get_absolute_url())
+
+
+class ACIDomainBindingExtraTests(_BindingFixture):
+    """Cover get_absolute_url (L62 in domain_bindings.py)."""
+
+    def test_get_absolute_url(self):
+        dom = ACIDomain.objects.create(
+            aci_fabric=self.fab, name="phys-dom-url", domain_type="physical"
+        )
+        b = ACIDomainBinding.objects.create(aci_endpoint_group=self.epg, aci_domain=dom)
+        self.assertIn(str(b.pk), b.get_absolute_url())
+
+
+class ACIInterfaceFabricMembershipExtraTests(_BindingFixture):
+    """Cover missed lines L52, 71, 86 in fabric_membership.py."""
+
+    def test_get_absolute_url(self):
+        m = ACIInterfaceFabricMembership.objects.create(
+            dcim_interface=self.iface_a, aci_node=self.node_a
+        )
+        self.assertIn(str(m.pk), m.get_absolute_url())
+
+    def test_clean_skips_when_no_fk(self):
+        """Line 71: return early when dcim_interface_id or aci_node_id is None."""
+        m = ACIInterfaceFabricMembership(dcim_interface=None, aci_node=None, name="empty")
+        # Should not raise; early return path
+        m.clean()
+
+    def test_clean_skips_non_device_node(self):
+        """Line 86: skip consistency check when node points at non-device object."""
+        from django.contrib.contenttypes.models import ContentType
+
+        from netbox_cisco_aci.models.fabric import ACINode
+
+        # Create a node whose GFK points at a non-dcim.Device content type (e.g. ACIFabric)
+        fab_ct = ContentType.objects.get_for_model(self.fab.__class__)
+        node_vm = ACINode.objects.create(
+            aci_pod=self.pod,
+            node_id=998,
+            name="vm-like-node",
+            node_object_type=fab_ct,
+            node_object_id=self.fab.pk,
+        )
+        # iface_b belongs to device_b, but node is a "non-device" type → should not raise
+        m = ACIInterfaceFabricMembership(dcim_interface=self.iface_b, aci_node=node_vm)
+        m.clean()

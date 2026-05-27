@@ -160,3 +160,35 @@ class Phase5FilterSetTests(TestCase):
             {"role": ["provider"]},
         )
         self.assertEqual(qs.count(), 1)
+
+
+# ---------------------------------------------------------------------------
+# Search() coverage (Bucket A) — filtersets/contracts.py L34
+# ---------------------------------------------------------------------------
+
+
+class ACIContractFilterSetSearchTests(TestCase):
+    """Cover _NameAliasDescriptionSearchMixin.search() empty branch."""
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.fab = ACIFabric.objects.create(name="fab-ctr-srch")
+        cls.tenant = ACITenant.objects.create(aci_fabric=cls.fab, name="t-ctr-srch")
+        ACIContract.objects.create(
+            aci_tenant=cls.tenant, name="ctr-phi", name_alias="", description=""
+        )
+        ACIContract.objects.create(
+            aci_tenant=cls.tenant, name="ctr-other", name_alias="phi-alias", description=""
+        )
+
+    def test_search_empty_returns_all(self):
+        qs = ACIContractFilterSet(
+            {"q": "  "}, ACIContract.objects.filter(aci_tenant=self.tenant)
+        ).qs
+        self.assertEqual(qs.count(), 2)
+
+    def test_search_matches_name_and_alias(self):
+        qs = ACIContractFilterSet(
+            {"q": "phi"}, ACIContract.objects.filter(aci_tenant=self.tenant)
+        ).qs
+        self.assertEqual(qs.count(), 2)

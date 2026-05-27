@@ -133,3 +133,28 @@ class ACIInterfaceContextPanelTests(TestCase):
         out = ext.right_page()
         self.assertIn("Cisco ACI Context", out)
         self.assertIn("memb-leaf", out)
+
+
+# ---------------------------------------------------------------------------
+# Bucket D — empty-state early-return paths
+# ---------------------------------------------------------------------------
+
+
+class ACIDeviceContextPanelNoneObjectTests(TestCase):
+    """Cover device.py L48, 51 — return '' when object is None."""
+
+    def test_returns_empty_when_object_is_none(self):
+        """device.py L48: `if device is None: return ""`."""
+        ext = ACIDeviceContextPanel({"object": None, "request": None, "settings": {}, "config": {}})
+        self.assertEqual(ext.full_width_page(), "")
+
+
+class ACIInterfaceContextPanelNoneObjectTests(TestCase):
+    """Cover interface.py L18 — return '' when object is None."""
+
+    def test_returns_empty_when_object_is_none(self):
+        """interface.py L18: `if interface is None: return ""`."""
+        ext = ACIInterfaceContextPanel(
+            {"object": None, "request": None, "settings": {}, "config": {}}
+        )
+        self.assertEqual(ext.right_page(), "")

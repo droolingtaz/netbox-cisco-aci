@@ -187,3 +187,49 @@ class Phase4FilterSetTests(TestCase):
             ACISwitchProfileInterfaceProfileAttachment.objects.all(),
         ).qs
         self.assertEqual(qs.count(), 1)
+
+
+# ---------------------------------------------------------------------------
+# Search() coverage (Bucket A) — filtersets/access_groups.py L26-28
+# ---------------------------------------------------------------------------
+
+
+class ACIInterfacePolicyGroupFilterSetSearchTests(TestCase):
+    """Cover ACIInterfacePolicyGroupFilterSet.search() empty and match paths."""
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.fab = ACIFabric.objects.create(name="fab-pg-srch")
+        ACIInterfacePolicyGroup.objects.create(
+            aci_fabric=cls.fab,
+            name="pg-rho",
+            pg_type=InterfacePolicyGroupTypeChoices.ACCESS,
+            name_alias="",
+            description="",
+        )
+        ACIInterfacePolicyGroup.objects.create(
+            aci_fabric=cls.fab,
+            name="pg-other",
+            pg_type=InterfacePolicyGroupTypeChoices.ACCESS,
+            name_alias="rho-alias",
+            description="",
+        )
+        ACIInterfacePolicyGroup.objects.create(
+            aci_fabric=cls.fab,
+            name="pg-third",
+            pg_type=InterfacePolicyGroupTypeChoices.ACCESS,
+            name_alias="",
+            description="rho in description",
+        )
+
+    def test_search_empty_returns_all(self):
+        qs = ACIInterfacePolicyGroupFilterSet(
+            {"q": "  "}, ACIInterfacePolicyGroup.objects.filter(aci_fabric=self.fab)
+        ).qs
+        self.assertEqual(qs.count(), 3)
+
+    def test_search_matches_name_alias_and_description(self):
+        qs = ACIInterfacePolicyGroupFilterSet(
+            {"q": "rho"}, ACIInterfacePolicyGroup.objects.filter(aci_fabric=self.fab)
+        ).qs
+        self.assertEqual(qs.count(), 3)

@@ -548,3 +548,176 @@ class ACISwitchProfileInterfaceProfileAttachmentTests(_Phase4Fixture):
         ACISwitchProfileInterfaceProfileAttachment.objects.create(
             switch_profile=self.sp, interface_profile=ip2
         )
+
+
+# ---------------------------------------------------------------------------
+# Extra coverage (Bucket B) — missed lines in Phase 4 models
+# ---------------------------------------------------------------------------
+
+
+class ACILinkLevelPolicyExtraTests(_Phase4Fixture):
+    """Cover get_absolute_url (L81 in link_level.py)."""
+
+    def test_get_absolute_url(self):
+        p = ACILinkLevelPolicy.objects.create(aci_fabric=self.fab, name="ll-url")
+        self.assertIn(str(p.pk), p.get_absolute_url())
+
+
+class ACICDPInterfacePolicyExtraTests(_Phase4Fixture):
+    """Cover get_absolute_url (L48 in cdp.py)."""
+
+    def test_get_absolute_url(self):
+        p = ACICDPInterfacePolicy.objects.create(aci_fabric=self.fab, name="cdp-url")
+        self.assertIn(str(p.pk), p.get_absolute_url())
+
+
+class ACILLDPInterfacePolicyExtraTests(_Phase4Fixture):
+    """Cover get_absolute_url (L49 in lldp.py)."""
+
+    def test_get_absolute_url(self):
+        p = ACILLDPInterfacePolicy.objects.create(aci_fabric=self.fab, name="lldp-url")
+        self.assertIn(str(p.pk), p.get_absolute_url())
+
+
+class ACILACPInterfacePolicyExtraTests(_Phase4Fixture):
+    """Cover get_absolute_url (L87 in lacp.py) and LACP required for PC/vPC."""
+
+    def test_get_absolute_url(self):
+        p = ACILACPInterfacePolicy.objects.create(
+            aci_fabric=self.fab, name="lacp-url", mode=LACPModeChoices.ACTIVE
+        )
+        self.assertIn(str(p.pk), p.get_absolute_url())
+
+    def test_pc_without_lacp_rejected(self):
+        from netbox_cisco_aci.models.access import ACIInterfacePolicyGroup
+
+        pg = ACIInterfacePolicyGroup(
+            aci_fabric=self.fab,
+            name="pg-pc-no-lacp",
+            pg_type=InterfacePolicyGroupTypeChoices.PC,
+        )
+        with self.assertRaisesRegex(ValidationError, "LACP"):
+            pg.full_clean()
+
+
+class ACIMCPInterfacePolicyExtraTests(_Phase4Fixture):
+    """Cover get_absolute_url (L47 in mcp.py)."""
+
+    def test_get_absolute_url(self):
+        p = ACIMCPInterfacePolicy.objects.create(aci_fabric=self.fab, name="mcp-url")
+        self.assertIn(str(p.pk), p.get_absolute_url())
+
+
+class ACISTPInterfacePolicyExtraTests(_Phase4Fixture):
+    """Cover get_absolute_url (L48 in stp.py)."""
+
+    def test_get_absolute_url(self):
+        p = ACISTPInterfacePolicy.objects.create(aci_fabric=self.fab, name="stp-url")
+        self.assertIn(str(p.pk), p.get_absolute_url())
+
+
+class ACIInterfacePolicyGroupExtraTests(_Phase4Fixture):
+    """Cover missed lines L116, 119, 141 in policy_groups.py."""
+
+    def test_get_absolute_url(self):
+        pg = ACIInterfacePolicyGroup.objects.create(
+            aci_fabric=self.fab,
+            name="pg-url",
+            pg_type=InterfacePolicyGroupTypeChoices.ACCESS,
+        )
+        self.assertIn(str(pg.pk), pg.get_absolute_url())
+
+    def test_get_pg_type_color(self):
+        pg = ACIInterfacePolicyGroup(
+            aci_fabric=self.fab, name="pg-color", pg_type=InterfacePolicyGroupTypeChoices.PC
+        )
+        self.assertEqual(pg.get_pg_type_color(), "blue")
+
+    def test_pg_without_fabric_skips_cross_fabric_check(self):
+        """Line 141: early return when aci_fabric_id is None."""
+        pg = ACIInterfacePolicyGroup(
+            name="pg-no-fabric", pg_type=InterfacePolicyGroupTypeChoices.ACCESS
+        )
+        # clean() should return without raising when there is no fabric set
+        pg.clean()
+
+
+class ACISwitchProfileExtraTests(_Phase4Fixture):
+    """Cover get_absolute_url (L53) in switch_profiles.py."""
+
+    def test_get_absolute_url(self):
+        sp = ACISwitchProfile.objects.create(aci_fabric=self.fab, name="sp-url")
+        self.assertIn(str(sp.pk), sp.get_absolute_url())
+
+
+class ACISwitchProfileSelectorExtraTests(_Phase4Fixture):
+    """Cover missed lines L98, 105, 109 in switch_profiles.py."""
+
+    def test_str_all_type(self):
+        sp = ACISwitchProfile.objects.create(aci_fabric=self.fab, name="sp-sel-all")
+        sel = ACISwitchProfileSelector.objects.create(
+            switch_profile=sp, name="sel-all", selector_type=RangeAllChoices.ALL
+        )
+        self.assertIn("all", str(sel))
+
+    def test_get_absolute_url(self):
+        sp = ACISwitchProfile.objects.create(aci_fabric=self.fab, name="sp-sel-url")
+        sel = ACISwitchProfileSelector.objects.create(
+            switch_profile=sp, name="sel-url", selector_type=RangeAllChoices.ALL
+        )
+        self.assertIn(str(sel.pk), sel.get_absolute_url())
+
+    def test_aci_fabric_property(self):
+        sp = ACISwitchProfile.objects.create(aci_fabric=self.fab, name="sp-fab-prop")
+        sel = ACISwitchProfileSelector.objects.create(
+            switch_profile=sp, name="sel-fab-prop", selector_type=RangeAllChoices.ALL
+        )
+        self.assertEqual(sel.aci_fabric, self.fab)
+
+
+class ACIInterfaceProfileSelectorExtraTests(_Phase4Fixture):
+    """Cover missed lines L45, 110, 114 in interface_profiles.py."""
+
+    def test_from_gt_to_raises(self):
+        ip = ACIInterfaceProfile.objects.create(aci_fabric=self.fab, name="ip-sel-range")
+        sel = ACIInterfaceProfileSelector(
+            interface_profile=ip,
+            name="isel-bad",
+            from_module=1,
+            from_port=10,
+            to_module=1,
+            to_port=1,
+        )
+        with self.assertRaisesRegex(ValidationError, "from_module"):
+            sel.full_clean()
+
+    def test_cross_fabric_policy_group_rejected(self):
+        ip = ACIInterfaceProfile.objects.create(aci_fabric=self.fab, name="ip-xfab")
+        pg_fab2 = ACIInterfacePolicyGroup.objects.create(
+            aci_fabric=self.fab2,
+            name="pg-fab2",
+            pg_type=InterfacePolicyGroupTypeChoices.ACCESS,
+        )
+        sel = ACIInterfaceProfileSelector(
+            interface_profile=ip,
+            name="isel-xfab",
+            from_module=1,
+            from_port=1,
+            to_module=1,
+            to_port=10,
+            policy_group=pg_fab2,
+        )
+        with self.assertRaisesRegex(ValidationError, "Fabric"):
+            sel.full_clean()
+
+
+class ACISwitchProfileInterfaceProfileAttachmentExtraTests(_Phase4Fixture):
+    """Cover get_absolute_url (L49 in attachments.py)."""
+
+    def test_get_absolute_url(self):
+        sp = ACISwitchProfile.objects.create(aci_fabric=self.fab, name="sp-attach-url")
+        ip = ACIInterfaceProfile.objects.create(aci_fabric=self.fab, name="ip-attach-url")
+        attachment = ACISwitchProfileInterfaceProfileAttachment.objects.create(
+            switch_profile=sp, interface_profile=ip
+        )
+        self.assertIn(str(attachment.pk), attachment.get_absolute_url())

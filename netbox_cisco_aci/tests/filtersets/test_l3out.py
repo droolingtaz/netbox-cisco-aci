@@ -432,3 +432,43 @@ class StaticRouteFilterSetTests(TestCase):
         ).qs
         self.assertIn(self.nh_null, qs)
         self.assertNotIn(self.nh_prefix, qs)
+
+
+# ---------------------------------------------------------------------------
+# Search() coverage (Bucket A)
+# ---------------------------------------------------------------------------
+
+
+class ACIL3OutFilterSetSearchTests(TestCase):
+    """Cover _SearchMixin.search() empty and match branches (filtersets/l3out.py L36-38)."""
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.fab = ACIFabric.objects.create(name="fab-l3out-srch")
+        cls.tenant = ACITenant.objects.create(aci_fabric=cls.fab, name="t-l3out-srch")
+        cls.vrf = ACIVRF.objects.create(aci_tenant=cls.tenant, name="vrf-l3out-srch")
+        cls.l3out1 = ACIL3Out.objects.create(
+            aci_tenant=cls.tenant, aci_vrf=cls.vrf, name="l3out-psi", name_alias="", description=""
+        )
+        cls.l3out2 = ACIL3Out.objects.create(
+            aci_tenant=cls.tenant,
+            aci_vrf=cls.vrf,
+            name="l3out-other",
+            name_alias="psi-alias",
+            description="",
+        )
+        cls.l3out3 = ACIL3Out.objects.create(
+            aci_tenant=cls.tenant,
+            aci_vrf=cls.vrf,
+            name="l3out-third",
+            name_alias="",
+            description="psi in description",
+        )
+
+    def test_search_empty_returns_all(self):
+        qs = ACIL3OutFilterSet({"q": "  "}, ACIL3Out.objects.filter(aci_tenant=self.tenant)).qs
+        self.assertEqual(qs.count(), 3)
+
+    def test_search_matches_name_alias_description(self):
+        qs = ACIL3OutFilterSet({"q": "psi"}, ACIL3Out.objects.filter(aci_tenant=self.tenant)).qs
+        self.assertEqual(qs.count(), 3)

@@ -199,3 +199,63 @@ class Phase6FilterSetTests(TestCase):
             ACIInterfaceFabricMembership.objects.all(),
         ).qs
         self.assertSequenceEqual(list(qs), [self.m2])
+
+
+# ---------------------------------------------------------------------------
+# Search() coverage (Bucket A) — filtersets/bindings.py L26-28
+# ---------------------------------------------------------------------------
+
+
+class ACIBindingFilterSetSearchTests(TestCase):
+    """Cover _SearchMixin.search() empty and match branches in bindings filterset."""
+
+    @classmethod
+    def setUpTestData(cls):
+        from dcim.models import Interface
+
+        from netbox_cisco_aci.tests.base import make_dcim_device
+
+        cls.fab = ACIFabric.objects.create(name="fab-bnd-srch")
+        cls.tenant = ACITenant.objects.create(aci_fabric=cls.fab, name="t-bnd-srch")
+        cls.vrf = ACIVRF.objects.create(aci_tenant=cls.tenant, name="vrf-bnd-srch")
+        cls.bd = ACIBridgeDomain.objects.create(
+            aci_tenant=cls.tenant, aci_vrf=cls.vrf, name="bd-bnd-srch"
+        )
+        cls.ap = ACIAppProfile.objects.create(aci_tenant=cls.tenant, name="ap-bnd-srch")
+        cls.epg = ACIEndpointGroup.objects.create(
+            aci_tenant=cls.tenant,
+            aci_app_profile=cls.ap,
+            aci_bridge_domain=cls.bd,
+            name="epg-bnd-srch",
+        )
+        cls.device = make_dcim_device("dev-bnd-srch")
+        cls.iface1 = Interface.objects.create(device=cls.device, name="eth1/1", type="10gbase-t")
+        cls.iface2 = Interface.objects.create(device=cls.device, name="eth1/2", type="10gbase-t")
+        cls.b1 = ACIStaticPortBinding.objects.create(
+            aci_endpoint_group=cls.epg,
+            dcim_interface=cls.iface1,
+            encap_vlan=300,
+            name="bnd-tau",
+            name_alias="",
+            description="",
+        )
+        cls.b2 = ACIStaticPortBinding.objects.create(
+            aci_endpoint_group=cls.epg,
+            dcim_interface=cls.iface2,
+            encap_vlan=301,
+            name="bnd-other",
+            name_alias="tau-alias",
+            description="",
+        )
+
+    def test_search_empty_returns_all(self):
+        qs = ACIStaticPortBindingFilterSet(
+            {"q": "  "}, ACIStaticPortBinding.objects.filter(aci_endpoint_group=self.epg)
+        ).qs
+        self.assertEqual(qs.count(), 2)
+
+    def test_search_matches_name_and_alias(self):
+        qs = ACIStaticPortBindingFilterSet(
+            {"q": "tau"}, ACIStaticPortBinding.objects.filter(aci_endpoint_group=self.epg)
+        ).qs
+        self.assertEqual(qs.count(), 2)

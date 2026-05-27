@@ -420,3 +420,131 @@ class ACIContractRelationTests(_ContractFixture):
             name="r-t",
         )
         self.assertEqual(r.target, self.epg)
+
+
+# ---------------------------------------------------------------------------
+# Extra coverage (Bucket B) — missed lines in contract models
+# ---------------------------------------------------------------------------
+
+
+class ACIContractRelationExtraTests(_ContractFixture):
+    """Cover missed lines L90, 93-94, 97, 128-130 in relations.py."""
+
+    def test_zero_targets_rejected(self):
+        contract = ACIContract.objects.create(aci_tenant=self.tenant, name="c-zero-tgt")
+        rel = ACIContractRelation(
+            aci_contract=contract,
+            name="rel-zero-tgt",
+            role=ContractRelationRoleChoices.PROVIDER,
+        )
+        with self.assertRaisesRegex(ValidationError, "Exactly one"):
+            rel.clean()
+
+    def test_two_targets_rejected(self):
+        contract = ACIContract.objects.create(aci_tenant=self.tenant, name="c-two-tgt")
+        rel = ACIContractRelation(
+            aci_contract=contract,
+            name="rel-two-tgt",
+            aci_endpoint_group=self.epg,
+            aci_endpoint_security_group=self.esg,
+            role=ContractRelationRoleChoices.PROVIDER,
+        )
+        with self.assertRaisesRegex(ValidationError, "Exactly one"):
+            rel.clean()
+
+    def test_cross_tenant_contract_rejected(self):
+        contract2 = ACIContract.objects.create(aci_tenant=self.tenant2, name="c-cross")
+        rel = ACIContractRelation(
+            aci_contract=contract2,
+            name="rel-cross",
+            aci_endpoint_group=self.epg,
+            role=ContractRelationRoleChoices.CONSUMER,
+        )
+        with self.assertRaisesRegex(ValidationError, "tenant"):
+            rel.clean()
+
+    def test_common_tenant_contract_allowed(self):
+        common_contract = ACIContract.objects.create(aci_tenant=self.common, name="c-common")
+        rel = ACIContractRelation(
+            aci_contract=common_contract,
+            name="rel-common",
+            aci_endpoint_group=self.epg,
+            role=ContractRelationRoleChoices.PROVIDER,
+        )
+        rel.clean()  # Should not raise
+
+
+class ACIFilterExtraTests(_ContractFixture):
+    """Cover get_absolute_url (L46 in filters.py)."""
+
+    def test_get_absolute_url(self):
+        f = ACIFilter.objects.create(aci_tenant=self.tenant, name="f-url-extra")
+        self.assertIn(str(f.pk), f.get_absolute_url())
+
+
+class ACIFilterEntryExtraTests(_ContractFixture):
+    """Cover get_absolute_url (L153 in filters.py)."""
+
+    def test_get_absolute_url(self):
+        f = ACIFilter.objects.create(aci_tenant=self.tenant, name="f-entry-url")
+        from netbox_cisco_aci.choices import ContractFilterEntryEtherTypeChoices
+
+        entry = ACIFilterEntry.objects.create(
+            aci_filter=f,
+            name="entry-url",
+            ether_type=ContractFilterEntryEtherTypeChoices.IP,
+        )
+        self.assertIn(str(entry.pk), entry.get_absolute_url())
+
+
+class ACISubjectExtraTests(_ContractFixture):
+    """Cover get_absolute_url (L88 in subjects.py) and reverse_filter_ports validation."""
+
+    def test_get_absolute_url(self):
+        c = ACIContract.objects.create(aci_tenant=self.tenant, name="c-subj-url")
+        subj = ACISubject.objects.create(aci_contract=c, name="subj-url")
+        self.assertIn(str(subj.pk), subj.get_absolute_url())
+
+    def test_reverse_filter_ports_requires_both_directions(self):
+        c = ACIContract.objects.create(aci_tenant=self.tenant, name="c-rev-filter")
+        from netbox_cisco_aci.models.contracts import ACISubject
+
+        subj = ACISubject(
+            aci_contract=c,
+            name="subj-rev",
+            apply_both_directions=False,
+            reverse_filter_ports=True,
+        )
+        with self.assertRaisesRegex(ValidationError, "reverse_filter_ports"):
+            subj.full_clean()
+
+
+class ACISubjectFilterExtraTests(_ContractFixture):
+    """Cover get_absolute_url (L163 in subjects.py) and direction validation."""
+
+    def test_get_absolute_url(self):
+        c = ACIContract.objects.create(aci_tenant=self.tenant, name="c-subj-filt-url")
+        subj = ACISubject.objects.create(
+            aci_contract=c, name="subj-filt-url", apply_both_directions=True
+        )
+        f = ACIFilter.objects.create(aci_tenant=self.tenant, name="f-subj-filt-url")
+        sf = ACISubjectFilter.objects.create(
+            aci_subject=subj,
+            aci_filter=f,
+            direction=SubjectFilterDirectionChoices.BOTH,
+        )
+        self.assertIn(str(sf.pk), sf.get_absolute_url())
+
+    def test_direction_must_be_both_when_apply_both_directions(self):
+        c = ACIContract.objects.create(aci_tenant=self.tenant, name="c-dir-both")
+        subj = ACISubject.objects.create(
+            aci_contract=c, name="subj-dir-both", apply_both_directions=True
+        )
+        f = ACIFilter.objects.create(aci_tenant=self.tenant, name="f-dir-both")
+        sf = ACISubjectFilter(
+            aci_subject=subj,
+            aci_filter=f,
+            direction=SubjectFilterDirectionChoices.IN,
+        )
+        with self.assertRaisesRegex(ValidationError, "direction"):
+            sf.full_clean()
