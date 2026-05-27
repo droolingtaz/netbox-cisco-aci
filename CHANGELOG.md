@@ -15,6 +15,40 @@ _No unreleased changes yet — next release will start here._
 
 ---
 
+## [0.1.3] — 2026-05-27
+
+Patch release adding the AAEP→EPG encap-VLAN reachability check and
+fixing a cosmetic em-dash render on the VLAN Pool detail page.
+
+> **Compatibility:** NetBox v4.5, NetBox v4.6 · Python 3.12.
+
+### Added
+
+- **AAEP→EPG encap VLAN must be reachable through the AAEP's domains**
+  (PR #17). `ACIAAEPEPGMapping.clean()` now resolves the chain
+  `AAEP → ACIAAEPDomainAssociation → ACIDomain → ACIVLANPool` and
+  asserts the encap is contained in at least one `ACIVLANPoolBlock`
+  under those pools. Mirrors APIC's deployment-time behaviour: the
+  leaves refuse to program a mapping whose encap isn't covered by any
+  bound pool. The check is intentionally permissive while the AAEP is
+  still being built (no domains attached, or attached domains have no
+  pool yet) so users aren't blocked during incremental config. Eight
+  new test cases cover the empty-domain, no-pool, in-range,
+  boundary, multi-block, and multi-domain branches.
+
+### Fixed
+
+- **`\u2014` rendering as literal text on the VLAN Pool detail page**
+  (PR #17). `templates/netbox_cisco_aci/acivlanpool.html` had a
+  `default:"\u2014"` filter call that I'd written assuming the Django
+  template engine would interpret the Python escape. It doesn't, so
+  the page rendered the literal six characters next to each VLAN
+  block. Replaced with the canonical NetBox `|placeholder` filter
+  which renders an em-dash in the muted class. Spot-audited the rest
+  of the templates — no other instance of this shape.
+
+---
+
 ## [0.1.2] — 2026-05-27
 
 Patch release fixing the **Add USeg Attribute** form. All v0.1.x users
@@ -227,7 +261,8 @@ Cloud / Kubernetes-friendly footprint.
   name. Python package, Django app label, URL base, and constraint
   names all use the matching `netbox_cisco_aci` / `cisco-aci` prefixes.
 
-[Unreleased]: https://github.com/droolingtaz/netbox-cisco-aci/compare/v0.1.2...HEAD
+[Unreleased]: https://github.com/droolingtaz/netbox-cisco-aci/compare/v0.1.3...HEAD
+[0.1.3]: https://github.com/droolingtaz/netbox-cisco-aci/releases/tag/v0.1.3
 [0.1.2]: https://github.com/droolingtaz/netbox-cisco-aci/releases/tag/v0.1.2
 [0.1.1]: https://github.com/droolingtaz/netbox-cisco-aci/releases/tag/v0.1.1
 [0.1.0]: https://github.com/droolingtaz/netbox-cisco-aci/releases/tag/v0.1.0
