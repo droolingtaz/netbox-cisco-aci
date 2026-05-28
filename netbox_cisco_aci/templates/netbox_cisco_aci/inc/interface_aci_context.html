@@ -1,25 +1,58 @@
+{% comment %}
+ACI Context panel injected into the dcim.Interface detail view.
+
+Same layout as the device panel: ``attr-table`` summary card up top,
+then per-concern subordinate cards (bindings, subnets, contracts,
+L3Out, BGP peers).
+{% endcomment %}
 {% load helpers %}
 {% load i18n %}
 
 <div class="card">
   <h2 class="card-header">{% trans "Cisco ACI Context" %}</h2>
-  <div class="card-body">
-    <p>
-      <strong>{% trans "Fabric Role" %}:</strong>
-      {% if interface_fabric_membership %}
-        {{ interface_fabric_membership.get_interface_role_display }}
-        {% trans "on" %}
-        <a href="{{ interface_fabric_membership.aci_node.get_absolute_url }}">{{ interface_fabric_membership.aci_node }}</a>
-      {% else %}—{% endif %}
-    </p>
-  </div>
+  <table class="table table-hover attr-table">
+    <tr>
+      <th scope="row">{% trans "ACI Node" %}</th>
+      <td>
+        {% if interface_fabric_membership %}
+          {{ interface_fabric_membership.aci_node|linkify }}
+        {% else %}{{ ""|placeholder }}{% endif %}
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">{% trans "Fabric Role" %}</th>
+      <td>
+        {% if interface_fabric_membership %}
+          {{ interface_fabric_membership.get_interface_role_display }}
+        {% else %}{{ ""|placeholder }}{% endif %}
+      </td>
+    </tr>
+    <tr>
+      <th scope="row">{% trans "Static Port Bindings" %}</th>
+      <td>{{ static_port_bindings|length }}</td>
+    </tr>
+    <tr>
+      <th scope="row">{% trans "L3Out Interfaces" %}</th>
+      <td>{{ l3out_interfaces|length }}</td>
+    </tr>
+    <tr>
+      <th scope="row">{% trans "BGP Peers" %}</th>
+      <td>{{ bgp_peers|length }}</td>
+    </tr>
+  </table>
+</div>
 
-  {% if static_port_bindings %}
-    <table class="table table-hover">
+{% if static_port_bindings %}
+  <div class="card">
+    <h2 class="card-header">
+      {% trans "Static Port Bindings" %}
+      <span class="badge text-bg-secondary">{{ static_port_bindings|length }}</span>
+    </h2>
+    <table class="table table-hover object-list">
       <thead>
         <tr>
           <th>{% trans "EPG" %}</th>
-          <th>{% trans "Encap" %}</th>
+          <th>{% trans "Encap VLAN" %}</th>
           <th>{% trans "Mode" %}</th>
           <th>{% trans "Immediacy" %}</th>
         </tr>
@@ -27,7 +60,7 @@
       <tbody>
         {% for b in static_port_bindings %}
           <tr>
-            <td><a href="{{ b.aci_endpoint_group.get_absolute_url }}">{{ b.aci_endpoint_group.name }}</a></td>
+            <td>{{ b.aci_endpoint_group|linkify }}</td>
             <td>{{ b.encap_vlan }}</td>
             <td>{{ b.get_mode_display }}</td>
             <td>{{ b.get_deployment_immediacy_display }}</td>
@@ -35,64 +68,104 @@
         {% endfor %}
       </tbody>
     </table>
-  {% endif %}
+  </div>
+{% endif %}
 
-  {% if subnets %}
-    <div class="card-body">
-      <h5>{% trans "Reachable Subnets" %}</h5>
-      <ul>
+{% if subnets %}
+  <div class="card">
+    <h2 class="card-header">
+      {% trans "Reachable Subnets" %}
+      <span class="badge text-bg-secondary">{{ subnets|length }}</span>
+    </h2>
+    <table class="table table-hover object-list">
+      <thead>
+        <tr>
+          <th>{% trans "Subnet" %}</th>
+        </tr>
+      </thead>
+      <tbody>
         {% for s in subnets %}
-          <li><a href="{{ s.get_absolute_url }}">{{ s }}</a></li>
+          <tr><td>{{ s|linkify }}</td></tr>
         {% endfor %}
-      </ul>
-    </div>
-  {% endif %}
+      </tbody>
+    </table>
+  </div>
+{% endif %}
 
-  {% if provided_contracts or consumed_contracts %}
-    <div class="card-body">
-      <h5>{% trans "Contracts" %}</h5>
-      <p>
-        <strong>{% trans "Provided" %}:</strong>
-        {% for r in provided_contracts %}
-          <a href="{{ r.aci_contract.get_absolute_url }}">{{ r.aci_contract.name }}</a>{% if not forloop.last %}, {% endif %}
-        {% empty %}—{% endfor %}
-      </p>
-      <p>
-        <strong>{% trans "Consumed" %}:</strong>
-        {% for r in consumed_contracts %}
-          <a href="{{ r.aci_contract.get_absolute_url }}">{{ r.aci_contract.name }}</a>{% if not forloop.last %}, {% endif %}
-        {% empty %}—{% endfor %}
-      </p>
-    </div>
-  {% endif %}
+{% if provided_contracts or consumed_contracts %}
+  <div class="card">
+    <h2 class="card-header">{% trans "Contracts" %}</h2>
+    <table class="table table-hover attr-table">
+      <tr>
+        <th scope="row">{% trans "Provided" %}</th>
+        <td>
+          {% for r in provided_contracts %}
+            {{ r.aci_contract|linkify }}{% if not forloop.last %}, {% endif %}
+          {% empty %}{{ ""|placeholder }}{% endfor %}
+        </td>
+      </tr>
+      <tr>
+        <th scope="row">{% trans "Consumed" %}</th>
+        <td>
+          {% for r in consumed_contracts %}
+            {{ r.aci_contract|linkify }}{% if not forloop.last %}, {% endif %}
+          {% empty %}{{ ""|placeholder }}{% endfor %}
+        </td>
+      </tr>
+    </table>
+  </div>
+{% endif %}
 
-  {% if l3out_interfaces %}
-    <div class="card-body">
-      <h5>{% trans "L3Out Interfaces" %}</h5>
-      <ul>
+{% if l3out_interfaces %}
+  <div class="card">
+    <h2 class="card-header">
+      {% trans "L3Out Interfaces" %}
+      <span class="badge text-bg-secondary">{{ l3out_interfaces|length }}</span>
+    </h2>
+    <table class="table table-hover object-list">
+      <thead>
+        <tr>
+          <th>{% trans "Interface" %}</th>
+          <th>{% trans "Logical Interface Profile" %}</th>
+          <th>{% trans "IP Address" %}</th>
+        </tr>
+      </thead>
+      <tbody>
         {% for i in l3out_interfaces %}
-          <li>
-            <a href="{{ i.get_absolute_url }}">{{ i.name }}</a>
-            {% trans "on" %}
-            <a href="{{ i.aci_logical_interface_profile.get_absolute_url }}">{{ i.aci_logical_interface_profile.name }}</a>
-            {% if i.ip_address %}— {{ i.ip_address }}{% endif %}
-          </li>
+          <tr>
+            <td>{{ i|linkify }}</td>
+            <td>{{ i.aci_logical_interface_profile|linkify }}</td>
+            <td>{{ i.ip_address|placeholder }}</td>
+          </tr>
         {% endfor %}
-      </ul>
-    </div>
-  {% endif %}
+      </tbody>
+    </table>
+  </div>
+{% endif %}
 
-  {% if bgp_peers %}
-    <div class="card-body">
-      <h5>{% trans "BGP Peers" %}</h5>
-      <ul>
+{% if bgp_peers %}
+  <div class="card">
+    <h2 class="card-header">
+      {% trans "BGP Peers" %}
+      <span class="badge text-bg-secondary">{{ bgp_peers|length }}</span>
+    </h2>
+    <table class="table table-hover object-list">
+      <thead>
+        <tr>
+          <th>{% trans "Peer Address" %}</th>
+          <th>{% trans "Remote AS" %}</th>
+          <th>{% trans "Local AS" %}</th>
+        </tr>
+      </thead>
+      <tbody>
         {% for p in bgp_peers %}
-          <li>
-            <a href="{{ p.get_absolute_url }}">{{ p.peer_address }}</a>
-            {% trans "AS" %} {{ p.remote_asn }}
-          </li>
+          <tr>
+            <td>{{ p|linkify }}</td>
+            <td>{{ p.remote_asn }}</td>
+            <td>{{ p.local_asn|placeholder }}</td>
+          </tr>
         {% endfor %}
-      </ul>
-    </div>
-  {% endif %}
-</div>
+      </tbody>
+    </table>
+  </div>
+{% endif %}

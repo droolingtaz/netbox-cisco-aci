@@ -70,7 +70,11 @@ class ACIDeviceContextPanelTests(TestCase):
         self.assertIn("100", out)
 
     def test_renders_for_device_with_only_bindings_no_node(self):
-        # Device has bindings but no ACINode link -> still render (binding count > 0)
+        # Device has bindings but no ACINode link -> still render (binding
+        # count > 0). The summary attr-table renders em-dashes for the
+        # fabric/pod/node rows when those FKs aren't present, and the
+        # bindings card still shows the encap so the operator sees the
+        # ACI policy on the port.
         device = make_dcim_device("bindings-only")
         iface = Interface.objects.create(device=device, name="eth1/1", type="10gbase-t")
         ACIStaticPortBinding.objects.create(
@@ -79,7 +83,11 @@ class ACIDeviceContextPanelTests(TestCase):
         ext = ACIDeviceContextPanel(_ctx(device))
         out = ext.full_width_page()
         self.assertIn("Cisco ACI Context", out)
-        self.assertIn("Not linked to an ACI Node", out)
+        # The encap from the binding is rendered in the bindings card.
+        self.assertIn("100", out)
+        # The ACI Node row in the summary table renders an em-dash because
+        # there's no node linked. ``|placeholder`` outputs &mdash;.
+        self.assertIn("&mdash;", out)
 
 
 class ACIInterfaceContextPanelTests(TestCase):
