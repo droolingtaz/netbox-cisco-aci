@@ -1,60 +1,102 @@
+{% comment %}
+ACI Context panel injected into the dcim.Device detail view.
+
+Layout follows NetBox's stock "Device Type" card pattern:
+
+  * Outer ``<div class="card">`` wrapper.
+  * ``<table class="table table-hover attr-table">`` rendering a two-
+    column definition list (label | value) for the summary attributes.
+    The ``attr-table`` class is what gives the screenshot's compact
+    "Device Type" look. ``|linkify`` auto-renders FKs as anchor tags
+    and ``|placeholder`` renders an em-dash when a value is blank.
+  * Subordinate sections (bindings table, L3Out logical nodes) render
+    as their own cards so they stack cleanly underneath the summary.
+
+If the device has no ACI link at all the view returns "" upstream, so
+nothing renders.
+{% endcomment %}
 {% load helpers %}
 {% load i18n %}
 
 <div class="card">
   <h2 class="card-header">{% trans "Cisco ACI Context" %}</h2>
-  <div class="card-body">
-    {% if aci_node %}
-      <p>
-        <strong>{% trans "ACI Node" %}:</strong>
-        <a href="{{ aci_node.get_absolute_url }}">{{ aci_node }}</a>
-        {% if aci_fabric %}
-          &middot; <strong>{% trans "Fabric" %}:</strong>
-          <a href="{{ aci_fabric.get_absolute_url }}">{{ aci_fabric }}</a>
-        {% endif %}
-        {% if aci_pod %}
-          &middot; <strong>{% trans "Pod" %}:</strong>
-          <a href="{{ aci_pod.get_absolute_url }}">{{ aci_pod }}</a>
-        {% endif %}
-      </p>
-    {% else %}
-      <p class="text-muted">{% trans "Not linked to an ACI Node." %}</p>
+  <table class="table table-hover attr-table">
+    <tr>
+      <th scope="row">{% trans "Fabric" %}</th>
+      <td>{{ aci_fabric|linkify|placeholder }}</td>
+    </tr>
+    <tr>
+      <th scope="row">{% trans "Pod" %}</th>
+      <td>{{ aci_pod|linkify|placeholder }}</td>
+    </tr>
+    <tr>
+      <th scope="row">{% trans "ACI Node" %}</th>
+      <td>{{ aci_node|linkify|placeholder }}</td>
+    </tr>
+    {% if aci_node and aci_node.node_id %}
+      <tr>
+        <th scope="row">{% trans "Node ID" %}</th>
+        <td>{{ aci_node.node_id }}</td>
+      </tr>
     {% endif %}
+    {% if aci_node and aci_node.role %}
+      <tr>
+        <th scope="row">{% trans "Role" %}</th>
+        <td>{{ aci_node.get_role_display }}</td>
+      </tr>
+    {% endif %}
+    <tr>
+      <th scope="row">{% trans "EPGs" %}</th>
+      <td>{{ epg_count }}</td>
+    </tr>
+    <tr>
+      <th scope="row">{% trans "Bridge Domains" %}</th>
+      <td>{{ bd_count }}</td>
+    </tr>
+    <tr>
+      <th scope="row">{% trans "VRFs" %}</th>
+      <td>{{ vrf_count }}</td>
+    </tr>
+    <tr>
+      <th scope="row">{% trans "Static Port Bindings" %}</th>
+      <td>{{ binding_count }}</td>
+    </tr>
+    {% if logical_nodes %}
+      <tr>
+        <th scope="row">{% trans "L3Out Logical Nodes" %}</th>
+        <td>{{ logical_nodes|length }}</td>
+      </tr>
+    {% endif %}
+  </table>
+</div>
 
-    <p>
-      {{ epg_count }} {% trans "EPGs" %},
-      {{ bd_count }} {% trans "BDs" %},
-      {{ vrf_count }} {% trans "VRFs" %}
-      {% trans "across" %} {{ binding_count }} {% trans "static port bindings" %}.
-    </p>
-  </div>
-
-  {% if static_port_bindings %}
-    <table class="table table-hover">
+{% if static_port_bindings %}
+  <div class="card">
+    <h2 class="card-header">
+      {% trans "Static Port Bindings" %}
+      <span class="badge text-bg-secondary">{{ binding_count }}</span>
+    </h2>
+    <table class="table table-hover object-list">
       <thead>
         <tr>
           <th>{% trans "Interface" %}</th>
           <th>{% trans "EPG" %}</th>
-          <th>{% trans "BD" %}</th>
+          <th>{% trans "Bridge Domain" %}</th>
           <th>{% trans "VRF" %}</th>
-          <th>{% trans "Encap" %}</th>
+          <th>{% trans "Encap VLAN" %}</th>
           <th>{% trans "Mode" %}</th>
         </tr>
       </thead>
       <tbody>
         {% for b in static_port_bindings %}
           <tr>
-            <td><a href="{{ b.dcim_interface.get_absolute_url }}">{{ b.dcim_interface }}</a></td>
-            <td><a href="{{ b.aci_endpoint_group.get_absolute_url }}">{{ b.aci_endpoint_group.name }}</a></td>
+            <td>{{ b.dcim_interface|linkify }}</td>
+            <td>{{ b.aci_endpoint_group|linkify }}</td>
+            <td>{{ b.aci_endpoint_group.aci_bridge_domain|linkify|placeholder }}</td>
             <td>
               {% if b.aci_endpoint_group.aci_bridge_domain %}
-                <a href="{{ b.aci_endpoint_group.aci_bridge_domain.get_absolute_url }}">{{ b.aci_endpoint_group.aci_bridge_domain.name }}</a>
-              {% else %}—{% endif %}
-            </td>
-            <td>
-              {% if b.aci_endpoint_group.aci_bridge_domain and b.aci_endpoint_group.aci_bridge_domain.aci_vrf %}
-                <a href="{{ b.aci_endpoint_group.aci_bridge_domain.aci_vrf.get_absolute_url }}">{{ b.aci_endpoint_group.aci_bridge_domain.aci_vrf.name }}</a>
-              {% else %}—{% endif %}
+                {{ b.aci_endpoint_group.aci_bridge_domain.aci_vrf|linkify|placeholder }}
+              {% else %}{{ ""|placeholder }}{% endif %}
             </td>
             <td>{{ b.encap_vlan }}</td>
             <td>{{ b.get_mode_display }}</td>
@@ -62,51 +104,67 @@
         {% endfor %}
       </tbody>
     </table>
-  {% endif %}
+  </div>
+{% endif %}
 
-  {% if logical_node_static_routes %}
-    <div class="card-body">
-      <h5>{% trans "L3Out Logical Nodes" %}</h5>
+{% if logical_node_static_routes %}
+  <div class="card">
+    <h2 class="card-header">{% trans "L3Out Logical Nodes" %}</h2>
+    <table class="table table-hover attr-table">
       {% for ln, node_routes in logical_node_static_routes %}
-        <p>
-          <strong><a href="{{ ln.get_absolute_url }}">{{ ln.name }}</a></strong>
-          {% trans "on" %}
-          <a href="{{ ln.aci_logical_node_profile.aci_l3out.get_absolute_url }}">{{ ln.aci_logical_node_profile.aci_l3out.name }}</a>
-          {% if ln.router_id %}({% trans "router ID" %} {{ ln.router_id }}){% endif %}
-        </p>
-        {% if node_routes %}
-          <table class="table table-hover table-sm">
-            <thead>
-              <tr>
-                <th>{% trans "Prefix" %}</th>
-                <th>{% trans "Preference" %}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for route in node_routes %}
-              <tr>
-                <td><a href="{{ route.get_absolute_url }}">{{ route.prefix }}</a></td>
-                <td>{{ route.preference }}</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        {% endif %}
+        <tr>
+          <th scope="row">{{ ln|linkify }}</th>
+          <td>
+            <div>
+              <strong>{% trans "L3Out" %}:</strong>
+              {{ ln.aci_logical_node_profile.aci_l3out|linkify }}
+              {% if ln.router_id %}
+                &middot; <strong>{% trans "Router ID" %}:</strong> {{ ln.router_id }}
+              {% endif %}
+            </div>
+            {% if node_routes %}
+              <table class="table table-hover table-sm mt-2 mb-0">
+                <thead>
+                  <tr>
+                    <th>{% trans "Prefix" %}</th>
+                    <th>{% trans "Preference" %}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for route in node_routes %}
+                    <tr>
+                      <td>{{ route|linkify }}</td>
+                      <td>{{ route.preference }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            {% else %}
+              <span class="text-muted">{% trans "No static routes." %}</span>
+            {% endif %}
+          </td>
+        </tr>
       {% endfor %}
-    </div>
-  {% elif logical_nodes %}
-    <div class="card-body">
-      <h5>{% trans "L3Out Logical Nodes" %}</h5>
-      <ul>
-        {% for ln in logical_nodes %}
-          <li>
-            <a href="{{ ln.get_absolute_url }}">{{ ln.name }}</a>
-            {% trans "on" %}
-            <a href="{{ ln.aci_logical_node_profile.aci_l3out.get_absolute_url }}">{{ ln.aci_logical_node_profile.aci_l3out.name }}</a>
-            {% if ln.router_id %}({% trans "router ID" %} {{ ln.router_id }}){% endif %}
-          </li>
-        {% endfor %}
-      </ul>
-    </div>
-  {% endif %}
-</div>
+    </table>
+  </div>
+{% elif logical_nodes %}
+  {# Logical nodes attached but the routes-by-node dict wasn't populated, #}
+  {# so just list them flat.                                              #}
+  <div class="card">
+    <h2 class="card-header">{% trans "L3Out Logical Nodes" %}</h2>
+    <table class="table table-hover attr-table">
+      {% for ln in logical_nodes %}
+        <tr>
+          <th scope="row">{{ ln|linkify }}</th>
+          <td>
+            <strong>{% trans "L3Out" %}:</strong>
+            {{ ln.aci_logical_node_profile.aci_l3out|linkify }}
+            {% if ln.router_id %}
+              &middot; <strong>{% trans "Router ID" %}:</strong> {{ ln.router_id }}
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+{% endif %}
