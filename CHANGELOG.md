@@ -15,6 +15,31 @@ _No unreleased changes yet — next release will start here._
 
 ---
 
+## [0.1.4] — 2026-05-28
+
+Patch release restyling the **Cisco ACI Context** panel on the
+`dcim.Device` and `dcim.Interface` detail pages to match NetBox's
+stock card layout.
+
+> **Compatibility:** NetBox v4.5, NetBox v4.6 · Python 3.12.
+
+### Changed
+
+- **"Cisco ACI Context" panel restyled to NetBox `attr-table`**
+  (PR #19). Both the device and interface PluginTemplateExtensions
+  now render the same compact two-column label-to-value definition
+  list NetBox uses for stock cards like "Device Type" — link-colored
+  FK values via `|linkify` and em-dashes for empty fields via
+  `|placeholder`. Subordinate sections (Static Port Bindings, L3Out
+  Logical Nodes, Reachable Subnets, Contracts, L3Out Interfaces, BGP
+  Peers) split into their own cards stacked beneath the summary,
+  each with a count badge in the header. Same data density, same
+  links, but the panels now blend seamlessly into the surrounding
+  NetBox UI. Pure template-layer change; no model, migration, API,
+  or serializer impact.
+
+---
+
 ## [0.1.3] — 2026-05-27
 
 Patch release adding the AAEP→EPG encap-VLAN reachability check and
@@ -261,7 +286,8 @@ Cloud / Kubernetes-friendly footprint.
   name. Python package, Django app label, URL base, and constraint
   names all use the matching `netbox_cisco_aci` / `cisco-aci` prefixes.
 
-[Unreleased]: https://github.com/droolingtaz/netbox-cisco-aci/compare/v0.1.3...HEAD
+[Unreleased]: https://github.com/droolingtaz/netbox-cisco-aci/compare/v0.1.4...HEAD
+[0.1.4]: https://github.com/droolingtaz/netbox-cisco-aci/releases/tag/v0.1.4
 [0.1.3]: https://github.com/droolingtaz/netbox-cisco-aci/releases/tag/v0.1.3
 [0.1.2]: https://github.com/droolingtaz/netbox-cisco-aci/releases/tag/v0.1.2
 [0.1.1]: https://github.com/droolingtaz/netbox-cisco-aci/releases/tag/v0.1.1
