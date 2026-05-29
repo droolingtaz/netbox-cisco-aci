@@ -15,6 +15,31 @@ _No unreleased changes yet — next release will start here._
 
 ---
 
+## [0.1.5] — 2026-05-29
+
+Patch release finishing the device ACI Context restyle: the **L3Out
+Logical Nodes** sub-card now follows the same per-attribute
+`attr-table` layout as the rest of the panel.
+
+> **Compatibility:** NetBox v4.5, NetBox v4.6 · Python 3.12.
+
+### Changed
+
+- **L3Out Logical Nodes sub-card restyled to per-node `attr-table`**
+  (PR #21). The v0.1.4 restyle missed one section: each logical node
+  on the device ACI Context panel was rendered as a single attr-table
+  row whose right cell stuffed three pieces of data inline
+  (`L3Out: ... · Router ID: 1.1.1.1` and a `No static routes.`
+  sentence). Each logical node now renders as its own per-attribute
+  attr-table inside the section card, with explicit rows for **Logical
+  Node**, **L3Out**, **Logical Node Profile**, **Router ID**,
+  **Loopback Address**, and **Static Routes**. Consecutive nodes are
+  separated by a thin `<hr>` and the card header gains a count badge.
+  Empty values render as em-dashes; FK references render as links.
+  Pure template + test change.
+
+---
+
 ## [0.1.4] — 2026-05-28
 
 Patch release restyling the **Cisco ACI Context** panel on the
@@ -286,7 +311,8 @@ Cloud / Kubernetes-friendly footprint.
   name. Python package, Django app label, URL base, and constraint
   names all use the matching `netbox_cisco_aci` / `cisco-aci` prefixes.
 
-[Unreleased]: https://github.com/droolingtaz/netbox-cisco-aci/compare/v0.1.4...HEAD
+[Unreleased]: https://github.com/droolingtaz/netbox-cisco-aci/compare/v0.1.5...HEAD
+[0.1.5]: https://github.com/droolingtaz/netbox-cisco-aci/releases/tag/v0.1.5
 [0.1.4]: https://github.com/droolingtaz/netbox-cisco-aci/releases/tag/v0.1.4
 [0.1.3]: https://github.com/droolingtaz/netbox-cisco-aci/releases/tag/v0.1.3
 [0.1.2]: https://github.com/droolingtaz/netbox-cisco-aci/releases/tag/v0.1.2
