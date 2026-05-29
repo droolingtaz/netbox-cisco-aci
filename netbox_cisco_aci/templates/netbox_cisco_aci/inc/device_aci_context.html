@@ -108,22 +108,48 @@ nothing renders.
 {% endif %}
 
 {% if logical_node_static_routes %}
+  {# One card per logical node, each rendered as its own attr-table        #}
+  {# (matching the 'Device Type' / 'Cisco ACI Context' layout). Per-node   #}
+  {# static routes get their own dedicated row whose value cell either    #}
+  {# carries the routes table or the |placeholder em-dash.                #}
   <div class="card">
-    <h2 class="card-header">{% trans "L3Out Logical Nodes" %}</h2>
-    <table class="table table-hover attr-table">
-      {% for ln, node_routes in logical_node_static_routes %}
+    <h2 class="card-header">
+      {% trans "L3Out Logical Nodes" %}
+      <span class="badge text-bg-secondary">{{ logical_node_static_routes|length }}</span>
+    </h2>
+    {% for ln, node_routes in logical_node_static_routes %}
+      <table class="table table-hover attr-table mb-0">
         <tr>
-          <th scope="row">{{ ln|linkify }}</th>
+          <th scope="row">{% trans "Logical Node" %}</th>
+          <td>{{ ln|linkify }}</td>
+        </tr>
+        <tr>
+          <th scope="row">{% trans "L3Out" %}</th>
+          <td>{{ ln.aci_logical_node_profile.aci_l3out|linkify|placeholder }}</td>
+        </tr>
+        <tr>
+          <th scope="row">{% trans "Logical Node Profile" %}</th>
+          <td>{{ ln.aci_logical_node_profile|linkify|placeholder }}</td>
+        </tr>
+        <tr>
+          <th scope="row">{% trans "Router ID" %}</th>
+          <td>{{ ln.router_id|placeholder }}</td>
+        </tr>
+        <tr>
+          <th scope="row">{% trans "Loopback Address" %}</th>
           <td>
-            <div>
-              <strong>{% trans "L3Out" %}:</strong>
-              {{ ln.aci_logical_node_profile.aci_l3out|linkify }}
-              {% if ln.router_id %}
-                &middot; <strong>{% trans "Router ID" %}:</strong> {{ ln.router_id }}
-              {% endif %}
-            </div>
+            {% if ln.use_router_id_as_loopback %}
+              <span class="text-muted">{% trans "Router ID" %}</span>
+            {% else %}
+              {{ ln.loopback_address|placeholder }}
+            {% endif %}
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">{% trans "Static Routes" %}</th>
+          <td>
             {% if node_routes %}
-              <table class="table table-hover table-sm mt-2 mb-0">
+              <table class="table table-hover table-sm mb-0">
                 <thead>
                   <tr>
                     <th>{% trans "Prefix" %}</th>
@@ -139,32 +165,11 @@ nothing renders.
                   {% endfor %}
                 </tbody>
               </table>
-            {% else %}
-              <span class="text-muted">{% trans "No static routes." %}</span>
-            {% endif %}
+            {% else %}{{ ""|placeholder }}{% endif %}
           </td>
         </tr>
-      {% endfor %}
-    </table>
-  </div>
-{% elif logical_nodes %}
-  {# Logical nodes attached but the routes-by-node dict wasn't populated, #}
-  {# so just list them flat.                                              #}
-  <div class="card">
-    <h2 class="card-header">{% trans "L3Out Logical Nodes" %}</h2>
-    <table class="table table-hover attr-table">
-      {% for ln in logical_nodes %}
-        <tr>
-          <th scope="row">{{ ln|linkify }}</th>
-          <td>
-            <strong>{% trans "L3Out" %}:</strong>
-            {{ ln.aci_logical_node_profile.aci_l3out|linkify }}
-            {% if ln.router_id %}
-              &middot; <strong>{% trans "Router ID" %}:</strong> {{ ln.router_id }}
-            {% endif %}
-          </td>
-        </tr>
-      {% endfor %}
-    </table>
+      </table>
+      {% if not forloop.last %}<hr class="my-0">{% endif %}
+    {% endfor %}
   </div>
 {% endif %}
