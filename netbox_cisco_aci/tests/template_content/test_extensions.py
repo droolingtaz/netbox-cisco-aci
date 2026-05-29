@@ -9,6 +9,12 @@ from netbox_cisco_aci.models.bindings import (
     ACIStaticPortBinding,
 )
 from netbox_cisco_aci.models.fabric import ACIFabric, ACINode, ACIPod
+from netbox_cisco_aci.models.l3out import (
+    ACIL3Out,
+    ACIL3OutStaticRoute,
+    ACILogicalNode,
+    ACILogicalNodeProfile,
+)
 from netbox_cisco_aci.models.tenant import (
     ACIVRF,
     ACIAppProfile,
@@ -68,6 +74,59 @@ class ACIDeviceContextPanelTests(TestCase):
         self.assertIn("Cisco ACI Context", out)
         self.assertIn("epg-web", out)
         self.assertIn("100", out)
+
+    def test_l3out_logical_node_card_renders_per_node_attr_table(self):
+        # Build a Device <- ACINode <- ACILogicalNode chain plus one
+        # static route, then assert the L3Out Logical Nodes card renders
+        # in the new attr-table layout (per-node label/value rows for
+        # L3Out, Logical Node Profile, Router ID, Loopback, Static
+        # Routes). Regression guard for the layout shipped in PR #21
+        # — the previous layout stuffed L3Out + Router ID into a single
+        # right-cell prose blob.
+        device = make_dcim_device("l3out-leaf")
+        ct = ContentType.objects.get_for_model(device.__class__)
+        node = ACINode.objects.create(
+            aci_pod=self.pod,
+            node_id=110,
+            name="l3out-leaf",
+            node_object_type=ct,
+            node_object_id=device.pk,
+        )
+        l3out = ACIL3Out.objects.create(
+            aci_tenant=self.tenant,
+            aci_vrf=self.vrf,
+            name="l3o-prod",
+            protocol_static=True,
+        )
+        lnp = ACILogicalNodeProfile.objects.create(aci_l3out=l3out, name="lnp-1")
+        ln = ACILogicalNode.objects.create(
+            aci_logical_node_profile=lnp,
+            aci_node=node,
+            name="ln-110",
+            router_id="10.0.0.110",
+            use_router_id_as_loopback=True,
+        )
+        ACIL3OutStaticRoute.objects.create(
+            aci_logical_node=ln, prefix="172.16.0.0/16", preference=1, name="sr-mgmt"
+        )
+        ext = ACIDeviceContextPanel(_ctx(device))
+        out = ext.full_width_page()
+        self.assertIn("L3Out Logical Nodes", out)
+        # Each per-node attribute is rendered as its own attr-table row
+        # (label → value), not stuffed inline in a single cell.
+        for label in (
+            "Logical Node",
+            "Logical Node Profile",
+            "Router ID",
+            "Loopback Address",
+            "Static Routes",
+        ):
+            self.assertIn(label, out)
+        # Linkified FK and the static route are present.
+        self.assertIn("l3o-prod", out)
+        self.assertIn("172.16.0.0/16", out)
+        # Router ID value is rendered.
+        self.assertIn("10.0.0.110", out)
 
     def test_renders_for_device_with_only_bindings_no_node(self):
         # Device has bindings but no ACINode link -> still render (binding
